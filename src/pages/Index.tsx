@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { SocialSidebar } from "@/components/social-sidebar"
 import { cn } from "@/lib/utils"
 import { projects } from "@/data/projects"
+import Footer from "./Footer"
 
 interface Feature {
   title: string
@@ -213,6 +214,8 @@ const Index = () => {
           ))}
         </div>
       </section>
+
+      <Footer />
     </div>
   )
 }

@@ -1,30 +1,31 @@
 "use client"
 
-import { Github, Linkedin, Mail, Twitter } from "lucide-react"
+import { Github, Mail, Twitter, MessageCircle } from "lucide-react"
 import { motion } from "framer-motion"
 
 const socialLinks = [
-  {
-    name: "GitHub",
-    icon: Github,
-    url: "https://github.com/yourusername",
-  },
-  {
-    name: "LinkedIn",
-    icon: Linkedin,
-    url: "https://linkedin.com/in/yourusername",
-  },
-  {
-    name: "Twitter",
-    icon: Twitter,
-    url: "https://twitter.com/yourusername",
-  },
-  {
-    name: "Email",
-    icon: Mail,
-    url: "mailto:your@email.com",
-  },
-]
+    {
+      name: "GitHub",
+      icon: Github,
+      url: "https://github.com/Dr-dyrane",
+    },
+    {
+      name: "Twitter",
+      icon: Twitter,
+      url: "https://twitter.com/dr_dyrane",
+    },
+    {
+      name: "WhatsApp",
+      icon: MessageCircle, // You can replace this with a WhatsApp icon
+      url: "https://wa.me/2348159502463",
+    },
+    {
+      name: "Email",
+      icon: Mail,
+      url: "mailto:drdyrane@gmail.com",
+    },
+  ]
+  
 
 export function SocialSidebar() {
   return (
