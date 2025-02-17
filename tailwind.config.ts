@@ -15,6 +15,7 @@ export default {
         "fade-up": "fadeUp 0.5s ease-out forwards",
         "slide-in": "slideIn 0.5s ease-out forwards",
         "scale-up": "scaleUp 0.3s ease-out forwards",
+        "float": "float 6s ease-in-out infinite",
       },
       keyframes: {
         fadeUp: {
@@ -29,6 +30,13 @@ export default {
           "0%": { transform: "scale(0.95)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+      },
+      fontFamily: {
+        sans: ["Space Grotesk", "sans-serif"],
       },
     },
   },
