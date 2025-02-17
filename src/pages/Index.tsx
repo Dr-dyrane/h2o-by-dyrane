@@ -6,6 +6,8 @@ import ProjectCard from "../components/ProjectCard"
 import WaterBottleBackground from "@/components/WaterBottleBackground"
 import MouseMoveEffect from "@/components/MouseMoveEffect"
 import { motion } from "framer-motion";
+import { SocialSidebar } from "@/components/social-sidebar"
+import { cn } from "@/lib/utils"
 
 interface Feature {
   title: string
@@ -101,35 +103,102 @@ const Index = () => {
     }),
   }
 
+  function FloatingBottle({
+    className,
+    delay = 0,
+    rotate = 0,
+    src,
+  }: {
+    className?: string;
+    delay?: number;
+    rotate?: number;
+    src: string;
+  }) {
+    return (
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: -150,
+          rotate: rotate - 15,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          rotate: rotate,
+        }}
+        transition={{
+          duration: 2.4,
+          delay,
+          ease: [0.23, 0.86, 0.39, 0.96],
+          opacity: { duration: 1.2 },
+        }}
+        className={cn("absolute", className)}
+      >
+        <motion.img
+          src={src}
+          alt="Water Bottle"
+          animate={{
+            y: [0, 15, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+          className="relative drop-shadow-lg max-w-none"
+        />
+      </motion.div>
+    );
+  }
+
   return (
     <div className="min-h-screen geometric-bg relative text-center">
       <MouseMoveEffect />
+      <SocialSidebar />
+      <div className="absolute -z-10 inset-0 overflow-hidden pointer-events-none">
+        {/* Two floating water bottles */}
+        <FloatingBottle className="top-0 right-1/3" rotate={15} delay={1} src="hero/water-bottle-1.png" />
+        <FloatingBottle className="bottom-0 right-1/5" rotate={-25} delay={1.5} src="hero/water-bottle-2.png" />
+      </div>
 
       {/* Hero Section - Water Bottle Branding */}
       <section className="relative flex h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
         <WaterBottleBackground />
         <motion.div
-        custom={0}
-        variants={fadeUpVariants}
-        initial="hidden"
-        animate="visible"
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/[0.03] border border-black/[0.08] mb-8 md:mb-12"
-      >
-        <img src="logo.png" alt="Dyrane UI" width={20} height={20} />
-        <span className="text-sm text-black/60 tracking-wide">Dyrane UI</span>
-      </motion.div>
-        <div className="relative z-10 flex flex-col items-center justify-center">
-          <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl">
-            H₂O <span className="text-2xl italic">BY DYRANE</span>
-          </h1>
-          <p className="mb-8 max-w-2xl text-lg font-light tracking-wide opacity-80">
-            Revolutionizing hydration through innovative design and sustainable solutions
-          </p>
-          <CircleArrowDown
-            className="mt-8 h-12 w-12 animate-bounce cursor-pointer opacity-50 transition-opacity hover:opacity-100"
-            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
-          />
+          custom={0}
+          variants={fadeUpVariants}
+          initial="hidden"
+          animate="visible"
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/[0.03] border border-black/[0.08] mb-8 md:mb-12"
+        >
+          <img src="logo.png" alt="Dyrane UI" width={20} height={20} className="border border-black/15 rounded-full" />
+          <span className="text-sm text-black/60 tracking-wide">Dyrane UI</span>
+        </motion.div>
+
+        <div className="relative z-10 flex flex-col items-center justify-center p-8 group">
+          {/* Glass Background */}
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm group-hover:backdrop-blur-none rounded-3xl"></div>
+
+          {/* Expanding Black Overlay on Hover */}
+          <div className="absolute left-0 top-0 w-full h-0 bg-black rounded-3xl transition-all duration-500 ease-in-out group-hover:h-full opacity-80"></div>
+
+          <div className="relative z-10 flex flex-col items-center">
+            {/* Text with Hover Transition */}
+            <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl p-4 transition-all duration-300 group-hover:text-white">
+              H₂O <span className="text-2xl italic">by dyrane</span>
+            </h1>
+            <p className="mb-8 max-w-2xl text-lg font-light tracking-wide opacity-80 transition-opacity duration-300 group-hover:text-white">
+              Revolutionizing hydration through innovative design and sustainable solutions
+            </p>
+
+            {/* Bouncing Scroll Arrow */}
+            <CircleArrowDown
+              className="mt-8 group-hover:text-white h-12 w-12 animate-bounce cursor-pointer opacity-50 transition-opacity hover:opacity-100"
+              onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
+            />
+          </div>
         </div>
+
       </section>
 
       {/* Features Grid */}
