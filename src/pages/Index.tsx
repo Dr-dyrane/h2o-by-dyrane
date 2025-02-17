@@ -111,6 +111,7 @@ const Index = () => {
         <motion.img
           src={src}
           alt="Water Bottle"
+          onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
           animate={{
             y: [0, 15, 0],
           }}
@@ -145,7 +146,8 @@ const Index = () => {
           animate="visible"
           className="inline-flex z-50 items-center gap-2 px-3 py-1 rounded-full bg-black/[0.03] border border-black/[0.08] mb-8 md:mb-12"
         >
-          <img src="logo.png" alt="Dyrane UI" width={20} height={20} className="border border-black/15 rounded-full" />
+          <img src="logo.png" alt="Dyrane UI" width={20} height={20} className="border border-black/15 rounded-full"
+            onError={(e) => (e.currentTarget.src = "/placeholder.svg")} />
           <span className="text-sm text-black/60 tracking-wide">Dyrane UI</span>
         </motion.div>
 
