@@ -38,32 +38,37 @@ const features: Feature[] = [
   }
 ];
 
-const projects: Project[] = [
+const projects = [
+  {
+    title: "H2O by Dyrane",
+    description: "Revolutionizing hydration through innovative design and sustainable solutions",
+    link: "h2ong.vercel.app"
+  },
   {
     title: "Slatechain",
     description: "Blockchain solution for transparent transactions",
-    link: "slatechain.vercel.app",
-    imageUrl: "/placeholder.svg"
+    link: "slatechain.vercel.app"
   },
   {
     title: "Reflectify",
     description: "Digital reflection and journaling platform",
-    link: "reflectify.dyrane.live",
-    imageUrl: "/placeholder.svg"
+    link: "reflectify.dyrane.live"
   },
   {
     title: "DDDC",
     description: "Medical platform for healthcare management",
-    link: "med.dyrane.live",
-    imageUrl: "/placeholder.svg"
+    link: "med.dyrane.live"
   },
   {
     title: "Aquawallet",
     description: "Digital wallet solution",
-    link: "aquawallet-coral.vercel.app",
-    imageUrl: "/placeholder.svg"
+    link: "aquawallet-coral.vercel.app"
   }
-];
+].map(project => ({
+  ...project,
+  imageUrl: `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`
+}));
+
 
 const Index = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
