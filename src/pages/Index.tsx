@@ -5,6 +5,7 @@ import { CircleArrowDown, Droplets, Sparkles, Infinity, Waves } from "lucide-rea
 import ProjectCard from "../components/ProjectCard"
 import WaterBottleBackground from "@/components/WaterBottleBackground"
 import MouseMoveEffect from "@/components/MouseMoveEffect"
+import { motion } from "framer-motion";
 
 interface Feature {
   title: string
@@ -54,11 +55,11 @@ const projects = [
   {
     title: "DDDC",
     description: "Medical platform for healthcare management",
-    link: "med.dyrane.live",
+    link: "dddc.vercel.app",
   },
   {
     title: "Aquawallet",
-    description: "Digital wallet solution",
+    description: "Digital wallet solution for ",
     link: "aquawallet-coral.vercel.app",
   },
 ]
@@ -86,12 +87,37 @@ const Index = () => {
     return () => observerRef.current?.disconnect()
   }, [])
 
+
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        delay: 0.5 + i * 0.2,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    }),
+  }
+
   return (
-    <div className="min-h-screen geometric-bg relative">
+    <div className="min-h-screen geometric-bg relative text-center">
       <MouseMoveEffect />
+
       {/* Hero Section - Water Bottle Branding */}
       <section className="relative flex h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
         <WaterBottleBackground />
+        <motion.div
+        custom={0}
+        variants={fadeUpVariants}
+        initial="hidden"
+        animate="visible"
+        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/[0.03] border border-black/[0.08] mb-8 md:mb-12"
+      >
+        <img src="logo.png" alt="Dyrane UI" width={20} height={20} />
+        <span className="text-sm text-black/60 tracking-wide">Dyrane UI</span>
+      </motion.div>
         <div className="relative z-10 flex flex-col items-center justify-center">
           <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl">
             H₂O <span className="text-2xl italic">BY DYRANE</span>

@@ -77,7 +77,7 @@ const WaterBottleBackground = () => {
             <ElegantShape className="top-1/3 right-10" width={350} height={90} rotate={-10} delay={0.2} gradient="from-black/[0.06]" />
             <ElegantShape className="bottom-10 left-1/2" width={400} height={100} rotate={20} delay={0.4} />
             <ElegantShape className="top-1/2 right-1/4" width={300} height={80} rotate={-15} delay={0.6} gradient="from-black/[0.05]" />
-            <ElegantShape className="bottom-5 right-1/3" width={500} height={130} rotate={25} delay={0.8} />
+            <ElegantShape className="bottom-5 right-1/2" width={500} height={130} rotate={25} delay={0.8} />
         </div>
     );
 };
