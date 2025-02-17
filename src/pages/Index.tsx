@@ -4,6 +4,8 @@ import { useRef, useEffect } from "react"
 import { CircleArrowDown, Droplets, Sparkles, Infinity, Waves } from "lucide-react"
 import WaterBottle3D from "../components/WaterBottle3D"
 import ProjectCard from "../components/ProjectCard"
+import RippleEffect from "@/components/RippleEffect"
+import WaterBottleBackground from "@/components/WaterBottleBackground"
 
 interface Feature {
   title: string
@@ -86,22 +88,23 @@ const Index = () => {
   }, [])
 
   return (
-    <div className="min-h-screen geometric-bg">
+    <div className="min-h-screen geometric-bg relative">
+      <RippleEffect />
       {/* Hero Section - Water Bottle Branding */}
-      <section className="flex h-screen flex-col items-center justify-center px-4 text-center">
-        <div className="floating mb-8 h-auto p-4 w-full">
-          <WaterBottle3D />
+      <section className="relative flex h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
+        <WaterBottleBackground />
+        <div className="relative z-10 flex flex-col items-center justify-center">
+          <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl">
+            H₂O <span className="text-2xl italic">BY DYRANE</span>
+          </h1>
+          <p className="mb-8 max-w-2xl text-lg font-light tracking-wide opacity-80">
+            Revolutionizing hydration through innovative design and sustainable solutions
+          </p>
+          <CircleArrowDown
+            className="mt-8 h-12 w-12 animate-bounce cursor-pointer opacity-50 transition-opacity hover:opacity-100"
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
+          />
         </div>
-        <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl">
-          H₂O <span className="text-2xl italic">BY DYRANE</span>
-        </h1>
-        <p className="mb-8 max-w-2xl text-lg font-light tracking-wide opacity-80">
-          Revolutionizing hydration through innovative design and sustainable solutions
-        </p>
-        <CircleArrowDown
-          className="mt-8 h-12 w-12 animate-bounce cursor-pointer opacity-50 transition-opacity hover:opacity-100"
-          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
-        />
       </section>
 
       {/* Features Grid */}
@@ -111,7 +114,7 @@ const Index = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="animate-on-scroll glass group cursor-pointer rounded-xl p-6 transition-all duration-300 hover:bg-black hover:text-white"
+              className="animate-on-scroll glass group cursor-pointer rounded-xl p-6 transition-all duration-300 hover:bg-black hover:text-white border border-black/10"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="mb-4 transition-transform duration-300 group-hover:scale-110">{feature.icon}</div>
