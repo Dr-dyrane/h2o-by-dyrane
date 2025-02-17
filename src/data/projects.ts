@@ -1,27 +1,45 @@
 export const projects = [
-    {
-      title: "H2O by Dyrane",
-      description: "Revolutionizing hydration through innovative design and sustainable solutions",
-      link: "h2ong.vercel.app",
-    },
-    {
-      title: "Slatechain",
-      description: "Blockchain solution for transparent transactions",
-      link: "slatechain.vercel.app",
-    },
-    {
-      title: "Reflectify",
-      description: "Digital reflection and journaling platform",
-      link: "reflectify.dyrane.live",
-    },
-    {
-      title: "DDDC",
-      description: "Medical platform for healthcare management",
-      link: "dddc.vercel.app",
-    },
-    {
-      title: "Aquawallet",
-      description: "Digital wallet solution for ",
-      link: "aquawallet-coral.vercel.app",
-    },
-  ]
+	{
+		title: "ableGod.",
+		description: "Digital wallet solution for Fish Farmers",
+		link: "chistanwrites.blog",
+	},
+	{
+		title: "SaySwitch",
+		description:
+			"A comprehensive, Feature-Rich Payment Solution for seamless offline and online transactions",
+		link: "sayswitchgroup.com",
+	},
+	{
+		title: "Slatechain",
+		description:
+			"SlateChain helps you manage your inventory, track orders, and optimize logistics with ease",
+		link: "slatechain.vercel.app",
+	},
+	{
+		title: "Reflectify",
+		description: "Your personal journaling application",
+		link: "myreflectify.vercel.app",
+	},
+	{
+		title: "DDDC",
+		description: "Medical platform for healthcare management",
+		link: "dddc.vercel.app",
+	},
+	{
+		title: "Aquawallet",
+		description: "Digital wallet solution for Fish Farmers",
+		link: "aquawallet-coral.vercel.app",
+	},
+	{
+		title: "MedChart",
+		description:
+			"Streamline patient care with a focus on simplicity. Track vitals, medications, and fluids with ease.",
+		link: "medchartv1.vercel.app",
+	},
+	{
+		title: "Algorise",
+		description: "Elevate your coding skills with daily algorithm challenges",
+		link: "algorise-dyrane.vercel.app",
+	},
+];
