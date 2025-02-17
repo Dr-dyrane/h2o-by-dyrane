@@ -4,28 +4,27 @@ import { Github, Mail, Twitter, MessageCircle } from "lucide-react"
 import { motion } from "framer-motion"
 
 const socialLinks = [
-    {
-      name: "GitHub",
-      icon: Github,
-      url: "https://github.com/Dr-dyrane",
-    },
-    {
-      name: "Twitter",
-      icon: Twitter,
-      url: "https://twitter.com/dr_dyrane",
-    },
-    {
-      name: "WhatsApp",
-      icon: MessageCircle, // You can replace this with a WhatsApp icon
-      url: "https://wa.me/2348159502463",
-    },
-    {
-      name: "Email",
-      icon: Mail,
-      url: "mailto:drdyrane@gmail.com",
-    },
-  ]
-  
+  {
+    name: "GitHub",
+    icon: Github,
+    url: "https://github.com/Dr-dyrane",
+  },
+  {
+    name: "Twitter",
+    icon: Twitter,
+    url: "https://twitter.com/dr_dyrane",
+  },
+  {
+    name: "WhatsApp",
+    icon: MessageCircle, // You can replace this with a WhatsApp icon
+    url: "https://wa.me/2348159502463",
+  },
+  {
+    name: "Email",
+    icon: Mail,
+    url: "mailto:drdyrane@gmail.com",
+  },
+]
 
 export function SocialSidebar() {
   return (
@@ -33,7 +32,7 @@ export function SocialSidebar() {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed left-4 top-1/2 z-50 -translate-y-1/2 flex flex-col gap-4 border p-4 rounded-full border-black/5 hover:border-black/50 bg-white/50"
+      className="fixed left-4 top-[25%] z-50 -translate-y-1/2 flex flex-col gap-4 border p-4 rounded-full border-black/5 hover:border-black/50 bg-white/85 shadow-lg backdrop-blur-sm"
     >
       {socialLinks.map((link) => (
         <a
@@ -52,4 +51,3 @@ export function SocialSidebar() {
     </motion.div>
   )
 }
-

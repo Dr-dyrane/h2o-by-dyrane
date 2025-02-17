@@ -206,7 +206,7 @@ const Index = () => {
             href="https://wa.me/2348159502463?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full relative group border-2 border-white px-8 py-3 text-lg font-medium transition-all hover:bg-white duration-300 hover:text-black overflow-hidden"
+            className="inline-block rounded-full relative group border-2 border-white px-8 py-3 text-lg font-medium transition-all hover:bg-white duration-300 hover:text-black overflow-hidden"
           >
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0 h-full bg-black rounded-full transition-transform duration-500 ease-in-out group-hover:w-full group-hover:translate-x-full"></div>
             <span className="relative z-10">Get Started</span>
