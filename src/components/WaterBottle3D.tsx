@@ -11,7 +11,7 @@ const Bottle = () => {
     <mesh ref={meshRef} scale={[1, 1, 1]} position={[0, 0, 0]}>
       <cylinderGeometry args={[1, 1, 4, 32]} />
       <meshPhysicalMaterial
-        color="#ffffff"
+        color="#000000"
         transmission={0.9}
         thickness={0.5}
         roughness={0}
@@ -23,7 +23,7 @@ const Bottle = () => {
 
 const WaterBottle3D = () => {
   return (
-    <Canvas className="h-[500px] w-full">
+    <Canvas className="h-[500px] p-4 w-full">
       <PerspectiveCamera makeDefault position={[0, 0, 5]} />
       <OrbitControls enableZoom={false} />
       <ambientLight intensity={0.5} />

@@ -89,7 +89,7 @@ const Index = () => {
     <div className="min-h-screen geometric-bg">
       {/* Hero Section - Water Bottle Branding */}
       <section className="flex h-screen flex-col items-center justify-center px-4 text-center">
-        <div className="floating mb-8 h-[500px] w-full">
+        <div className="floating mb-8 h-auto p-4 w-full">
           <WaterBottle3D />
         </div>
         <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl">
