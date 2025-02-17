@@ -136,9 +136,11 @@ const Index = () => {
           <p className="mb-8 text-lg opacity-80">
             Let's create something extraordinary together
           </p>
-          <button className="rounded-full border-2 border-white px-8 py-3 text-lg font-medium transition-all duration-300 hover:bg-white hover:text-black">
-            Get Started
+          <button className="rounded-full relative group border-2 border-white px-8 py-3 text-lg font-medium transition-all hover:bg-white duration-300 hover:text-black overflow-hidden">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0 h-full bg-black rounded-full transition-transform duration-500 ease-in-out group-hover:w-full group-hover:translate-x-full"></div>
+            <span className="relative z-10">Get Started</span>
           </button>
+
         </div>
       </section>
 
