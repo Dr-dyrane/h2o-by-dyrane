@@ -1,12 +1,18 @@
-
 import { useRef, useEffect } from "react";
-import { CircleArrowDown, Droplets, Sparkles, Infinity, Wave } from "lucide-react";
+import { CircleArrowDown, Droplets, Sparkles, Infinity, Waves } from "lucide-react";
 import WaterBottle3D from "../components/WaterBottle3D";
 
 interface Feature {
   title: string;
   description: string;
   icon: JSX.Element;
+}
+
+interface Project {
+  title: string;
+  description: string;
+  link: string;
+  imageUrl: string;
 }
 
 const features: Feature[] = [
@@ -23,12 +29,39 @@ const features: Feature[] = [
   {
     title: "Pure Design",
     description: "Minimal and elegant",
-    icon: <Wave className="h-8 w-8" />
+    icon: <Waves className="h-8 w-8" />
   },
   {
     title: "Refreshing",
     description: "Stay hydrated in style",
     icon: <Droplets className="h-8 w-8" />
+  }
+];
+
+const projects: Project[] = [
+  {
+    title: "Slatechain",
+    description: "Blockchain solution for transparent transactions",
+    link: "slatechain.vercel.app",
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    title: "Reflectify",
+    description: "Digital reflection and journaling platform",
+    link: "reflectify.dyrane.live",
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    title: "DDDC",
+    description: "Medical platform for healthcare management",
+    link: "med.dyrane.live",
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    title: "Aquawallet",
+    description: "Digital wallet solution",
+    link: "aquawallet-coral.vercel.app",
+    imageUrl: "/placeholder.svg"
   }
 ];
 
@@ -57,7 +90,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen geometric-bg">
-      {/* Hero Section */}
+      {/* Hero Section - Water Bottle Branding */}
       <section className="flex h-screen flex-col items-center justify-center px-4 text-center">
         <div className="floating mb-8">
           <WaterBottle3D />
@@ -106,6 +139,36 @@ const Index = () => {
           <button className="rounded-full border-2 border-white px-8 py-3 text-lg font-medium transition-all duration-300 hover:bg-white hover:text-black">
             Get Started
           </button>
+        </div>
+      </section>
+
+      {/* Other Projects Section */}
+      <section className="px-4 py-20">
+        <h2 className="animate-on-scroll mb-16 text-center text-4xl font-bold">
+          More Projects by Dr. Dyrane
+        </h2>
+        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {projects.map((project, index) => (
+            <a
+              key={index}
+              href={`https://${project.link}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="animate-on-scroll glass group cursor-pointer rounded-xl p-6 transition-all duration-300 hover:bg-black hover:text-white"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="mb-4 overflow-hidden rounded-lg">
+                <img
+                  src={project.imageUrl}
+                  alt={project.title}
+                  className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  loading="lazy"
+                />
+              </div>
+              <h3 className="mb-2 text-xl font-semibold">{project.title}</h3>
+              <p className="text-sm opacity-70">{project.description}</p>
+            </a>
+          ))}
         </div>
       </section>
     </div>
