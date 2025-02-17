@@ -2,10 +2,9 @@
 
 import { useRef, useEffect } from "react"
 import { CircleArrowDown, Droplets, Sparkles, Infinity, Waves } from "lucide-react"
-import WaterBottle3D from "../components/WaterBottle3D"
 import ProjectCard from "../components/ProjectCard"
-import RippleEffect from "@/components/RippleEffect"
 import WaterBottleBackground from "@/components/WaterBottleBackground"
+import MouseMoveEffect from "@/components/MouseMoveEffect"
 
 interface Feature {
   title: string
@@ -89,7 +88,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen geometric-bg relative">
-      <RippleEffect />
+      <MouseMoveEffect />
       {/* Hero Section - Water Bottle Branding */}
       <section className="relative flex h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
         <WaterBottleBackground />
