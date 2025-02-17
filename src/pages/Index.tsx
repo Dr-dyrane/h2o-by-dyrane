@@ -96,13 +96,13 @@ const Index = () => {
           <WaterBottle3D />
         </div>
         <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl">
-          AQUA DESIGN
+          H₂O <span className="text-2xl italic">BY DYRANE</span>
         </h1>
         <p className="mb-8 max-w-2xl text-lg font-light tracking-wide opacity-80">
           Revolutionizing hydration through innovative design and sustainable solutions
         </p>
-        <CircleArrowDown 
-          className="mt-8 h-12 w-12 animate-bounce cursor-pointer opacity-50 transition-opacity hover:opacity-100" 
+        <CircleArrowDown
+          className="mt-8 h-12 w-12 animate-bounce cursor-pointer opacity-50 transition-opacity hover:opacity-100"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
         />
       </section>
