@@ -1,7 +1,8 @@
 export const projects = [
 	{
 		title: "ableGod.",
-		description: "Digital wallet solution for Fish Farmers",
+		description:
+			"A community of young adults embracing faith, creativity, and prosperity",
 		link: "chistanwrites.blog",
 	},
 	{
