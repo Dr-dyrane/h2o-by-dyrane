@@ -199,7 +199,7 @@ const Index = () => {
 
       {/* Call to Action */}
       <section id="cta" className="mb-20 px-4">
-        <div className="mx-auto max-w-4xl rounded-2xl bg-black p-12 text-center text-white">
+        <div className="mx-auto max-w-4xl rounded-3xl bg-black p-12 text-center text-white">
           <h2 className="mb-6 text-3xl font-bold">Ready to Transform Your Brand?</h2>
           <p className="mb-8 text-lg opacity-80">
             Let's create something extraordinary together
