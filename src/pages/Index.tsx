@@ -10,6 +10,7 @@ import { SocialSidebar } from "@/components/social-sidebar"
 import { cn } from "@/lib/utils"
 import { projects } from "@/data/projects"
 import Footer from "./Footer"
+import { Navbar } from "./Navbar"
 
 interface Feature {
   title: string
@@ -127,9 +128,10 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen geometric-bg relative text-center">
+    <div className="min-h-screen geometric-bg relative text-center pt-28">
       <MouseMoveEffect />
       <SocialSidebar />
+      <Navbar />
       <div className="absolute -z-10 inset-0 overflow-hidden pointer-events-none">
         {/* Two floating water bottles */}
         <FloatingBottle className="top-0 right-1/3" rotate={15} delay={1} src="hero/water-bottle-1.png" />
@@ -137,7 +139,7 @@ const Index = () => {
       </div>
 
       {/* Hero Section - Water Bottle Branding */}
-      <section className="relative flex h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
+      <section id="hero" className="relative flex h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
         <WaterBottleBackground />
         <motion.div
           custom={0}
@@ -178,7 +180,7 @@ const Index = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="px-4 py-20">
+      <section id="features" className="px-4 py-20">
         <h2 className="animate-on-scroll mb-16 text-center text-4xl font-bold">Why Choose Us</h2>
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
@@ -196,7 +198,7 @@ const Index = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="mb-20 px-4">
+      <section id="cta" className="mb-20 px-4">
         <div className="mx-auto max-w-4xl rounded-2xl bg-black p-12 text-center text-white">
           <h2 className="mb-6 text-3xl font-bold">Ready to Transform Your Brand?</h2>
           <p className="mb-8 text-lg opacity-80">
@@ -215,7 +217,7 @@ const Index = () => {
       </section>
 
       {/* Other Projects Section */}
-      <section className="px-4 py-20">
+      <section id="projects" className="px-4 py-20">
         <h2 className="animate-on-scroll mb-16 text-center text-4xl font-bold">More Projects by Dr. Dyrane</h2>
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, index) => (
