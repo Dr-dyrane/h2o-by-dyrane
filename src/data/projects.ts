@@ -6,6 +6,11 @@ export const projects = [
 		link: "chistanwrites.blog",
 	},
 	{
+		title: "smartEdu",
+		description: "A modern platform for online learning and course management",
+		link: "smartedu-v1.vercel.app",
+	},
+	{
 		title: "SaySwitch",
 		description:
 			"A comprehensive, Feature-Rich Payment Solution for seamless offline and online transactions",
