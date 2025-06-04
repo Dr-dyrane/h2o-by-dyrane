@@ -48,4 +48,10 @@ export const projects = [
 		description: "Elevate your coding skills with daily algorithm challenges",
 		link: "algorise-dyrane.vercel.app",
 	},
+	{
+		title: "Kindbody Conceptual Revamp",
+		description:
+			"A proactive conceptual redesign of Kindbody's landing page and patient portal, showcasing modern UI/UX, an 'Ask Me Anything' AI feature, and a tech-forward approach to enhance the patient journey. Built with Next.js, Tailwind CSS, and Supabase.",
+		link: "kindbody.vercel.app",
+	},
 ];
