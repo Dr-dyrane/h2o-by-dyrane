@@ -51,7 +51,7 @@ export const projects = [
 	{
 		title: "Kindbody Conceptual Revamp",
 		description:
-			"A proactive conceptual redesign of Kindbody's landing page and patient portal, showcasing modern UI/UX, an 'Ask Me Anything' AI feature, and a tech-forward approach to enhance the patient journey. Built with Next.js, Tailwind CSS, and Supabase.",
+			"A conceptual redesign of Kindbody's landing page, showcasing modern UI/UX",
 		link: "kindbody.vercel.app",
 	},
 ];
