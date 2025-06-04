@@ -54,4 +54,14 @@ export const projects = [
 			"A conceptual redesign of Kindbody's landing page, showcasing modern UI/UX",
 		link: "kindbody.vercel.app",
 	},
+	{
+		title: "Adeleke Immigration",
+		description: "Trusted Immigration Expertise & Guidance.",
+		link: "adelekeimmigration.com",
+	},
+	{
+		title: "Fytbite",
+		description: "Premium healthy meal plans tailored to your fitness goals.",
+		link: "fytbite.ng",
+	},
 ];
