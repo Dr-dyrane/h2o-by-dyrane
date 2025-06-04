@@ -49,7 +49,7 @@ export const projects = [
 		link: "algorise-dyrane.vercel.app",
 	},
 	{
-		title: "Kindbody Conceptual Revamp",
+		title: "Kindbody",
 		description:
 			"A conceptual redesign of Kindbody's landing page, showcasing modern UI/UX",
 		link: "kindbody.vercel.app",
