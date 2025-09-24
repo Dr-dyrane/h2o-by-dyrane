@@ -64,4 +64,9 @@ export const projects = [
 		description: "Premium healthy meal plans tailored to your fitness goals.",
 		link: "fytbite.ng",
 	},
+	{
+		title: "Plated. - California's Premier Catering Service",
+  		description:"Exquisite culinary experiences, effortlessly delivered. Premium catering for corporate events, weddings, and special occasions across California.",
+		link: "platedca.vercel.app",
+	},
 ];
