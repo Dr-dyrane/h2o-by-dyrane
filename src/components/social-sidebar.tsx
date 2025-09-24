@@ -17,7 +17,7 @@ const socialLinks = [
   {
     name: "WhatsApp",
     icon: MessageCircle, // You can replace this with a WhatsApp icon
-    url: "https://wa.me/2348159502463",
+    url: "https://wa.me/19517284218",
   },
   {
     name: "Email",
