@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 
 export const CommandCenter = () => {
     return (
-        <div className="fixed top-0 left-0 w-full z-50 px-6 py-4">
+        <div className="fixed top-0 left-0 w-full z-50 px-6 py-4 bg-[#0D0D0D]/5 backdrop-blur-sm">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 {/* Brand Identity */}
                 <div className="flex items-center gap-3">
