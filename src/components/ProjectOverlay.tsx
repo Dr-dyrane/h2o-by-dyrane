@@ -24,12 +24,12 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in"
+                className="absolute inset-0 bg-black/10 backdrop-blur-md animate-fade-in"
                 onClick={onClose}
             />
 
             {/* Content Container */}
-            <div className="relative w-full max-w-4xl bg-[#0D0D0D] border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-glide">
+            <div className="relative w-full max-w-4xl bg-[#0D0D0D]/5 border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-glide">
 
                 {/* Header */}
                 <div className="flex items-center justify-between p-8 border-b border-white/5 bg-white/[0.02]">
