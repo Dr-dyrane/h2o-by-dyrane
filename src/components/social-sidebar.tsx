@@ -1,7 +1,6 @@
 "use client"
 
 import { Github, Mail, Twitter, MessageCircle } from "lucide-react"
-import { motion } from "framer-motion"
 
 const socialLinks = [
   {
@@ -16,38 +15,56 @@ const socialLinks = [
   },
   {
     name: "WhatsApp",
-    icon: MessageCircle, // You can replace this with a WhatsApp icon
+    icon: MessageCircle,
     url: "https://wa.me/19517284218",
   },
   {
     name: "Email",
     icon: Mail,
-    url: "mailto:drdyrane@gmail.com",
+    url: "mailto:hello@dyrane.tech",
   },
 ]
 
 export function SocialSidebar() {
   return (
-    <motion.div
-      initial={{ x: -100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="fixed left-4 top-[25%] z-50 -translate-y-1/2 flex flex-col gap-4 border p-4 rounded-full border-black/5 hover:border-black/50 bg-white/85 shadow-lg backdrop-blur-sm"
-    >
-      {socialLinks.map((link) => (
-        <a
-          key={link.name}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-black/5 transition-all hover:bg-black hover:text-white"
-        >
-          <link.icon className="h-5 w-5" />
-          <span className="absolute left-12 hidden rounded-md bg-black px-2 py-1 text-sm text-white group-hover:block">
-            {link.name}
-          </span>
-        </a>
-      ))}
-    </motion.div>
+    <>
+      {/* Desktop: fixed sidebar */}
+      <div
+        className="hidden md:flex fixed left-4 top-1/3 z-50 flex-col gap-3 p-3 rounded-full bg-white/[0.03] border border-white/5 backdrop-blur-md"
+      >
+        {socialLinks.map((link) => (
+          <a
+            key={link.name}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-all duration-300 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/40 hover:scale-110"
+          >
+            <link.icon className="h-4 w-4" />
+            <span className="absolute left-14 hidden whitespace-nowrap rounded-lg bg-[#0D0D0D] border border-white/10 px-3 py-1.5 text-xs text-white/80 font-medium group-hover:block">
+              {link.name}
+            </span>
+          </a>
+        ))}
+      </div>
+
+      {/* Mobile: bottom bar */}
+      <div
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-6 py-3 bg-[#0D0D0D]/90 backdrop-blur-md border-t border-white/5"
+      >
+        {socialLinks.map((link) => (
+          <a
+            key={link.name}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white/40 transition-all duration-300 active:scale-95 hover:bg-emerald-500/20 hover:text-emerald-400"
+            aria-label={link.name}
+          >
+            <link.icon className="h-4 w-4" />
+          </a>
+        ))}
+      </div>
+    </>
   )
 }

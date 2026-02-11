@@ -58,20 +58,7 @@ export const projects: Project[] = [
 	},
 
 	// --- Intelligence Bridges ---
-	{
-		title: "h2o-by-dyrane",
-		description: "High-performance distributed machine learning bridge built for enterprise-scale AI infrastructure.",
-		link: "github.com/Dr-dyrane/h2o-by-dyrane",
-		category: "Intelligence Bridge",
-		challenge: "Deploying enterprise ML models often creates a bottleneck between data science teams and production engineering, slowing rollout by weeks.",
-		architecture: "A high-throughput bridge connecting H2O.ai clusters with modern web sockets, enabling real-time inference without REST API overhead.",
-		proposal: "Use the h2o bridge to cut model deployment time from weeks to hours. Seamless integration with your existing node.js infrastructure.",
-		github_stats: {
-			commits: 85,
-			languages: ["Java", "TypeScript", "Python"],
-			stars: 12,
-		},
-	},
+
 	{
 		title: "SaySwitch",
 		description: "A comprehensive, feature-rich payment solution for seamless offline and online transactions.",

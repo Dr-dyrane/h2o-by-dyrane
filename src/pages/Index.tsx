@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CommandCenter } from "@/components/CommandCenter";
 import { ProjectGrid } from "@/components/ProjectGrid";
 import { ProjectOverlay } from "@/components/ProjectOverlay";
 import { ContributionGraph } from "@/components/ContributionGraph";
+import { SocialSidebar } from "@/components/social-sidebar";
+import Footer from "@/pages/Footer";
 import { Project } from "@/data/projects";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 const TypewriterEffect = ({ words }: { words: string[] }) => {
   const [index, setIndex] = useState(0);
@@ -11,7 +14,6 @@ const TypewriterEffect = ({ words }: { words: string[] }) => {
   const [reverse, setReverse] = useState(false);
   const [blink, setBlink] = useState(true);
 
-  // Blinking cursor
   useEffect(() => {
     const timeout2 = setTimeout(() => {
       setBlink((prev) => !prev);
@@ -49,9 +51,42 @@ const TypewriterEffect = ({ words }: { words: string[] }) => {
     </>
   );
 };
+
+// Fade-in on scroll hook
+const useFadeIn = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, className: `transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}` };
+};
+
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
+
+  const aboutFade = useFadeIn();
+  const graphFade = useFadeIn();
+
+  useEffect(() => {
+    // Stagger hero entrance
+    const timer = setTimeout(() => setHeroVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
@@ -60,7 +95,7 @@ const Index = () => {
 
   const handleCloseOverlay = () => {
     setIsOverlayOpen(false);
-    setTimeout(() => setSelectedProject(null), 500); // Clear after animation
+    setTimeout(() => setSelectedProject(null), 500);
   };
 
   return (
@@ -76,40 +111,87 @@ const Index = () => {
       </div>
 
       <CommandCenter />
+      <SocialSidebar />
 
-      <main className="relative z-10 pt-32 pb-20">
-        <div className="max-w-7xl mx-auto px-6 mb-20">
+      <main className="relative z-10 pt-32 pb-20 md:pb-20 pb-24">
+        {/* Hero Section */}
+        <div className={`max-w-7xl mx-auto px-6 mb-20 transition-all duration-1000 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
           <h1 className="text-5xl md:text-7xl font-light tracking-tighter mb-6 font-mono">
             Architecting <span className="text-white/40">
               <TypewriterEffect words={["Digital Intelligence.", "Logistics Engines.", "Neural Layers.", "Future Systems."]} />
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/60 max-w-2xl font-light leading-relaxed font-sans">
+          <p className="text-xl md:text-2xl text-white/60 max-w-2xl font-light leading-relaxed font-sans mb-12">
             A collective of proprietary infrastructure, logistics engines, and high-fidelity interfaces built for the next generation of the web.
           </p>
+
+          {/* Hero CTAs */}
+          <div className={`flex flex-col sm:flex-row items-start gap-4 transition-all duration-1000 delay-300 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+            <a
+              href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+            >
+              Start a Project <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+            <a
+              href="#logistics-engine"
+              className="group inline-flex items-center gap-2 px-8 py-4 bg-white/5 text-white/70 font-medium rounded-full border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300"
+            >
+              View My Work <ChevronDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
+            </a>
+          </div>
         </div>
 
-        <ContributionGraph />
+        {/* About Section */}
+        <div ref={aboutFade.ref} className={`max-w-7xl mx-auto px-6 mb-20 ${aboutFade.className}`}>
+          <div className="relative rounded-2xl border border-white/5 bg-white/[0.02] p-8 md:p-12 overflow-hidden">
+            {/* Subtle glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
+
+            <div className="relative flex flex-col md:flex-row gap-10 items-start">
+              {/* Identity */}
+              <div className="flex-shrink-0">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center text-3xl font-light text-white/80 font-mono">
+                  AD
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div className="flex-1 space-y-4">
+                <div>
+                  <h2 className="text-2xl text-white font-medium tracking-tight mb-1">
+                    Alexander Dyrane
+                  </h2>
+                  <p className="text-emerald-400/80 text-sm font-mono uppercase tracking-widest">
+                    Systems Architect · Full-Stack Engineer
+                  </p>
+                </div>
+                <p className="text-white/50 leading-relaxed max-w-2xl text-lg font-light">
+                  I design and build production-grade software systems — from emergency logistics platforms processing real-time dispatch, to AI-powered educational tools, to fintech infrastructure for emerging markets. Every project below is live, maintained, and serving real users.
+                </p>
+                <div className="flex flex-wrap gap-3 pt-2">
+                  {["TypeScript", "React", "Next.js", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
+                    <span key={tech} className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-white/40 text-xs font-mono">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Contribution Graph */}
+        <div ref={graphFade.ref} className={graphFade.className}>
+          <ContributionGraph />
+        </div>
 
         <ProjectGrid onProjectSelect={handleProjectSelect} />
       </main>
 
-      {/* Footer / Contact */}
-      <footer className="relative z-10 border-t border-white/5 bg-black/40 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-white/40 text-sm">
-            © {new Date().getFullYear()} Dyrane Intelligence Collective. All Systems Nominal.
-          </div>
-          <div className="flex items-center gap-6 text-sm font-medium">
-            <a href="https://github.com/Dr-dyrane" target="_blank" rel="noreferrer" className="text-white/60 hover:text-white transition-colors">
-              GitHub
-            </a>
-            <a href="mailto:hello@dyrane.tech" className="text-white/60 hover:text-white transition-colors">
-              Contact Protocol
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       <ProjectOverlay
         project={selectedProject}

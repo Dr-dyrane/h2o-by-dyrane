@@ -57,7 +57,7 @@ export function Navbar() {
           <div className="hidden md:block">
             <Button asChild className="rounded-full relative overflow-hidden group">
               <a
-                href="https://wa.me/2348159502463?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
+                href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-black text-white hover:text-black transition-colors duration-300"
@@ -92,7 +92,7 @@ export function Navbar() {
                   ))}
                   <Button asChild className="mt-4 rounded-full relative overflow-hidden group py-6">
                     <a
-                      href="https://wa.me/2348159502463?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
+                      href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="bg-black text-white hover:text-black transition-colors duration-300"

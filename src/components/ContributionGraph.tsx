@@ -1,16 +1,25 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
+// Simple seeded random for deterministic contribution data
+const seededRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+};
+
 export const ContributionGraph = () => {
-    // Generate mock contribution data (52 weeks x 7 days)
     const weeks = 52;
     const days = 7;
 
-    const getIntensity = () => {
-        const rand = Math.random();
-        if (rand > 0.9) return "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"; // High
-        if (rand > 0.7) return "bg-emerald-500/80"; // Medium
-        if (rand > 0.4) return "bg-emerald-600/40"; // Low
-        return "bg-white/5"; // None
+    const getIntensity = (seed: number) => {
+        const rand = seededRandom(seed);
+        if (rand > 0.9) return "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
+        if (rand > 0.7) return "bg-emerald-500/80";
+        if (rand > 0.4) return "bg-emerald-600/40";
+        return "bg-white/5";
+    };
+
+    const getCommitCount = (seed: number) => {
+        return Math.floor(seededRandom(seed + 999) * 15);
     };
 
     return (
@@ -43,7 +52,9 @@ export const ContributionGraph = () => {
                     {Array.from({ length: weeks }).map((_, weekIndex) => (
                         <div key={weekIndex} className="flex flex-col gap-1">
                             {Array.from({ length: days }).map((_, dayIndex) => {
-                                const intensityClass = getIntensity();
+                                const seed = weekIndex * 7 + dayIndex + 42;
+                                const intensityClass = getIntensity(seed);
+                                const commits = getCommitCount(seed);
                                 return (
                                     <Tooltip key={`${weekIndex}-${dayIndex}`}>
                                         <TooltipTrigger asChild>
@@ -54,7 +65,7 @@ export const ContributionGraph = () => {
                                         <TooltipContent className="bg-dyrane-black border border-white/10 text-white/90 text-xs text-center p-2 mb-2">
                                             <p>Intelligence Deployed</p>
                                             <p className="font-mono text-emerald-400">
-                                                {Math.floor(Math.random() * 15)} Commits
+                                                {commits} Commits
                                             </p>
                                         </TooltipContent>
                                     </Tooltip>
