@@ -25,10 +25,10 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         dyrane: {
-          black: "#0D0D0D",
-          dim: "rgba(255, 255, 255, 0.05)",
-          glass: "rgba(13, 13, 13, 0.7)",
-          accent: "#FFFFFF",
+          black: "var(--surface)",
+          dim: "var(--surface-card)",
+          glass: "var(--surface-glass)",
+          accent: "var(--cta-bg)",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

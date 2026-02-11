@@ -24,27 +24,27 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/10 backdrop-blur-md animate-fade-in"
+                className="absolute inset-0 bg-[var(--surface)]/10 backdrop-blur-md animate-fade-in"
                 onClick={onClose}
             />
 
             {/* Content Container */}
-            <div className="relative w-full max-w-4xl bg-[#0D0D0D]/5 border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-glide">
+            <div className="relative w-full max-w-4xl bg-[var(--surface)]/95 backdrop-blur-xl rounded-2xl overflow-hidden shadow-2xl animate-glide">
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-8 border-b border-white/5 bg-white/[0.02]">
+                <div className="flex items-center justify-between p-8 border-b border-[var(--border-subtle)] bg-[var(--surface-card)]">
                     <div>
                         <span className="text-emerald-400 text-xs font-mono tracking-wider uppercase mb-1 block">
                             {project.category} Module
                         </span>
-                        <h2 className="text-3xl text-white font-medium tracking-tight">
+                        <h2 className="text-3xl text-[var(--text)] font-medium tracking-tight">
                             {project.title}
                         </h2>
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white"
+                        className="p-2 hover:bg-[var(--surface-card-hover)] rounded-full transition-colors text-[var(--text-muted)] hover:text-[var(--text)]"
                     >
                         <X size={24} />
                     </button>
@@ -52,7 +52,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                 <div className="flex flex-col md:flex-row h-[600px]">
                     {/* Navigation Sidebar */}
-                    <div className="w-full md:w-64 p-6 border-r border-white/5 bg-white/[0.01]">
+                    <div className="w-full md:w-64 p-6 border-r border-[var(--border-subtle)] bg-[var(--surface-card)]">
                         <div className="space-y-2">
                             {[
                                 { id: 1, label: "The Challenge" },
@@ -63,8 +63,8 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     key={step.id}
                                     onClick={() => setActiveStep(step.id)}
                                     className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${activeStep === step.id
-                                        ? "bg-white/10 text-white"
-                                        : "text-white/40 hover:text-white/70 hover:bg-white/5"
+                                        ? "bg-[var(--surface-card-hover)] text-[var(--text)]"
+                                        : "text-[var(--text-dim)] hover:text-[var(--text-muted)] hover:bg-[var(--surface-card)]"
                                         }`}
                                 >
                                     0{step.id} — {step.label}
@@ -74,11 +74,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                         {/* GitHub Stats Mini-Widget */}
                         <div className="mt-auto pt-8">
-                            <div className="p-4 rounded-xl bg-white/5 border-white/5 space-y-3">
-                                <div className="flex items-center gap-2 text-white/70 text-xs font-mono uppercase">
+                            <div className="p-4 rounded-xl bg-[var(--surface-card)] space-y-3">
+                                <div className="flex items-center gap-2 text-[var(--text-muted)] text-xs font-mono uppercase">
                                     <Github size={12} /> Live Repository
                                 </div>
-                                <div className="flex items-center justify-between text-white/40 text-xs">
+                                <div className="flex items-center justify-between text-[var(--text-dim)] text-xs">
                                     <span className="flex items-center gap-1">
                                         <GitCommit size={12} /> {project.github_stats.commits}
                                     </span>
@@ -88,7 +88,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {project.github_stats.languages.map(lang => (
-                                        <span key={lang} className="px-1.5 py-0.5 rounded-md bg-white/5 text-[10px] text-white/50 border-white/5">
+                                        <span key={lang} className="px-1.5 py-0.5 rounded-md bg-[var(--surface-card-hover)] text-[10px] text-[var(--text-muted)]">
                                             {lang}
                                         </span>
                                     ))}
@@ -102,15 +102,15 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                         {/* Step 1: Challenge */}
                         <div className={`transition-all duration-500 absolute inset-0 p-8 md:p-12 ${activeStep === 1 ? 'opacity-100 translate-y-0 z-10' : 'opacity-0 translate-y-8 z-0 pointer-events-none'}`}>
-                            <h3 className="text-xl text-white/90 mb-6 font-light">
+                            <h3 className="text-xl text-[var(--text)] opacity-90 mb-6 font-light">
                                 The Business Challenge
                             </h3>
-                            <p className="text-white/60 text-lg leading-relaxed max-w-2xl">
+                            <p className="text-[var(--text-muted)] text-lg leading-relaxed max-w-2xl">
                                 {project.challenge}
                             </p>
                             <button
                                 onClick={() => setActiveStep(2)}
-                                className="mt-12 group flex items-center gap-3 text-white/80 hover:text-white transition-colors text-sm font-medium"
+                                className="mt-12 group flex items-center gap-3 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors text-sm font-medium"
                             >
                                 Explore Architecture <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
@@ -118,27 +118,27 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                         {/* Step 2: Architecture */}
                         <div className={`transition-all duration-500 absolute inset-0 p-8 md:p-12 ${activeStep === 2 ? 'opacity-100 translate-y-0 z-10' : 'opacity-0 translate-y-8 z-0 pointer-events-none'}`}>
-                            <h3 className="text-xl text-white/90 mb-6 font-light">
+                            <h3 className="text-xl text-[var(--text)] opacity-90 mb-6 font-light">
                                 Engineering The Solution
                             </h3>
-                            <p className="text-white/60 text-lg leading-relaxed max-w-2xl mb-8">
+                            <p className="text-[var(--text-muted)] text-lg leading-relaxed max-w-2xl mb-8">
                                 {project.architecture}
                             </p>
 
                             <div className="grid grid-cols-2 gap-4 max-w-lg mb-8">
-                                <div className="p-4 rounded-lg bg-black/40 border-white/10">
+                                <div className="p-4 rounded-lg bg-[var(--surface-card)]">
                                     <div className="text-emerald-400 text-2xl font-light mb-1">
                                         {project.github_stats.commits > 1000 ? '1k+' : project.github_stats.commits}
                                     </div>
-                                    <div className="text-white/40 text-xs uppercase tracking-wider">
+                                    <div className="text-[var(--text-dim)] text-xs uppercase tracking-wider">
                                         Core Commits
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-lg bg-black/40 border-white/10">
+                                <div className="p-4 rounded-lg bg-[var(--surface-card)]">
                                     <div className="text-blue-400 text-2xl font-light mb-1">
                                         100%
                                     </div>
-                                    <div className="text-white/40 text-xs uppercase tracking-wider">
+                                    <div className="text-[var(--text-dim)] text-xs uppercase tracking-wider">
                                         Uptime Target
                                     </div>
                                 </div>
@@ -146,7 +146,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                             <button
                                 onClick={() => setActiveStep(3)}
-                                className="mt-4 group flex items-center gap-3 text-white/80 hover:text-white transition-colors text-sm font-medium"
+                                className="mt-4 group flex items-center gap-3 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors text-sm font-medium"
                             >
                                 View Engagement Proposal <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
@@ -155,20 +155,20 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                         {/* Step 3: Proposal */}
                         <div className={`transition-all duration-500 absolute inset-0 p-8 md:p-12 ${activeStep === 3 ? 'opacity-100 translate-y-0 z-10' : 'opacity-0 translate-y-8 z-0 pointer-events-none'}`}>
                             <div className="h-full flex flex-col justify-center max-w-xl">
-                                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-6 text-white">
+                                <div className="w-12 h-12 bg-[var(--surface-card-hover)] rounded-full flex items-center justify-center mb-6 text-[var(--text)]">
                                     <Code size={20} />
                                 </div>
-                                <h3 className="text-2xl text-white mb-4">
+                                <h3 className="text-2xl text-[var(--text)] mb-4">
                                     Deploy This Intelligence
                                 </h3>
-                                <p className="text-white/60 text-lg leading-relaxed mb-8">
+                                <p className="text-[var(--text-muted)] text-lg leading-relaxed mb-8">
                                     {project.proposal}
                                 </p>
 
                                 <div className="flex flex-col gap-4">
                                     <a
                                         href={`mailto:hello@dyrane.tech?subject=Inquiry: ${project.title} Implementation`}
-                                        className="flex items-center justify-center gap-2 w-full py-4 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-colors"
+                                        className="flex items-center justify-center gap-2 w-full py-4 bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium rounded-lg hover:opacity-90 transition-colors"
                                     >
                                         Contact for Similar Build
                                     </a>
@@ -176,7 +176,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         href={`https://${project.link}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center justify-center gap-2 w-full py-4 bg-white/5 text-white/80 font-medium rounded-lg hover:bg-white/10 transition-colors"
+                                        className="flex items-center justify-center gap-2 w-full py-4 bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium rounded-lg hover:bg-[var(--cta-secondary-hover)] transition-colors"
                                     >
                                         Visit Live Project
                                     </a>

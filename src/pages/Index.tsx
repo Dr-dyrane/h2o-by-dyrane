@@ -4,6 +4,7 @@ import { ProjectGrid } from "@/components/ProjectGrid";
 import { ProjectOverlay } from "@/components/ProjectOverlay";
 import { ContributionGraph } from "@/components/ContributionGraph";
 import { SocialSidebar } from "@/components/social-sidebar";
+import { MatrixBackground } from "@/components/MatrixBackground";
 import Footer from "@/pages/Footer";
 import { Project } from "@/data/projects";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
@@ -12,14 +13,6 @@ const TypewriterEffect = ({ words }: { words: string[] }) => {
   const [index, setIndex] = useState(0);
   const [subIndex, setSubIndex] = useState(0);
   const [reverse, setReverse] = useState(false);
-  const [blink, setBlink] = useState(true);
-
-  useEffect(() => {
-    const timeout2 = setTimeout(() => {
-      setBlink((prev) => !prev);
-    }, 500);
-    return () => clearTimeout(timeout2);
-  }, [blink]);
 
   useEffect(() => {
     if (index >= words.length) {
@@ -27,28 +20,33 @@ const TypewriterEffect = ({ words }: { words: string[] }) => {
       return;
     }
 
-    if (subIndex === words[index].length + 1 && !reverse) {
-      setReverse(true);
-      return;
+    // Pause at full word before reversing
+    if (subIndex === words[index].length && !reverse) {
+      const hold = setTimeout(() => setReverse(true), 2000);
+      return () => clearTimeout(hold);
     }
 
+    // Switch word after deleting
     if (subIndex === 0 && reverse) {
       setReverse(false);
       setIndex((prev) => (prev + 1) % words.length);
       return;
     }
 
+    // Consistent timing — no jitter
+    const speed = reverse ? 60 : 100;
     const timeout = setTimeout(() => {
       setSubIndex((prev) => prev + (reverse ? -1 : 1));
-    }, Math.max(reverse ? 75 : subIndex === words[index].length ? 1500 : 150, Math.random() * 50));
+    }, speed);
 
     return () => clearTimeout(timeout);
   }, [subIndex, index, reverse, words]);
 
   return (
-    <>
-      {`${words[index].substring(0, subIndex)}${blink ? "|" : " "}`}
-    </>
+    <span className="inline-flex items-baseline">
+      <span>{words[index].substring(0, subIndex)}</span>
+      <span className="ml-0.5 w-[2px] h-[0.85em] bg-current inline-block animate-pulse" />
+    </span>
   );
 };
 
@@ -83,7 +81,6 @@ const Index = () => {
   const graphFade = useFadeIn();
 
   useEffect(() => {
-    // Stagger hero entrance
     const timer = setTimeout(() => setHeroVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
@@ -99,15 +96,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-dyrane-black font-sans text-white overflow-x-hidden selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div className="min-h-screen bg-[var(--surface)] font-sans text-[var(--text)] overflow-x-hidden selection:bg-emerald-500/30 selection:text-emerald-200 transition-colors duration-300">
 
-      {/* Visual Texture: Grid Background */}
-      <div className="fixed inset-0 bg-grid-white/[0.02] bg-[size:50px_50px] pointer-events-none" />
+      {/* Interactive Matrix Background */}
+      <MatrixBackground />
 
       {/* Background Ambience */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-900/10 blur-[120px] rounded-full mix-blend-screen animate-pulse-slow" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 blur-[120px] rounded-full mix-blend-screen animate-pulse-slow delay-1000" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-900/10 blur-[120px] rounded-full animate-pulse-slow" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 blur-[120px] rounded-full animate-pulse-slow delay-1000" />
       </div>
 
       <CommandCenter />
@@ -116,12 +113,17 @@ const Index = () => {
       <main className="relative z-10 pt-32 pb-20 md:pb-20 pb-24">
         {/* Hero Section */}
         <div className={`max-w-7xl mx-auto px-6 mb-20 transition-all duration-1000 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
-          <h1 className="text-5xl md:text-7xl font-light tracking-tighter mb-6 font-mono">
-            Architecting <span className="text-white/40">
+          {/*
+            Fixed-height hero text block prevents Y-axis glitch.
+            The h1 reserves 2 lines so the typewriter never causes layout shift.
+          */}
+          <h1 className="text-5xl md:text-7xl font-light tracking-tighter mb-6 font-mono min-h-[7rem] md:min-h-[10rem]">
+            Architecting{" "}
+            <span className="text-[var(--text-dim)] inline-block">
               <TypewriterEffect words={["Digital Intelligence.", "Logistics Engines.", "Neural Layers.", "Future Systems."]} />
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/60 max-w-2xl font-light leading-relaxed font-sans mb-12">
+          <p className="text-xl md:text-2xl text-[var(--text-muted)] max-w-2xl font-light leading-relaxed font-sans mb-12">
             A collective of proprietary infrastructure, logistics engines, and high-fidelity interfaces built for the next generation of the web.
           </p>
 
@@ -131,13 +133,13 @@ const Index = () => {
               href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+              className="group inline-flex items-center gap-2 px-8 py-4 bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium rounded-full hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_var(--glow-color)]"
             >
               Start a Project <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
             <a
               href="#logistics-engine"
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-white/5 text-white/70 font-medium rounded-full border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300"
+              className="group inline-flex items-center gap-2 px-8 py-4 bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium rounded-full hover:bg-[var(--cta-secondary-hover)] hover:text-[var(--text)] transition-all duration-300"
             >
               View My Work <ChevronDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
             </a>
@@ -146,14 +148,14 @@ const Index = () => {
 
         {/* About Section */}
         <div ref={aboutFade.ref} className={`max-w-7xl mx-auto px-6 mb-20 ${aboutFade.className}`}>
-          <div className="relative rounded-2xl border-white/5 bg-white/[0.02] p-8 md:p-12 overflow-hidden">
+          <div className="relative rounded-2xl bg-[var(--surface-card)] p-8 md:p-12 overflow-hidden">
             {/* Subtle glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="relative flex flex-col md:flex-row gap-10 items-start">
               {/* Identity */}
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border-white/10 flex items-center justify-center text-3xl font-light text-white/80 font-mono">
+                <div className="w-20 h-20 rounded-2xl bg-[var(--surface-card-hover)] flex items-center justify-center text-3xl font-light text-[var(--text-muted)] font-mono">
                   AD
                 </div>
               </div>
@@ -161,19 +163,19 @@ const Index = () => {
               {/* Bio */}
               <div className="flex-1 space-y-4">
                 <div>
-                  <h2 className="text-2xl text-white font-medium tracking-tight mb-1">
+                  <h2 className="text-2xl text-[var(--text)] font-medium tracking-tight mb-1">
                     Alexander Dyrane
                   </h2>
                   <p className="text-emerald-400/80 text-sm font-mono uppercase tracking-widest">
                     Systems Architect · Full-Stack Engineer
                   </p>
                 </div>
-                <p className="text-white/50 leading-relaxed max-w-2xl text-lg font-light">
+                <p className="text-[var(--text-muted)] leading-relaxed max-w-2xl text-lg font-light">
                   I design and build production-grade software systems — from emergency logistics platforms processing real-time dispatch, to AI-powered educational tools, to fintech infrastructure for emerging markets. Every project below is live, maintained, and serving real users.
                 </p>
                 <div className="flex flex-wrap gap-3 pt-2">
                   {["TypeScript", "React", "Next.js", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
-                    <span key={tech} className="px-3 py-1 rounded-full bg-white/5 border-white/5 text-white/40 text-xs font-mono">
+                    <span key={tech} className="px-3 py-1 rounded-full bg-[var(--surface-card)] text-[var(--text-dim)] text-xs font-mono">
                       {tech}
                     </span>
                   ))}

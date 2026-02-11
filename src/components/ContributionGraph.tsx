@@ -15,7 +15,7 @@ export const ContributionGraph = () => {
         if (rand > 0.9) return "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
         if (rand > 0.7) return "bg-emerald-500/80";
         if (rand > 0.4) return "bg-emerald-600/40";
-        return "bg-white/5";
+        return "bg-[var(--surface-card)]";
     };
 
     const getCommitCount = (seed: number) => {
@@ -23,7 +23,7 @@ export const ContributionGraph = () => {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto px-6 py-20 border-b border-white/5">
+        <div className="w-full max-w-7xl mx-auto px-6 py-20 border-b border-[var(--border-subtle)]">
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 gap-4">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
@@ -32,13 +32,13 @@ export const ContributionGraph = () => {
                             Velocity Matrix
                         </span>
                     </div>
-                    <h2 className="text-3xl text-white font-light">Engineering DNA</h2>
+                    <h2 className="text-3xl text-[var(--text)] font-light">Engineering DNA</h2>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs text-white/40 font-mono">
+                <div className="flex items-center gap-4 text-xs text-[var(--text-dim)] font-mono">
                     <span>Less</span>
                     <div className="flex gap-1">
-                        <div className="w-2.5 h-2.5 rounded-sm bg-white/5" />
+                        <div className="w-2.5 h-2.5 rounded-sm bg-[var(--surface-card)]" />
                         <div className="w-2.5 h-2.5 rounded-sm bg-emerald-600/40" />
                         <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500/80" />
                         <div className="w-2.5 h-2.5 rounded-sm bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
@@ -62,7 +62,7 @@ export const ContributionGraph = () => {
                                                 className={`w-3 h-3 rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-10 cursor-crosshair ${intensityClass}`}
                                             />
                                         </TooltipTrigger>
-                                        <TooltipContent className="bg-dyrane-black border-white/10 text-white/90 text-xs text-center p-2 mb-2">
+                                        <TooltipContent className="bg-[var(--surface)] text-[var(--text)] text-xs text-center p-2 mb-2">
                                             <p>Intelligence Deployed</p>
                                             <p className="font-mono text-emerald-400">
                                                 {commits} Commits
@@ -76,7 +76,7 @@ export const ContributionGraph = () => {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/5">
+            <div className="flex items-center justify-between mt-6 pt-6 border-t border-[var(--border-subtle)]">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
                     {[
                         { label: "Total Contributions", value: "4,285" },
@@ -85,8 +85,8 @@ export const ContributionGraph = () => {
                         { label: "System Uptime", value: "99.99%" },
                     ].map(stat => (
                         <div key={stat.label}>
-                            <div className="text-2xl text-white font-light tracking-tight">{stat.value}</div>
-                            <div className="text-white/40 text-xs uppercase tracking-wider mt-1">{stat.label}</div>
+                            <div className="text-2xl text-[var(--text)] font-light tracking-tight">{stat.value}</div>
+                            <div className="text-[var(--text-dim)] text-xs uppercase tracking-wider mt-1">{stat.label}</div>
                         </div>
                     ))}
                 </div>

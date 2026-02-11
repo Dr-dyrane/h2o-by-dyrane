@@ -4,62 +4,103 @@
 
 @layer base {
 	:root {
+		/* Semantic theme tokens — light mode */
+		--surface: #FFFFFF;
+		--surface-alt: #F8F9FA;
+		--surface-glass: rgba(255, 255, 255, 0.7);
+		--surface-card: rgba(0, 0, 0, 0.02);
+		--surface-card-hover: rgba(0, 0, 0, 0.04);
+
+		--text: #111111;
+		--text-muted: rgba(0, 0, 0, 0.6);
+		--text-dim: rgba(0, 0, 0, 0.4);
+		--text-ghost: rgba(0, 0, 0, 0.3);
+
+		--border-subtle: rgba(0, 0, 0, 0.06);
+		--glow-color: rgba(16, 185, 129, 0.15);
+
+		--cta-bg: #111111;
+		--cta-text: #FFFFFF;
+		--cta-hover: rgba(0, 0, 0, 0.85);
+
+		--cta-secondary-bg: rgba(0, 0, 0, 0.05);
+		--cta-secondary-text: rgba(0, 0, 0, 0.7);
+		--cta-secondary-hover: rgba(0, 0, 0, 0.1);
+
+		--gradient-mask-from: #FFFFFF;
+		--gradient-mask-via: rgba(255, 255, 255, 0.8);
+
+		--scrollbar-track: #F0F0F0;
+
+		/* shadcn tokens */
 		--background: 0 0% 100%;
 		--foreground: 222.2 84% 4.9%;
-
 		--card: 0 0% 100%;
 		--card-foreground: 222.2 84% 4.9%;
-
 		--popover: 0 0% 100%;
 		--popover-foreground: 222.2 84% 4.9%;
-
 		--primary: 222.2 47.4% 11.2%;
 		--primary-foreground: 210 40% 98%;
-
 		--secondary: 210 40% 96.1%;
 		--secondary-foreground: 222.2 47.4% 11.2%;
-
 		--muted: 210 40% 96.1%;
 		--muted-foreground: 215.4 16.3% 46.9%;
-
 		--accent: 210 40% 96.1%;
 		--accent-foreground: 222.2 47.4% 11.2%;
-
 		--destructive: 0 84.2% 60.2%;
 		--destructive-foreground: 210 40% 98%;
-
 		--border: 214.3 31.8% 91.4%;
 		--input: 214.3 31.8% 91.4%;
 		--ring: 222.2 84% 4.9%;
-
 		--radius: 0.5rem;
 	}
 
 	.dark {
+		/* Semantic theme tokens — dark mode */
+		--surface: #0D0D0D;
+		--surface-alt: #131313;
+		--surface-glass: rgba(13, 13, 13, 0.7);
+		--surface-card: rgba(255, 255, 255, 0.02);
+		--surface-card-hover: rgba(255, 255, 255, 0.04);
+
+		--text: #FFFFFF;
+		--text-muted: rgba(255, 255, 255, 0.6);
+		--text-dim: rgba(255, 255, 255, 0.4);
+		--text-ghost: rgba(255, 255, 255, 0.3);
+
+		--border-subtle: rgba(255, 255, 255, 0.05);
+		--glow-color: rgba(16, 185, 129, 0.3);
+
+		--cta-bg: #FFFFFF;
+		--cta-text: #000000;
+		--cta-hover: rgba(255, 255, 255, 0.9);
+
+		--cta-secondary-bg: rgba(255, 255, 255, 0.05);
+		--cta-secondary-text: rgba(255, 255, 255, 0.7);
+		--cta-secondary-hover: rgba(255, 255, 255, 0.1);
+
+		--gradient-mask-from: #0D0D0D;
+		--gradient-mask-via: rgba(13, 13, 13, 0.8);
+
+		--scrollbar-track: #0D0D0D;
+
+		/* shadcn tokens */
 		--background: 222.2 84% 4.9%;
 		--foreground: 210 40% 98%;
-
 		--card: 222.2 84% 4.9%;
 		--card-foreground: 210 40% 98%;
-
 		--popover: 222.2 84% 4.9%;
 		--popover-foreground: 210 40% 98%;
-
 		--primary: 210 40% 98%;
 		--primary-foreground: 222.2 47.4% 11.2%;
-
 		--secondary: 217.2 32.6% 17.5%;
 		--secondary-foreground: 210 40% 98%;
-
 		--muted: 217.2 32.6% 17.5%;
 		--muted-foreground: 215 20.2% 65.1%;
-
 		--accent: 217.2 32.6% 17.5%;
 		--accent-foreground: 210 40% 98%;
-
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 210 40% 98%;
-
 		--border: 217.2 32.6% 17.5%;
 		--input: 217.2 32.6% 17.5%;
 		--ring: 212.7 26.8% 83.9%;
@@ -72,7 +113,7 @@
 	}
 
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-[var(--surface)] text-[var(--text)] transition-colors duration-300;
 	}
 
 	/* Custom Neon Scrollbar */
@@ -82,7 +123,7 @@
 	}
 
 	::-webkit-scrollbar-track {
-		@apply bg-[#0D0D0D];
+		background: var(--scrollbar-track);
 	}
 
 	::-webkit-scrollbar-thumb {
@@ -97,9 +138,9 @@
 }
 
 @layer utilities {
-	.bg-grid-white {
+	.bg-grid-pattern {
 		background-size: 40px 40px;
-		background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-			linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+		background-image: linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
+			linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
 	}
 }
