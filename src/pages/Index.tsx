@@ -1,235 +1,75 @@
-"use client"
 
-import { useRef, useEffect } from "react"
-import { CircleArrowDown, Droplets, Sparkles, Infinity, Waves } from "lucide-react"
-import ProjectCard from "../components/ProjectCard"
-import WaterBottleBackground from "@/components/WaterBottleBackground"
-import MouseMoveEffect from "@/components/MouseMoveEffect"
-import { motion } from "framer-motion";
-import { SocialSidebar } from "@/components/social-sidebar"
-import { cn } from "@/lib/utils"
-import { projects } from "@/data/projects"
-import Footer from "./Footer"
-import { Navbar } from "./Navbar"
-
-interface Feature {
-  title: string
-  description: string
-  icon: JSX.Element
-}
-
-const features: Feature[] = [
-  {
-    title: "Premium Quality",
-    description: "Crafted with precision and care",
-    icon: <Sparkles className="h-8 w-8" />,
-  },
-  {
-    title: "Sustainable",
-    description: "Eco-friendly materials",
-    icon: <Infinity className="h-8 w-8" />,
-  },
-  {
-    title: "Pure Design",
-    description: "Minimal and elegant",
-    icon: <Waves className="h-8 w-8" />,
-  },
-  {
-    title: "Refreshing",
-    description: "Stay hydrated in style",
-    icon: <Droplets className="h-8 w-8" />,
-  },
-]
+import { useState } from "react";
+import { CommandCenter } from "@/components/CommandCenter";
+import { ProjectGrid } from "@/components/ProjectGrid";
+import { ProjectOverlay } from "@/components/ProjectOverlay";
+import { ContributionGraph } from "@/components/ContributionGraph";
+import { Project } from "@/data/projects";
 
 const Index = () => {
-  const observerRef = useRef<IntersectionObserver | null>(null)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-up")
-            observerRef.current?.unobserve(entry.target)
-          }
-        })
-      },
-      { threshold: 0.1 },
-    )
+  const handleProjectSelect = (project: Project) => {
+    setSelectedProject(project);
+    setIsOverlayOpen(true);
+  };
 
-    document.querySelectorAll(".animate-on-scroll").forEach((element) => {
-      observerRef.current?.observe(element)
-    })
-
-    return () => observerRef.current?.disconnect()
-  }, [])
-
-
-  const fadeUpVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 1,
-        delay: 0.5 + i * 0.2,
-        ease: [0.25, 0.4, 0.25, 1],
-      },
-    }),
-  }
-
-  function FloatingBottle({
-    className,
-    delay = 0,
-    rotate = 0,
-    src,
-  }: {
-    className?: string;
-    delay?: number;
-    rotate?: number;
-    src: string;
-  }) {
-    return (
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -150,
-          rotate: rotate - 15,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-          rotate: rotate,
-        }}
-        transition={{
-          duration: 2.4,
-          delay,
-          ease: [0.23, 0.86, 0.39, 0.96],
-          opacity: { duration: 1.2 },
-        }}
-        className={cn("absolute", className)}
-      >
-        <motion.img
-          src={src}
-          alt="Water Bottle"
-          onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
-          animate={{
-            y: [0, 15, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-          className="relative drop-shadow-lg max-w-none"
-        />
-      </motion.div>
-    );
-  }
+  const handleCloseOverlay = () => {
+    setIsOverlayOpen(false);
+    setTimeout(() => setSelectedProject(null), 500); // Clear after animation
+  };
 
   return (
-    <div className="min-h-screen geometric-bg relative text-center pt-28">
-      <MouseMoveEffect />
-      <SocialSidebar />
-      <Navbar />
-      <div className="absolute -z-10 inset-0 overflow-hidden pointer-events-none">
-        {/* Two floating water bottles */}
-        <FloatingBottle className="top-0 right-1/3" rotate={15} delay={1} src="hero/water-bottle-1.png" />
-        <FloatingBottle className="bottom-0 right-1/5" rotate={-25} delay={1.5} src="hero/water-bottle-2.png" />
+    <div className="min-h-screen bg-dyrane-black font-sans text-white overflow-x-hidden selection:bg-emerald-500/30 selection:text-emerald-200">
+
+      {/* Background Ambience */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-900/10 blur-[120px] rounded-full mix-blend-screen animate-pulse-slow" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 blur-[120px] rounded-full mix-blend-screen animate-pulse-slow delay-1000" />
       </div>
 
-      {/* Hero Section - Water Bottle Branding */}
-      <section id="hero" className="relative flex h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
-        <WaterBottleBackground />
-        <motion.div
-          custom={0}
-          variants={fadeUpVariants}
-          initial="hidden"
-          animate="visible"
-          className="inline-flex z-50 items-center gap-2 px-3 py-1 rounded-full bg-black/[0.03] border border-black/[0.08] mb-8 md:mb-12"
-        >
-          <img src="logo.png" alt="Dyrane UI" width={20} height={20} className="border border-black/15 rounded-full"
-            onError={(e) => (e.currentTarget.src = "/placeholder.svg")} />
-          <span className="text-sm text-black/60 tracking-wide">Dyrane UI</span>
-        </motion.div>
+      <CommandCenter />
 
-        <div className="relative z-10 flex flex-col items-center justify-center p-8 group">
-          {/* Glass Background */}
-          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm group-hover:backdrop-blur-none rounded-3xl"></div>
+      <main className="relative z-10 pt-32 pb-20">
+        <div className="max-w-7xl mx-auto px-6 mb-20">
+          <h1 className="text-5xl md:text-7xl font-light tracking-tighter mb-6">
+            Architecting <span className="text-white/40">Digital Intelligence.</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-white/60 max-w-2xl font-light leading-relaxed">
+            A collective of proprietary infrastructure, logistics engines, and high-fidelity interfaces built for the next generation of the web.
+          </p>
+        </div>
 
-          {/* Expanding Black Overlay on Hover */}
-          <div className="absolute left-0 top-0 w-full h-0 bg-black rounded-3xl transition-all duration-500 ease-in-out group-hover:h-full opacity-80"></div>
+        <ContributionGraph />
 
-          <div className="relative z-10 flex flex-col items-center">
-            {/* Text with Hover Transition */}
-            <h1 className="mb-6 text-6xl font-bold gradient-text md:text-8xl p-4 transition-all duration-300 group-hover:text-white">
-              H₂O <span className="text-2xl italic">by dyrane</span>
-            </h1>
-            <p className="mb-8 max-w-2xl text-lg font-light tracking-wide opacity-80 transition-opacity duration-300 group-hover:text-white">
-              Revolutionizing hydration through innovative design and sustainable solutions
-            </p>
+        <ProjectGrid onProjectSelect={handleProjectSelect} />
+      </main>
 
-            {/* Bouncing Scroll Arrow */}
-            <CircleArrowDown
-              className="mt-8 group-hover:text-white h-12 w-12 animate-bounce cursor-pointer opacity-50 transition-opacity hover:opacity-100"
-              onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
-            />
+      {/* Footer / Contact */}
+      <footer className="relative z-10 border-t border-white/5 bg-black/40 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-white/40 text-sm">
+            © {new Date().getFullYear()} Dyrane Intelligence Collective. All Systems Nominal.
+          </div>
+          <div className="flex items-center gap-6 text-sm font-medium">
+            <a href="https://github.com/Dr-dyrane" target="_blank" rel="noreferrer" className="text-white/60 hover:text-white transition-colors">
+              GitHub
+            </a>
+            <a href="mailto:hello@dyrane.com" className="text-white/60 hover:text-white transition-colors">
+              Contact Protocol
+            </a>
           </div>
         </div>
+      </footer>
 
-      </section>
-
-      {/* Features Grid */}
-      <section id="features" className="px-4 py-20">
-        <h2 className="animate-on-scroll mb-16 text-center text-4xl font-bold">Why Choose Us</h2>
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="animate-on-scroll glass group cursor-pointer rounded-xl p-6 transition-all duration-300 hover:bg-black hover:text-white border border-black/10"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="mb-4 transition-transform duration-300 group-hover:scale-110">{feature.icon}</div>
-              <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
-              <p className="text-sm opacity-70">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section id="cta" className="mb-20 px-4">
-        <div className="mx-auto max-w-4xl rounded-3xl bg-black p-12 text-center text-white">
-          <h2 className="mb-6 text-3xl font-bold">Ready to Transform Your Brand?</h2>
-          <p className="mb-8 text-lg opacity-80">
-            Let's create something extraordinary together
-          </p>
-          <a
-            href="https://wa.me/2348159502463?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block rounded-full relative group border-2 border-white px-8 py-3 text-lg font-medium transition-all hover:bg-white duration-300 hover:text-black overflow-hidden"
-          >
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0 h-full bg-black rounded-full transition-transform duration-500 ease-in-out group-hover:w-full group-hover:translate-x-full"></div>
-            <span className="relative z-10">Get Started</span>
-          </a>
-        </div>
-      </section>
-
-      {/* Other Projects Section */}
-      <section id="projects" className="px-4 py-20">
-        <h2 className="animate-on-scroll mb-16 text-center text-4xl font-bold">More Projects by Dr. Dyrane</h2>
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, index) => (
-            <ProjectCard key={index} project={project} index={index} />
-          ))}
-        </div>
-      </section>
-
-      <Footer />
+      <ProjectOverlay
+        project={selectedProject}
+        isOpen={isOverlayOpen}
+        onClose={handleCloseOverlay}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default Index
-
+export default Index;

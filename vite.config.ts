@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "/icons/*.png"],
       manifest: {
-        name: "H₂O",
-        short_name: "H₂O by Dyrane",
+        name: "Dyrane Intelligence Collective",
+        short_name: "Dyrane Intelligence",
         description: "Refresh with purity, sustain the future.",
         start_url: "/",
         display: "standalone",

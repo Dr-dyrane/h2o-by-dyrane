@@ -58,7 +58,7 @@ const Footer = () => {
 
       {/* Copyright */}
       <p className="text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} H₂O by Dyrane. All Rights Reserved.
+        &copy; {new Date().getFullYear()} Dyrane Intelligence Collective. All Rights Reserved.
       </p>
     </footer>
   );

@@ -35,7 +35,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
             <a href="#hero" className="flex items-center text-2xl font-bold text-black">
-              H₂O <span className="italic text-lg ml-2">by Dyrane</span>
+              Dyrane <span className="italic text-lg ml-2">Intelligence Collective</span>
             </a>
           </div>
           <div className="hidden md:block">
