@@ -137,7 +137,7 @@ const Index = () => {
             </a>
             <a
               href="#logistics-engine"
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-white/5 text-white/70 font-medium rounded-full border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300"
+              className="group inline-flex items-center gap-2 px-8 py-4 bg-white/5 text-white/70 font-medium rounded-full border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300"
             >
               View My Work <ChevronDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
             </a>
@@ -146,14 +146,14 @@ const Index = () => {
 
         {/* About Section */}
         <div ref={aboutFade.ref} className={`max-w-7xl mx-auto px-6 mb-20 ${aboutFade.className}`}>
-          <div className="relative rounded-2xl border border-white/5 bg-white/[0.02] p-8 md:p-12 overflow-hidden">
+          <div className="relative rounded-2xl border-white/5 bg-white/[0.02] p-8 md:p-12 overflow-hidden">
             {/* Subtle glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="relative flex flex-col md:flex-row gap-10 items-start">
               {/* Identity */}
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center text-3xl font-light text-white/80 font-mono">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border-white/10 flex items-center justify-center text-3xl font-light text-white/80 font-mono">
                   AD
                 </div>
               </div>
@@ -173,7 +173,7 @@ const Index = () => {
                 </p>
                 <div className="flex flex-wrap gap-3 pt-2">
                   {["TypeScript", "React", "Next.js", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
-                    <span key={tech} className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-white/40 text-xs font-mono">
+                    <span key={tech} className="px-3 py-1 rounded-full bg-white/5 border-white/5 text-white/40 text-xs font-mono">
                       {tech}
                     </span>
                   ))}

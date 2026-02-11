@@ -30,7 +30,7 @@ export function SocialSidebar() {
     <>
       {/* Desktop: fixed sidebar */}
       <div
-        className="hidden md:flex fixed left-4 top-1/3 z-50 flex-col gap-3 p-3 rounded-full bg-white/[0.03] border border-white/5 backdrop-blur-md"
+        className="hidden md:flex fixed left-4 top-1/3 z-50 flex-col gap-3 p-3 rounded-full bg-white/[0.03] border-white/5 backdrop-blur-md"
       >
         {socialLinks.map((link) => (
           <a
@@ -41,7 +41,7 @@ export function SocialSidebar() {
             className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-all duration-300 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/40 hover:scale-110"
           >
             <link.icon className="h-4 w-4" />
-            <span className="absolute left-14 hidden whitespace-nowrap rounded-lg bg-[#0D0D0D] border border-white/10 px-3 py-1.5 text-xs text-white/80 font-medium group-hover:block">
+            <span className="absolute left-14 hidden whitespace-nowrap rounded-lg bg-[#0D0D0D] border-white/10 px-3 py-1.5 text-xs text-white/80 font-medium group-hover:block">
               {link.name}
             </span>
           </a>

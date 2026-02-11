@@ -30,7 +30,7 @@ const Footer = () => {
     <footer className="relative z-10 border-t border-white/5">
       {/* CTA Section */}
       <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono uppercase tracking-widest mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border-emerald-500/20 text-emerald-400 text-xs font-mono uppercase tracking-widest mb-8">
           <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
           Available for Projects
         </div>

@@ -29,7 +29,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
             />
 
             {/* Content Container */}
-            <div className="relative w-full max-w-4xl bg-[#0D0D0D] border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-glide">
+            <div className="relative w-full max-w-4xl bg-[#0D0D0D] border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-glide">
 
                 {/* Header */}
                 <div className="flex items-center justify-between p-8 border-b border-white/5 bg-white/[0.02]">
@@ -74,7 +74,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                         {/* GitHub Stats Mini-Widget */}
                         <div className="mt-auto pt-8">
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
+                            <div className="p-4 rounded-xl bg-white/5 border-white/5 space-y-3">
                                 <div className="flex items-center gap-2 text-white/70 text-xs font-mono uppercase">
                                     <Github size={12} /> Live Repository
                                 </div>
@@ -88,7 +88,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {project.github_stats.languages.map(lang => (
-                                        <span key={lang} className="px-1.5 py-0.5 rounded-md bg-white/5 text-[10px] text-white/50 border border-white/5">
+                                        <span key={lang} className="px-1.5 py-0.5 rounded-md bg-white/5 text-[10px] text-white/50 border-white/5">
                                             {lang}
                                         </span>
                                     ))}
@@ -126,7 +126,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                             </p>
 
                             <div className="grid grid-cols-2 gap-4 max-w-lg mb-8">
-                                <div className="p-4 rounded-lg bg-black/40 border border-white/10">
+                                <div className="p-4 rounded-lg bg-black/40 border-white/10">
                                     <div className="text-emerald-400 text-2xl font-light mb-1">
                                         {project.github_stats.commits > 1000 ? '1k+' : project.github_stats.commits}
                                     </div>
@@ -134,7 +134,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         Core Commits
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-lg bg-black/40 border border-white/10">
+                                <div className="p-4 rounded-lg bg-black/40 border-white/10">
                                     <div className="text-blue-400 text-2xl font-light mb-1">
                                         100%
                                     </div>

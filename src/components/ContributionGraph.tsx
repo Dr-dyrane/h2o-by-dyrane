@@ -62,7 +62,7 @@ export const ContributionGraph = () => {
                                                 className={`w-3 h-3 rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-10 cursor-crosshair ${intensityClass}`}
                                             />
                                         </TooltipTrigger>
-                                        <TooltipContent className="bg-dyrane-black border border-white/10 text-white/90 text-xs text-center p-2 mb-2">
+                                        <TooltipContent className="bg-dyrane-black border-white/10 text-white/90 text-xs text-center p-2 mb-2">
                                             <p>Intelligence Deployed</p>
                                             <p className="font-mono text-emerald-400">
                                                 {commits} Commits

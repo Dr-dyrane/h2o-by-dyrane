@@ -14,7 +14,7 @@ const ProjectThumbnail = ({ project }: { project: Project }) => {
     const screenshotUrl = `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`;
 
     return (
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden rounded-3xl border-white/10">
             {!loaded && !error && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/[0.02]">
                     <Loader2 className="w-5 h-5 animate-spin text-white/20" />
@@ -24,7 +24,7 @@ const ProjectThumbnail = ({ project }: { project: Project }) => {
                 <img
                     src={screenshotUrl}
                     alt={project.title}
-                    className={`w-full h-full object-cover object-top transition-all duration-700 ${loaded ? "opacity-20 group-hover:opacity-30 group-hover:scale-105" : "opacity-0"
+                    className={`w-full h-full object-cover rounded-3xl object-top transition-all duration-700 ${loaded ? "opacity-0 group-hover:opacity-60 group-hover:scale-105" : "opacity-0"
                         }`}
                     loading="lazy"
                     onLoad={() => setLoaded(true)}
@@ -32,7 +32,7 @@ const ProjectThumbnail = ({ project }: { project: Project }) => {
                 />
             )}
             {/* Gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-[#0D0D0D]/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-[#0D0D0D]/80 to-transparent rounded-3xl" />
         </div>
     );
 };
@@ -76,7 +76,7 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
                                 <div
                                     key={project.title}
                                     onClick={() => onProjectSelect(project)}
-                                    className="group relative h-[320px] bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 ease-dyrane cursor-pointer overflow-hidden rounded-xl border border-white/5 hover:border-white/10"
+                                    className="group relative h-[320px] bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 ease-dyrane cursor-pointer overflow-hidden rounded-3xl"
                                     style={{
                                         animationDelay: `${index * 100}ms`,
                                     }}
