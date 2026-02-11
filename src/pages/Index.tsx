@@ -56,7 +56,7 @@ const Index = () => {
             <a href="https://github.com/Dr-dyrane" target="_blank" rel="noreferrer" className="text-white/60 hover:text-white transition-colors">
               GitHub
             </a>
-            <a href="mailto:hello@dyrane.com" className="text-white/60 hover:text-white transition-colors">
+            <a href="mailto:hello@dyrane.tech" className="text-white/60 hover:text-white transition-colors">
               Contact Protocol
             </a>
           </div>

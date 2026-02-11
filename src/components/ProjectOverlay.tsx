@@ -63,8 +63,8 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     key={step.id}
                                     onClick={() => setActiveStep(step.id)}
                                     className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${activeStep === step.id
-                                            ? "bg-white/10 text-white"
-                                            : "text-white/40 hover:text-white/70 hover:bg-white/5"
+                                        ? "bg-white/10 text-white"
+                                        : "text-white/40 hover:text-white/70 hover:bg-white/5"
                                         }`}
                                 >
                                     0{step.id} — {step.label}
@@ -167,7 +167,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                                 <div className="flex flex-col gap-4">
                                     <a
-                                        href={`mailto:hello@dyrane.com?subject=Inquiry: ${project.title} Implementation`}
+                                        href={`mailto:hello@dyrane.tech?subject=Inquiry: ${project.title} Implementation`}
                                         className="flex items-center justify-center gap-2 w-full py-4 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-colors"
                                     >
                                         Contact for Similar Build
