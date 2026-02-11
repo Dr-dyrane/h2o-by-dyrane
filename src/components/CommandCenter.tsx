@@ -29,7 +29,7 @@ export const CommandCenter = () => {
 
                     {/* CTA Button */}
                     <a
-                        href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
+                        href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--cta-bg)] text-[var(--cta-text)] text-sm font-medium rounded-full hover:opacity-90 transition-all duration-300 hover:scale-105"
