@@ -219,6 +219,32 @@ export const projects: Project[] = [
 		}
 	},
 	{
+		title: "Aero",
+		description: "Digital therapeutic that rebrands addiction as bio-investment through medical credit scoring and biometric verification.",
+		link: "aero.vercel.app",
+		category: "Intelligence Bridge",
+		challenge: "Traditional smoking cessation apps feel medical and moralizing, failing to create sustained behavior change in normalized smoking cultures.",
+		architecture: "Bio-engineering platform using smartphone sensors (voice, PPG, face) for daily verification. Features Aero Score calculation, Bio-Vault financial endowment system, and merit-based rewards. Built with Supabase for HIPAA-compliant data storage.",
+		proposal: "Implement Aero's bio-investment model for your wellness program. Achieve 3x higher retention than traditional cessation apps through financial incentives and status progression.",
+		github_stats: {
+			commits: 17,
+			languages: ["TypeScript", "Next.js", "Supabase", "Framer Motion"],
+		},
+	},
+	{
+		title: "BoxDrop",
+		description: "A premium logistics marketplace PWA with real-time courier tracking and glass-depth design philosophy.",
+		link: "boxdrop.vercel.app",
+		category: "Logistics Engine",
+		challenge: "Standard delivery apps lack visual sophistication and real-time logistics simulation, resulting in low user engagement.",
+		architecture: "Three-sided marketplace (Users, Vendors, Couriers) with Supabase Realtime for live tracking, Mapbox for geospatial visualization, and Zustand for state management. Implements the 'Alexander Canon' design system with frosted glass UI.",
+		proposal: "Deploy BoxDrop's logistics engine to transform your delivery operations. Real-time tracking reduces customer support queries by 40% and increases order completion rates.",
+		github_stats: {
+			commits: 42,
+			languages: ["TypeScript", "Next.js", "Supabase", "Mapbox"],
+		},
+	},
+	{
 		title: "Fytbite",
 		description: "Premium healthy meal plans tailored to high-performance fitness goals.",
 		link: "fytbite.ng",
