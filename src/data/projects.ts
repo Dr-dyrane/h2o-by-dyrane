@@ -221,7 +221,7 @@ export const projects: Project[] = [
 	{
 		title: "Aero",
 		description: "Digital therapeutic that rebrands addiction as bio-investment through medical credit scoring and biometric verification.",
-		link: "aero.vercel.app",
+		link: "aero.dyrane.tech",
 		category: "Intelligence Bridge",
 		challenge: "Traditional smoking cessation apps feel medical and moralizing, failing to create sustained behavior change in normalized smoking cultures.",
 		architecture: "Bio-engineering platform using smartphone sensors (voice, PPG, face) for daily verification. Features Aero Score calculation, Bio-Vault financial endowment system, and merit-based rewards. Built with Supabase for HIPAA-compliant data storage.",
@@ -234,7 +234,7 @@ export const projects: Project[] = [
 	{
 		title: "BoxDrop",
 		description: "A premium logistics marketplace PWA with real-time courier tracking and glass-depth design philosophy.",
-		link: "boxdrop.vercel.app",
+		link: "boxdrop.dyrane.tech",
 		category: "Logistics Engine",
 		challenge: "Standard delivery apps lack visual sophistication and real-time logistics simulation, resulting in low user engagement.",
 		architecture: "Three-sided marketplace (Users, Vendors, Couriers) with Supabase Realtime for live tracking, Mapbox for geospatial visualization, and Zustand for state management. Implements the 'Alexander Canon' design system with frosted glass UI.",
