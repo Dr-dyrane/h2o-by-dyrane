@@ -17,6 +17,13 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
         if (isOpen) {
             setActiveStep(1);
             setImageLoaded(false);
+
+            // Lock body scroll
+            const originalStyle = window.getComputedStyle(document.body).overflow;
+            document.body.style.overflow = "hidden";
+            return () => {
+                document.body.style.overflow = originalStyle;
+            };
         }
     }, [isOpen]);
 
@@ -32,17 +39,17 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            {/* Backdrop with Rule 20: Transparent layers & Soft blur */}
+            {/* Backdrop - Restored to Rule 20: Original Get-go transparency (10% + sm blur) */}
             <div
-                className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-3xl animate-fade-in"
+                className="absolute inset-0 bg-black/10 backdrop-blur-sm animate-fade-in"
                 onClick={onClose}
             />
 
-            {/* Content Container - Rule 21: Depth Over Color. Rule 20: Glass, not gloss. */}
-            <div className="relative w-full max-w-5xl bg-[var(--surface-glass)] backdrop-blur-[80px] rounded-[3rem] overflow-hidden shadow-[0_64px_128px_-32px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] dark:shadow-[0_64px_128px_-32px_rgba(0,0,0,0.8),inset_0_0_0_1px_rgba(255,255,255,0.05)] animate-glide flex flex-col md:flex-row h-[700px]">
+            {/* Content Container - Rule 33: No visual debt. Original solid/high-opacity look. */}
+            <div className="relative w-full max-w-5xl bg-white/40 dark:bg-[#0D0D0D]/40 rounded-[1.5rem] overflow-hidden shadow-[0_64px_128px_-32px_rgba(0,0,0,0.5)] animate-glide flex flex-col md:flex-row h-[700px] backdrop-blur-[8px]">
 
                 {/* Navigation Sidebar - Rule 2: Best Default Wins */}
-                <div className="w-full md:w-72 p-8 flex flex-col bg-white/[0.02] dark:bg-black/40 shadow-[inset_-1px_0_0_0_rgba(255,255,255,0.03)]">
+                <div className="w-full md:w-72 p-8 flex flex-col bg-black/5 dark:bg-black/40 overflow-y-auto h-full scrollbar-thin">
                     <div className="mb-12">
                         <span className="text-emerald-500 dark:text-emerald-400 text-[10px] font-mono tracking-[0.2em] uppercase mb-2 block opacity-80">
                             {project.category}
@@ -57,9 +64,9 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                             <button
                                 key={step.id}
                                 onClick={() => setActiveStep(step.id)}
-                                className={`w-full text-left px-5 py-4 rounded-3xl text-sm font-medium transition-all duration-500 group relative overflow-hidden ${activeStep === step.id
-                                        ? "text-[var(--text)] bg-[var(--surface-card-hover)] shadow-[0_8px_32px_rgba(0,0,0,0.05),inset_0_0_0_1px_rgba(255,255,255,0.05)]"
-                                        : "text-[var(--text-dim)] hover:text-[var(--text-muted)] hover:bg-[var(--surface-card)]"
+                                className={`w-full text-left px-5 py-4 rounded-xl text-sm font-medium transition-all duration-500 group relative overflow-hidden ${activeStep === step.id
+                                    ? "text-[var(--text)] bg-black/5 dark:bg-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.05)]"
+                                    : "text-[var(--text-dim)] hover:text-[var(--text-muted)] hover:bg-black/[0.03] dark:hover:bg-white/5"
                                     }`}
                             >
                                 <div className="relative z-10 flex items-center gap-3">
@@ -69,15 +76,16 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     {step.label}
                                 </div>
                                 {activeStep === step.id && (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-emerald-500 dark:bg-emerald-400 rounded-full blur-[1px]" />
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-emerald-500 dark:bg-emerald-400 rounded-full" />
                                 )}
                             </button>
                         ))}
                     </nav>
 
                     {/* Repository Context - Rule 16: Reveal on Hover / Silence by default */}
+                    {/* Restored to Original 40% Opacity logic for cards */}
                     <div className="mt-auto space-y-6">
-                        <div className="p-6 rounded-[2rem] bg-[var(--surface-card)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] space-y-4">
+                        <div className="p-6 rounded-[2rem] bg-black/5 dark:bg-black/40 space-y-4">
                             <div className="flex items-center gap-2 text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-wider">
                                 <Github size={12} /> Source Intelligence
                             </div>
@@ -91,7 +99,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                             </div>
                             <div className="flex flex-wrap gap-1.5">
                                 {project.github_stats.languages.map(lang => (
-                                    <span key={lang} className="px-2.5 py-1 rounded-xl bg-[var(--surface-card-hover)] text-[9px] text-[var(--text-ghost)] font-mono uppercase tracking-wider">
+                                    <span key={lang} className="px-2.5 py-1 rounded-xl bg-black/5 dark:bg-white/[0.05] text-[9px] text-[var(--text-ghost)] font-mono uppercase tracking-wider">
                                         {lang}
                                     </span>
                                 ))}
@@ -101,18 +109,18 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                 </div>
 
                 {/* Main Content Area - Rule 3: Reveal Gradually */}
-                <div className="flex-1 relative overflow-hidden">
+                <div className="flex-1 relative h-full">
 
                     {/* Floating Close Button */}
                     <button
                         onClick={onClose}
-                        className="absolute top-8 right-8 z-50 p-3 bg-[var(--surface-card)] hover:bg-[var(--surface-card-hover)] rounded-full transition-all duration-500 text-[var(--text-dim)] hover:text-[var(--text)] shadow-[0_8px_32px_rgba(0,0,0,0.05),inset_0_0_0_1px_rgba(255,255,255,0.05)] backdrop-blur-xl"
+                        className="absolute top-8 right-8 z-50 p-3 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 rounded-full transition-all duration-500 text-[var(--text-dim)] hover:text-[var(--text)] shadow-[0_8px_32px_rgba(0,0,0,0.05)]"
                     >
                         <X size={20} />
                     </button>
 
                     {/* Step 1: Visual Intelligence (Snapshot First) */}
-                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${activeStep === 1 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
+                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 1 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
                         }`}>
                         <div className="mb-8 flex items-center justify-between">
                             <h3 className="text-2xl text-[var(--text)] font-light tracking-tight">
@@ -123,14 +131,14 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     href={`https://${project.link}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-medium shadow-[inset_0_0_0_1px_rgba(16,185,129,0.2)] transition-all active:scale-95"
+                                    className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-medium transition-all active:scale-95"
                                 >
                                     Launch <ExternalLink size={14} />
                                 </a>
                             </div>
                         </div>
 
-                        <div className="flex-1 relative group cursor-pointer rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1),inset_0_0_0_1px_rgba(0,0,0,0.05)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5),inset_0_0_0_1px_rgba(255,255,255,0.05)] bg-black/60">
+                        <div className="flex-1 relative group cursor-pointer rounded-[1.5rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] bg-black/60">
                             <img
                                 src={screenshotUrl}
                                 alt={project.title}
@@ -161,7 +169,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     </div>
 
                     {/* Step 2: Architecture */}
-                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${activeStep === 2 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
+                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 2 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
                         }`}>
                         <h3 className="text-2xl text-[var(--text)] font-light tracking-tight mb-8">
                             Intelligence Architecture
@@ -174,7 +182,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 </p>
 
                                 <div className="grid grid-cols-2 gap-6">
-                                    <div className="p-8 rounded-[2.5rem] bg-[var(--surface-card)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] group hover:bg-[var(--surface-card-hover)] transition-all duration-500">
+                                    <div className="p-8 rounded-[2.5rem] bg-white/5 dark:bg-white/[0.02] transition-all duration-500">
                                         <div className="text-emerald-500 dark:text-emerald-400 text-4xl font-light mb-2 tracking-tighter">
                                             {project.github_stats.commits > 1000 ? '1.2k+' : project.github_stats.commits}
                                         </div>
@@ -182,7 +190,8 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             Core Modules
                                         </div>
                                     </div>
-                                    <div className="p-8 rounded-[2.5rem] bg-[var(--surface-card)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] group hover:bg-[var(--surface-card-hover)] transition-all duration-500">
+                                    {/* Restored to Original 40% Opacity logic */}
+                                    <div className="p-8 rounded-[2.5rem] bg-black/5 dark:bg-black/40 transition-all duration-500">
                                         <div className="text-blue-500 dark:text-blue-400 text-4xl font-light mb-2 tracking-tighter">
                                             99.9%
                                         </div>
@@ -193,7 +202,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 </div>
                             </div>
 
-                            <div className="relative aspect-square rounded-[4rem] overflow-hidden bg-[var(--surface-card)] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1),inset_0_0_0_1px_rgba(0,0,0,0.05)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5),inset_0_0_0_1px_rgba(255,255,255,0.05)] p-12 flex items-center justify-center group overflow-hidden">
+                            <div className="relative aspect-square rounded-[1.5rem] md:rounded-[4rem] bg-black/5 dark:bg-black/20 p-12 flex items-center justify-center group overflow-hidden">
                                 <div className="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none group-hover:opacity-30 transition-opacity duration-1000">
                                     <div className="w-full h-full bg-[radial-gradient(circle_at_center,var(--emerald-500)_0%,transparent_70%)] blur-3xl animate-pulse" />
                                 </div>
@@ -214,7 +223,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     </div>
 
                     {/* Step 3: Strategic Impact (Challenge + Proposal) */}
-                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${activeStep === 3 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
+                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 3 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
                         }`}>
                         <div className="max-w-3xl flex-1 flex flex-col justify-center">
                             <h3 className="text-2xl text-[var(--text)] font-light tracking-tight mb-12">
@@ -222,7 +231,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                             </h3>
 
                             <div className="space-y-12 mb-16">
-                                <div className="relative p-8 rounded-[2.5rem] bg-[var(--surface-card)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)] dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]">
+                                <div className="relative p-8 rounded-[2.5rem] bg-black/5 dark:bg-black/40">
                                     <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">
                                         The Challenge
                                     </h4>
@@ -231,7 +240,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     </p>
                                 </div>
 
-                                <div className="relative p-8 rounded-[2.5rem] bg-emerald-500/[0.02] shadow-[inset_0_0_0_1px_rgba(16,185,129,0.05)]">
+                                <div className="relative p-8 rounded-[2.5rem] bg-emerald-500/[0.04]">
                                     <h4 className="text-emerald-500 text-[10px] font-mono tracking-[0.2em] uppercase mb-4">
                                         The Proposal
                                     </h4>
@@ -252,7 +261,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     href={`https://${project.link}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 py-6 bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium rounded-[2rem] hover:bg-[var(--cta-secondary-hover)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)] transition-all text-center flex items-center justify-center gap-3 active:scale-[0.98]"
+                                    className="flex-1 py-6 bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium rounded-[2rem] hover:bg-[var(--cta-secondary-hover)] transition-all text-center flex items-center justify-center gap-3 active:scale-[0.98]"
                                 >
                                     Visit Project <Globe size={18} />
                                 </a>
