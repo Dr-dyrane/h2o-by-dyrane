@@ -46,11 +46,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
             />
 
             {/* Content Container - Rule 33: No visual debt. Original solid/high-opacity look. */}
-            <div className="relative w-full max-w-5xl bg-white/40 dark:bg-[#0D0D0D]/40 rounded-[1.5rem] overflow-hidden shadow-[0_64px_128px_-32px_rgba(0,0,0,0.5)] animate-glide flex flex-col md:flex-row h-[700px] backdrop-blur-[8px]">
+            <div className="relative w-full max-w-5xl bg-white/40 dark:bg-[#0D0D0D]/40 rounded-[1.5rem] overflow-hidden shadow-[0_64px_128px_-32px_rgba(0,0,0,0.5)] animate-glide flex flex-col md:flex-row h-full max-h-[90vh] md:h-[700px] backdrop-blur-[8px]">
 
                 {/* Navigation Sidebar - Rule 2: Best Default Wins */}
-                <div className="w-full md:w-72 p-8 flex flex-col bg-black/5 dark:bg-black/40 overflow-y-auto h-full scrollbar-thin">
-                    <div className="mb-12">
+                <div className="w-full md:w-72 p-6 md:p-8 flex flex-col bg-black/5 dark:bg-black/40 overflow-y-auto shrink-0 md:h-full scrollbar-thin">
+                    <div className="mb-6 md:mb-12">
                         <span className="text-emerald-500 dark:text-emerald-400 text-[10px] font-mono tracking-[0.2em] uppercase mb-2 block opacity-80">
                             {project.category}
                         </span>
@@ -114,13 +114,13 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     {/* Floating Close Button */}
                     <button
                         onClick={onClose}
-                        className="absolute top-8 right-8 z-50 p-3 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 rounded-full transition-all duration-500 text-[var(--text-dim)] hover:text-[var(--text)] shadow-[0_8px_32px_rgba(0,0,0,0.05)]"
+                        className="absolute top-4 right-4 md:top-8 md:right-8 z-50 p-3 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 rounded-full transition-all duration-500 text-[var(--text-dim)] hover:text-[var(--text)] shadow-[0_8px_32px_rgba(0,0,0,0.05)]"
                     >
                         <X size={20} />
                     </button>
 
                     {/* Step 1: Visual Intelligence (Snapshot First) */}
-                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 1 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
+                    <div className={`absolute inset-0 p-6 md:p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 1 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
                         }`}>
                         <div className="mb-8 flex items-center justify-between">
                             <h3 className="text-2xl text-[var(--text)] font-light tracking-tight">
@@ -169,7 +169,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     </div>
 
                     {/* Step 2: Architecture */}
-                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 2 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
+                    <div className={`absolute inset-0 p-6 md:p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 2 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
                         }`}>
                         <h3 className="text-2xl text-[var(--text)] font-light tracking-tight mb-8">
                             Intelligence Architecture
@@ -202,11 +202,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 </div>
                             </div>
 
-                            <div className="relative aspect-square rounded-[1.5rem] md:rounded-[4rem] bg-black/5 dark:bg-black/20 p-12 flex items-center justify-center group overflow-hidden">
+                            <div className="relative aspect-square rounded-[1.5rem] md:rounded-[4rem] bg-black/5 dark:bg-black/20 p-6 md:p-12 flex items-center justify-center group overflow-hidden">
                                 <div className="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none group-hover:opacity-30 transition-opacity duration-1000">
                                     <div className="w-full h-full bg-[radial-gradient(circle_at_center,var(--emerald-500)_0%,transparent_70%)] blur-3xl animate-pulse" />
                                 </div>
-                                <Code className="w-32 h-32 text-[var(--text)] opacity-5 relative z-10 transition-transform duration-1000 group-hover:scale-110" />
+                                <Code className="w-20 h-20 md:w-32 md:h-32 text-[var(--text)] opacity-5 relative z-10 transition-transform duration-1000 group-hover:scale-110" />
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <div className="w-4/5 h-4/5 border border-[var(--text)] opacity-5 rounded-full animate-[ping_8s_infinite]" />
                                     <div className="absolute w-2/3 h-2/3 border border-[var(--text)] opacity-10 rounded-full animate-[pulse_4s_infinite]" />
@@ -223,14 +223,14 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     </div>
 
                     {/* Step 3: Strategic Impact (Challenge + Proposal) */}
-                    <div className={`absolute inset-0 p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 3 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
+                    <div className={`absolute inset-0 p-6 md:p-12 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-y-auto scrollbar-thin ${activeStep === 3 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-12 scale-95 invisible'
                         }`}>
                         <div className="max-w-3xl flex-1 flex flex-col justify-center">
                             <h3 className="text-2xl text-[var(--text)] font-light tracking-tight mb-12">
                                 Strategic Impact
                             </h3>
 
-                            <div className="space-y-12 mb-16">
+                            <div className="space-y-6 md:space-y-12 mb-8 md:mb-16">
                                 <div className="relative p-8 rounded-[2.5rem] bg-black/5 dark:bg-black/40">
                                     <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">
                                         The Challenge
