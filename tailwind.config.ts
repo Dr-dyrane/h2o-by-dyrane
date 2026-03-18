@@ -15,7 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        sans: ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Inter", "sans-serif"],
         mono: ["Space Grotesk", "monospace"],
       },
       colors: {
@@ -63,6 +63,12 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        /* Squircle shape tokens */
+        icon: "var(--radius-icon)",
+        card: "var(--radius-card)",
+        panel: "var(--radius-panel)",
+        nav: "var(--radius-nav)",
+        chip: "var(--radius-chip)",
       },
       keyframes: {
         "accordion-down": {
@@ -90,6 +96,8 @@ export default {
       },
       transitionTimingFunction: {
         "dyrane-ease": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "ease-spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "ease-out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       backgroundImage: {
         "glass-gradient":

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Project, projects } from "@/data/projects";
 import { ArrowUpRight, Globe, Loader2, GitBranch } from "lucide-react";
 
@@ -7,140 +7,226 @@ interface ProjectGridProps {
     onProjectSelect: (project: Project) => void;
 }
 
-const categoryColor: Record<Project["category"], string> = {
-    "Logistics Engine": "text-blue-400 bg-blue-400/10",
-    "Intelligence Bridge": "text-violet-400 bg-violet-400/10",
-    "Modernized UX": "text-emerald-400 bg-emerald-400/10",
+const categoryColor: Record<Project["category"], { text: string; bg: string; glow: string }> = {
+    "Logistics Engine":    { text: "text-blue-300",    bg: "bg-blue-500/10",    glow: "rgba(59,130,246,0.15)"  },
+    "Intelligence Bridge": { text: "text-violet-300",  bg: "bg-violet-500/10",  glow: "rgba(139,92,246,0.15)" },
+    "Modernized UX":       { text: "text-emerald-300", bg: "bg-emerald-500/10", glow: "rgba(52,211,153,0.15)" },
 };
 
-const ProjectThumbnail = ({ project }: { project: Project }) => {
+// ─── Intersection Observer hook for scroll reveal ─────────────────────────────
+const useReveal = () => {
+    const ref = useRef<HTMLDivElement>(null);
+    const [visible, setVisible] = useState(false);
+    useEffect(() => {
+        const obs = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+            { threshold: 0.12 }
+        );
+        if (ref.current) obs.observe(ref.current);
+        return () => obs.disconnect();
+    }, []);
+    return { ref, visible };
+};
+
+// ─── Live screenshot panel ─────────────────────────────────────────────────────
+const ProjectScreen = ({ project }: { project: Project }) => {
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
-
-    const screenshotUrl = `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`;
-
-    if (error) return null;
+    const url = `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`;
+    const { text, glow } = categoryColor[project.category];
 
     return (
-        <div className="relative w-full h-36 overflow-hidden rounded-xl mb-4 bg-[var(--surface-card-hover)]">
-            {!loaded && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader2 className="w-4 h-4 animate-spin text-[var(--text-dim)]" />
+        <div className="relative w-full aspect-[16/10] squircle overflow-hidden"
+            style={{ boxShadow: `0 32px 80px -8px ${glow}, 0 8px 32px rgba(0,0,0,0.4)` }}>
+            {/* Loading state */}
+            {!loaded && !error && (
+                <div className="absolute inset-0 glass-ultra-thin flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                        <Loader2 className={`w-6 h-6 animate-spin ${text}`} />
+                        <span className="text-[var(--text-dim)] text-[11px] font-mono uppercase tracking-widest">
+                            Loading Preview
+                        </span>
+                    </div>
                 </div>
             )}
-            <img
-                src={screenshotUrl}
-                alt={project.title}
-                className={`w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-105 ${
-                    loaded ? "opacity-100" : "opacity-0"
-                }`}
-                loading="lazy"
-                onLoad={() => setLoaded(true)}
-                onError={() => setError(true)}
-            />
-            {/* Subtle bottom fade for blending */}
-            <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[var(--surface-card)] to-transparent" />
+
+            {/* Fallback */}
+            {error && (
+                <div className="absolute inset-0 glass-ultra-thin flex items-center justify-center">
+                    <div className="text-center">
+                        <Globe className={`w-8 h-8 mx-auto mb-2 ${text} opacity-50`} />
+                        <span className="text-[var(--text-dim)] text-[11px] font-mono">{project.link}</span>
+                    </div>
+                </div>
+            )}
+
+            {!error && (
+                <img
+                    src={url}
+                    alt={`${project.title} live preview`}
+                    className={`w-full h-full object-cover object-top transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}
+                    loading="lazy"
+                    onLoad={() => setLoaded(true)}
+                    onError={() => setError(true)}
+                />
+            )}
         </div>
     );
 };
 
+// ─── Single project feature row ───────────────────────────────────────────────
+const ProjectFeature = ({
+    project,
+    index,
+    onSelect,
+}: {
+    project: Project;
+    index: number;
+    onSelect: () => void;
+}) => {
+    const { ref, visible } = useReveal();
+    const isEven = index % 2 === 0;
+    const { text, bg, glow } = categoryColor[project.category];
+
+    return (
+        <div
+            ref={ref}
+            className={`
+                flex flex-col lg:flex-row items-center gap-12 xl:gap-20
+                transition-all duration-700
+                ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"}
+                ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}
+            `}
+        >
+            {/* Screenshot — 58% width */}
+            <div className="w-full lg:w-[58%] flex-shrink-0">
+                <ProjectScreen project={project} />
+            </div>
+
+            {/* Copy — 42% width */}
+            <div className="w-full lg:w-[42%] flex flex-col gap-5">
+
+                {/* Category + index */}
+                <div className="flex items-center gap-3">
+                    <span className={`squircle-chip px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.15em] font-medium ${text} ${bg}`}>
+                        {project.category}
+                    </span>
+                    <span className="text-[var(--text-ghost)] text-[11px] font-mono tabular-nums">
+                        {String(index + 1).padStart(2, "0")}
+                    </span>
+                </div>
+
+                {/* Title */}
+                <h3 className="text-3xl xl:text-4xl font-semibold text-[var(--text)] tracking-tight leading-snug">
+                    {project.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">
+                    {project.description}
+                </p>
+
+                {/* The challenge — the story */}
+                <div className="squircle-nav p-4 glass-ultra-thin" style={{ boxShadow: `inset 0 0 40px ${glow}` }}>
+                    <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-2 ${text}`}>
+                        The Challenge
+                    </p>
+                    <p className="text-[var(--text-muted)] text-sm leading-relaxed font-light">
+                        {project.challenge}
+                    </p>
+                </div>
+
+                {/* Languages */}
+                <div className="flex items-center gap-2 flex-wrap">
+                    {project.github_stats.languages.map((lang) => (
+                        <span key={lang} className="squircle-chip px-2.5 py-1 glass-ultra-thin text-[var(--text-dim)] text-[11px] font-mono">
+                            {lang}
+                        </span>
+                    ))}
+                    <span className="text-[var(--text-ghost)] text-[11px] font-mono ml-1">
+                        {project.github_stats.commits.toLocaleString()} commits
+                    </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-4 pt-1">
+                    <button
+                        onClick={onSelect}
+                        className={`
+                            group inline-flex items-center gap-2
+                            px-5 py-2.5 squircle-pill
+                            ${bg} ${text}
+                            text-sm font-medium
+                            transition-all duration-300
+                            hover:shadow-[0_0_24px_${glow}]
+                            hover:scale-105
+                        `}
+                    >
+                        <GitBranch size={13} />
+                        Full Case Study
+                        <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </button>
+
+                    <a
+                        href={`https://${project.link}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-dim)] hover:text-[var(--text)] transition-colors duration-200 font-mono"
+                    >
+                        <Globe size={11} />
+                        {project.link}
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ─── Main export ──────────────────────────────────────────────────────────────
 export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
     const categories = [
-        { id: "Logistics Engine", label: "Global Logistics Engines" },
-        { id: "Intelligence Bridge", label: "Intelligence Bridges" },
-        { id: "Modernized UX", label: "Modernized Experience Layers" },
+        { id: "Logistics Engine",    label: "Global Logistics Engines",      sub: "Infrastructure that moves the world" },
+        { id: "Intelligence Bridge", label: "Intelligence Bridges",           sub: "Systems that translate data into decisions" },
+        { id: "Modernized UX",       label: "Modernized Experience Layers",   sub: "Interfaces that earn trust at first glance" },
     ] as const;
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-32 space-y-32">
+        <div className="max-w-7xl mx-auto px-6 py-24 space-y-40">
             {categories.map((category) => {
-                const categoryProjects = projects.filter(
-                    (p) => p.category === category.id
-                );
-
-                if (categoryProjects.length === 0) return null;
+                const cat = projects.filter((p) => p.category === category.id);
+                if (cat.length === 0) return null;
 
                 return (
                     <section
                         key={category.id}
                         id={category.id.toLowerCase().replace(/\s+/g, "-")}
-                        className="relative scroll-mt-32"
+                        className="scroll-mt-28"
                     >
-                        {/* Category Header */}
-                        <div className="mb-12 flex items-end gap-4">
-                            <h2 className="text-4xl md:text-5xl font-light text-[var(--text)] tracking-tighter">
+                        {/* Category header */}
+                        <div className="mb-20 max-w-2xl">
+                            <p className="text-[var(--text-dim)] text-[11px] font-mono uppercase tracking-[0.2em] mb-3">
+                                {category.id}
+                            </p>
+                            <h2 className="text-5xl md:text-6xl font-light text-[var(--text)] tracking-tighter mb-4">
                                 {category.label.split(" ")[0]}{" "}
                                 <span className="text-[var(--text-ghost)]">
                                     {category.label.split(" ").slice(1).join(" ")}
                                 </span>
                             </h2>
-                            <div className="h-px flex-1 bg-gradient-to-r from-[var(--text-dim)] to-transparent mb-2" />
+                            <p className="text-[var(--text-dim)] text-base font-light">
+                                {category.sub}
+                            </p>
                         </div>
 
-                        {/* Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {categoryProjects.map((project, index) => (
-                                <div
+                        {/* Projects — one at a time, alternating */}
+                        <div className="space-y-28">
+                            {cat.map((project, index) => (
+                                <ProjectFeature
                                     key={project.title}
-                                    onClick={() => onProjectSelect(project)}
-                                    className="group relative flex flex-col bg-[var(--surface-card)] hover:bg-[var(--surface-card-hover)] transition-all duration-300 ease-dyrane cursor-pointer rounded-2xl p-5 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 border border-transparent hover:border-[var(--text-dim)]/10"
-                                    style={{ animationDelay: `${index * 80}ms` }}
-                                >
-                                    {/* Live screenshot preview */}
-                                    <ProjectThumbnail project={project} />
-
-                                    {/* Category + language tags */}
-                                    <div className="flex items-center gap-2 mb-3 flex-wrap">
-                                        <span
-                                            className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full ${categoryColor[project.category]}`}
-                                        >
-                                            {project.category}
-                                        </span>
-                                        <span className="text-[10px] font-mono text-[var(--text-dim)] uppercase tracking-widest px-2 py-0.5 rounded-full bg-[var(--surface-card-hover)]">
-                                            {project.github_stats.languages[0]}
-                                        </span>
-                                    </div>
-
-                                    {/* Title */}
-                                    <h3 className="text-lg font-semibold text-[var(--text)] mb-2 leading-snug">
-                                        {project.title}
-                                    </h3>
-
-                                    {/* Description — always visible */}
-                                    <p className="text-sm text-[var(--text-muted)] leading-relaxed line-clamp-3 flex-1 mb-4">
-                                        {project.description}
-                                    </p>
-
-                                    {/* Footer row */}
-                                    <div className="flex items-center justify-between pt-3 border-t border-[var(--text-dim)]/10">
-                                        {/* Domain */}
-                                        <a
-                                            href={`https://${project.link}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="inline-flex items-center gap-1.5 text-xs text-[var(--text-dim)] hover:text-[var(--text)] transition-colors duration-200 font-mono"
-                                        >
-                                            <Globe size={11} />
-                                            {project.link}
-                                        </a>
-
-                                        {/* Deep Dive CTA */}
-                                        <button
-                                            className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] group-hover:text-[var(--text)] transition-colors duration-200"
-                                            onClick={() => onProjectSelect(project)}
-                                        >
-                                            <GitBranch size={11} />
-                                            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 mr-0.5">
-                                                Details
-                                            </span>
-                                            <ArrowUpRight
-                                                size={13}
-                                                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
-                                            />
-                                        </button>
-                                    </div>
-                                </div>
+                                    project={project}
+                                    index={index}
+                                    onSelect={() => onProjectSelect(project)}
+                                />
                             ))}
                         </div>
                     </section>

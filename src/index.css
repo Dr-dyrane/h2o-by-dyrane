@@ -5,32 +5,53 @@
 @layer base {
 	:root {
 		/* Semantic theme tokens — light mode */
-		--surface: #FFFFFF;
-		--surface-alt: #F8F9FA;
-		--surface-glass: rgba(255, 255, 255, 0.7);
-		--surface-card: rgba(0, 0, 0, 0.02);
-		--surface-card-hover: rgba(0, 0, 0, 0.04);
+		--surface: #F5F5F7;          /* Apple's signature light grey — not pure white */
+		--surface-alt: #ECECEC;
+		--surface-glass: rgba(245, 245, 247, 0.85);
+		--surface-card: rgba(255, 255, 255, 0.80);      /* White card lifts off grey surface */
+		--surface-card-hover: rgba(255, 255, 255, 0.95);
 
-		--text: #111111;
-		--text-muted: rgba(0, 0, 0, 0.6);
-		--text-dim: rgba(0, 0, 0, 0.4);
-		--text-ghost: rgba(0, 0, 0, 0.3);
+		--text: #1D1D1F;             /* Apple's off-black — slightly warmer than #111 */
+		--text-muted: rgba(29, 29, 31, 0.60);
+		--text-dim: rgba(29, 29, 31, 0.40);
+		--text-ghost: rgba(29, 29, 31, 0.28);
 
 		--border-subtle: rgba(0, 0, 0, 0.06);
-		--glow-color: rgba(16, 185, 129, 0.15);
+		--glow-color: rgba(16, 185, 129, 0.18);
 
-		--cta-bg: #111111;
+		/* Shape tokens */
+		--radius-icon: 22.5%;
+		--radius-card: 28px;
+		--radius-panel: 32px;
+		--radius-nav: 24px;
+		--radius-chip: 12px;
+		--radius-pill: 9999px;
+
+		/* Liquid Glass material tokens — light mode
+		   Uses dark-tinted alpha fills over the grey surface
+		   (same as macOS light sidebar / Control Center)        */
+		--glass-ultra-thin-bg: rgba(255, 255, 255, 0.55);
+		--glass-ultra-thin-blur: blur(12px);
+		--glass-thin-bg: rgba(255, 255, 255, 0.70);
+		--glass-thin-blur: blur(20px);
+		--glass-regular-bg: rgba(255, 255, 255, 0.80);
+		--glass-regular-blur: blur(28px);
+		--glass-thick-bg: rgba(255, 255, 255, 0.92);
+		--glass-thick-blur: blur(48px);
+		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.50) 40%, transparent 70%);
+
+		--cta-bg: #1D1D1F;
 		--cta-text: #FFFFFF;
-		--cta-hover: rgba(0, 0, 0, 0.85);
+		--cta-hover: rgba(29, 29, 31, 0.85);
 
-		--cta-secondary-bg: rgba(0, 0, 0, 0.05);
-		--cta-secondary-text: rgba(0, 0, 0, 0.7);
-		--cta-secondary-hover: rgba(0, 0, 0, 0.1);
+		--cta-secondary-bg: rgba(0, 0, 0, 0.06);
+		--cta-secondary-text: rgba(29, 29, 31, 0.70);
+		--cta-secondary-hover: rgba(0, 0, 0, 0.10);
 
-		--gradient-mask-from: #FFFFFF;
-		--gradient-mask-via: rgba(255, 255, 255, 0.8);
+		--gradient-mask-from: #F5F5F7;
+		--gradient-mask-via: rgba(245, 245, 247, 0.8);
 
-		--scrollbar-track: #F0F0F0;
+		--scrollbar-track: #E5E5E5;
 
 		/* shadcn tokens */
 		--background: 0 0% 100%;
@@ -69,6 +90,13 @@
 		--text-ghost: rgba(255, 255, 255, 0.3);
 
 		--border-subtle: rgba(255, 255, 255, 0.05);
+
+		/* Liquid Glass material tokens — dark */
+		--glass-ultra-thin-bg: rgba(255, 255, 255, 0.04);
+		--glass-thin-bg: rgba(255, 255, 255, 0.07);
+		--glass-regular-bg: rgba(255, 255, 255, 0.10);
+		--glass-thick-bg: rgba(255, 255, 255, 0.15);
+		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.65) 45%, transparent 72%);
 		--glow-color: rgba(16, 185, 129, 0.3);
 
 		--cta-bg: #FFFFFF;
@@ -109,10 +137,13 @@
 
 @layer base {
 	* {
-		@apply border-border;
+		box-sizing: border-box;
 	}
 
 	body {
+		/* SF Pro system font stack — resolves to SF Pro on all Apple devices */
+		font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+		             "Helvetica Neue", Inter, sans-serif;
 		@apply bg-[var(--surface)] text-[var(--text)] transition-colors duration-300;
 	}
 
@@ -143,4 +174,111 @@
 		background-image: linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
 			linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
 	}
-}
+
+	/* ─── Squircle Shape System ─────────────────────────────────────────────── */
+	/* Native CSS corner-shape (Chrome 133+ / Safari TP) with border-radius fallback */
+
+	/* Card — rectangular elements (project cards, panels) */
+	.squircle {
+		corner-shape: squircle;
+		border-radius: var(--radius-card);
+	}
+
+	/* Icon — true Apple squircle on square elements */
+	.squircle-icon {
+		corner-shape: squircle;
+		border-radius: var(--radius-icon);
+	}
+
+	/* Panel — large overlay sheets */
+	.squircle-panel {
+		corner-shape: squircle;
+		border-radius: var(--radius-panel);
+	}
+
+	/* Nav — CommandCenter, floating bars */
+	.squircle-nav {
+		corner-shape: squircle;
+		border-radius: var(--radius-nav);
+	}
+
+	/* Chip — pills, tags, language badges */
+	.squircle-chip {
+		corner-shape: squircle;
+		border-radius: var(--radius-chip);
+	}
+
+	/* Pill — CTAs, fully rounded */
+	.squircle-pill {
+		corner-shape: squircle;
+		border-radius: var(--radius-pill);
+	}
+
+	/* ─── Liquid Glass — Web Approximation of Apple's 3-Layer Optical Material ─
+	
+	   Apple's Liquid Glass = refraction + specular highlight + adaptive tint.
+	   The system handles this natively in UIKit/SwiftUI. On web we layer:
+	     1. backdrop-filter: blur()       → approximates refraction (light bending)
+	     2. box-shadow: inset highlights  → specular edge (the "wet glass" bright rim)
+	     3. background alpha              → adaptive tint layer
+	
+	   Spec mandates sparingness. Only applied to:
+	   functional controls and navigation elements.
+	   Never to content layers. Never stacked on top of each other.
+	─────────────────────────────────────────────────────────────────────────── */
+
+	/* Ultra-thin — for small chips, tags, pills on a surface */
+	.glass-ultra-thin {
+		background: var(--glass-ultra-thin-bg);
+		backdrop-filter: var(--glass-ultra-thin-blur);
+		-webkit-backdrop-filter: var(--glass-ultra-thin-blur);
+		/* Specular: barely-there top edge highlight */
+		box-shadow:
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+			inset 0 -1px 0 0 rgba(0, 0, 0, 0.04);
+	}
+
+	/* Thin — sidebar icons, floating icon groups */
+	.glass-thin {
+		background: var(--glass-thin-bg);
+		backdrop-filter: var(--glass-thin-blur);
+		-webkit-backdrop-filter: var(--glass-thin-blur);
+		/* Specular: visible top edge + subtle bottom depth */
+		box-shadow:
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+			inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
+			0 4px 16px rgba(0, 0, 0, 0.08);
+	}
+
+	/* Regular — CommandCenter nav bar, floating panels */
+	.glass-regular {
+		background: var(--glass-regular-bg);
+		backdrop-filter: var(--glass-regular-blur);
+		-webkit-backdrop-filter: var(--glass-regular-blur);
+		/* Specular: bright top-edge, subtle drop shadow */
+		box-shadow:
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.40),
+			inset 0 -1px 0 0 rgba(0, 0, 0, 0.08),
+			0 8px 32px rgba(0, 0, 0, 0.14),
+			0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	/* Thick — modal sheets, ProjectOverlay, deep panels */
+	.glass-thick {
+		background: var(--glass-thick-bg);
+		backdrop-filter: var(--glass-thick-blur);
+		-webkit-backdrop-filter: var(--glass-thick-blur);
+		/* Specular: strong top-edge highlight, substantial shadow */
+		box-shadow:
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
+			inset 0 -1px 0 0 rgba(0, 0, 0, 0.10),
+			0 24px 64px rgba(0, 0, 0, 0.24),
+			0 4px 16px rgba(0, 0, 0, 0.12);
+	}
+
+	/* Dark mode specular adjustment — invert highlight intensity */
+	.dark .glass-ultra-thin { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.08), inset 0 -1px 0 0 rgba(0,0,0,0.20); }
+	.dark .glass-thin        { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.12), inset 0 -1px 0 0 rgba(0,0,0,0.30), 0 4px 16px rgba(0,0,0,0.30); }
+	.dark .glass-regular     { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.16), inset 0 -1px 0 0 rgba(0,0,0,0.40), 0 8px 32px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20); }
+	.dark .glass-thick       { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.20), inset 0 -1px 0 0 rgba(0,0,0,0.50), 0 24px 64px rgba(0,0,0,0.60), 0 4px 16px rgba(0,0,0,0.30); }
+}

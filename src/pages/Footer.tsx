@@ -9,43 +9,32 @@ const XIcon = ({ className }: { className?: string }) => (
 );
 
 const socialLinks = [
-  {
-    name: "GitHub",
-    icon: Github,
-    url: "https://github.com/Dr-dyrane",
-  },
-  {
-    name: "X",
-    icon: XIcon,
-    url: "https://x.com/dr_dyrane",
-  },
-  {
-    name: "WhatsApp",
-    icon: MessageCircle,
-    url: "https://wa.me/19517284218",
-  },
-  {
-    name: "Email",
-    icon: Mail,
-    url: "mailto:hello@dyrane.tech",
-  },
+  { name: "GitHub",   icon: Github,        url: "https://github.com/Dr-dyrane" },
+  { name: "X",         icon: XIcon,         url: "https://x.com/dr_dyrane" },
+  { name: "WhatsApp",  icon: MessageCircle, url: "https://wa.me/19517284218" },
+  { name: "Email",     icon: Mail,          url: "mailto:hello@dyrane.tech" },
 ];
 
 const Footer = () => {
   return (
-    <footer className="relative z-10 border-t border-[var(--border-subtle)]">
+    <footer className="relative z-10">
+      {/* Depth separator — ambient glow line, not a border */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--text-ghost)]/20 to-transparent" />
+
       {/* CTA Section */}
       <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono uppercase tracking-widest mb-8">
-          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+
+        {/* Available badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 squircle-pill glass-ultra-thin text-emerald-400 text-[11px] font-mono uppercase tracking-[0.15em] mb-8">
+          <div className="h-1.5 w-1.5 squircle-pill bg-emerald-500 animate-pulse" />
           Available for Projects
         </div>
 
-        <h2 className="text-4xl md:text-5xl font-light text-[var(--text)] tracking-tighter mb-4">
+        <h2 className="text-4xl md:text-6xl font-light text-[var(--text)] tracking-tighter mb-4">
           Let's Build{" "}
           <span className="text-[var(--text-ghost)]">Something Intelligent.</span>
         </h2>
-        <p className="text-[var(--text-muted)] max-w-lg mx-auto mb-10 leading-relaxed">
+        <p className="text-[var(--text-muted)] max-w-lg mx-auto mb-10 leading-relaxed font-light">
           Whether it's a new product, a systems overhaul, or a conversation
           about possibilities — I'm one message away.
         </p>
@@ -54,31 +43,32 @@ const Footer = () => {
           href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium rounded-full hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_var(--glow-color)]"
+          className="inline-flex items-center gap-2 px-8 py-4 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_var(--glow-color)]"
         >
           Start a Conversation <ArrowUpRight size={18} />
         </a>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-[var(--border-subtle)] bg-[var(--surface-card)]">
+      {/* Bottom bar — depth separated, no border */}
+      <div className="glass-ultra-thin">
         <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-[var(--text-ghost)] text-sm">
-            &copy; {new Date().getFullYear()} Dyrane Intelligence Collective. All Systems Nominal.
+          <p className="text-[var(--text-ghost)] text-[13px] font-mono">
+            © {new Date().getFullYear()} Dyrane Intelligence Collective.{" "}
+            <span className="text-emerald-500/60">All Systems Nominal.</span>
           </p>
 
-          {/* Social Links */}
-          <div className="flex items-center gap-4">
+          {/* Social icons */}
+          <div className="flex items-center gap-3">
             {socialLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-[var(--surface-card)] text-[var(--text-dim)] hover:bg-[var(--surface-card-hover)] hover:text-[var(--text)] transition-all duration-300"
+                className="flex items-center justify-center w-9 h-9 squircle-icon glass-ultra-thin text-[var(--text-dim)] hover:text-emerald-400 transition-all duration-200 hover:scale-110"
                 aria-label={link.name}
               >
-                <link.icon className="w-4 h-4" />
+                <link.icon className="w-[15px] h-[15px]" />
               </a>
             ))}
           </div>

@@ -133,13 +133,13 @@ const Index = () => {
               href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium rounded-full hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_var(--glow-color)]"
+              className="group inline-flex items-center gap-2 px-8 py-4 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_var(--glow-color)]"
             >
               Start a Project <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
             <a
               href="#logistics-engine"
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium rounded-full hover:bg-[var(--cta-secondary-hover)] hover:text-[var(--text)] transition-all duration-300"
+              className="group inline-flex items-center gap-2 px-8 py-4 squircle-pill bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium hover:bg-[var(--cta-secondary-hover)] hover:text-[var(--text)] transition-all duration-300"
             >
               View My Work <ChevronDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
             </a>
@@ -148,14 +148,14 @@ const Index = () => {
 
         {/* About Section */}
         <div ref={aboutFade.ref} className={`max-w-7xl mx-auto px-6 mb-20 ${aboutFade.className}`}>
-          <div className="relative rounded-2xl bg-[var(--surface-card)] p-8 md:p-12 overflow-hidden">
-            {/* Subtle glow */}
+          <div className="relative squircle bg-[var(--surface-card)] p-8 md:p-12 overflow-hidden glass-ultra-thin">
+            {/* Ambient glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="relative flex flex-col md:flex-row gap-10 items-start">
-              {/* Identity */}
+              {/* Identity — true squircle avatar */}
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 rounded-2xl bg-[var(--surface-card-hover)] flex items-center justify-center text-3xl font-light text-[var(--text-muted)] font-mono">
+                <div className="w-20 h-20 squircle-icon bg-[var(--surface-card-hover)] flex items-center justify-center text-2xl font-semibold text-[var(--text-muted)] tracking-tight">
                   AD
                 </div>
               </div>
@@ -163,19 +163,19 @@ const Index = () => {
               {/* Bio */}
               <div className="flex-1 space-y-4">
                 <div>
-                  <h2 className="text-2xl text-[var(--text)] font-medium tracking-tight mb-1">
+                  <h2 className="text-2xl text-[var(--text)] font-semibold tracking-tight mb-1">
                     Alexander Dyrane
                   </h2>
-                  <p className="text-emerald-400/80 text-sm font-mono uppercase tracking-widest">
+                  <p className="text-emerald-400/80 text-[11px] font-mono uppercase tracking-[0.15em]">
                     Systems Architect · Full-Stack Engineer
                   </p>
                 </div>
                 <p className="text-[var(--text-muted)] leading-relaxed max-w-2xl text-lg font-light">
                   I design and build production-grade software systems — from emergency logistics platforms processing real-time dispatch, to AI-powered educational tools, to fintech infrastructure for emerging markets. Every project below is live, maintained, and serving real users.
                 </p>
-                <div className="flex flex-wrap gap-3 pt-2">
+                <div className="flex flex-wrap gap-2 pt-1">
                   {["TypeScript", "React", "Next.js", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
-                    <span key={tech} className="px-3 py-1 rounded-full bg-[var(--surface-card)] text-[var(--text-dim)] text-xs font-mono">
+                    <span key={tech} className="squircle-chip px-3 py-1 glass-ultra-thin text-[var(--text-dim)] text-[11px] font-mono">
                       {tech}
                     </span>
                   ))}
