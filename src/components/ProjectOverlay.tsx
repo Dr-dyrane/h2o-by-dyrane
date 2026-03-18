@@ -56,20 +56,20 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
     if (isMobile) {
         return (
             <div className="fixed inset-0 z-[60] flex items-end justify-center">
-                {/* Scrim */}
+                {/* Scrim — dark enough to signal modal depth in both modes */}
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+                    className="absolute inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"
                     onClick={onClose}
                 />
 
-                {/* Sheet — glass-thick + squircle-panel at top */}
+                {/* Sheet — explicit dark floor + glass-thick */}
                 <motion.div
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
                     transition={{ type: "spring", damping: 28, stiffness: 220 }}
-                    className="relative w-full h-[92vh] glass-thick squircle-panel overflow-hidden flex flex-col"
+                    className="relative w-full h-[92vh] bg-white/85 dark:bg-[#0D0D0D]/90 glass-thick squircle-panel overflow-hidden flex flex-col"
                     style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}
                 >
                     {/* Drag handle */}
@@ -226,12 +226,12 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"
                 onClick={onClose}
             />
 
-            {/* Panel — glass-thick + squircle-panel */}
-            <div className="relative w-full max-w-5xl glass-thick squircle-panel overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] md:h-[700px]">
+            {/* Panel — explicit dark floor + glass-thick */}
+            <div className="relative w-full max-w-5xl bg-white/85 dark:bg-[#0D0D0D]/90 glass-thick squircle-panel overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] md:h-[700px]">
 
                 {/* Sidebar */}
                 <div className="w-full md:w-72 p-5 md:p-6 flex flex-col glass-ultra-thin shrink-0 md:h-full overflow-y-auto">

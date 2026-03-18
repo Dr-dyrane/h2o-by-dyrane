@@ -1,10 +1,39 @@
-import { useRef, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useRef, Suspense, useEffect } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, MeshDistortMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
-// ─── Inner geometry — procedural, zero model files ───────────────────────────
+// ─── Mouse-driven camera parallax ────────────────────────────────────────────
+const MouseParallax = () => {
+    const { camera } = useThree();
+    const mouse = useRef({ x: 0, y: 0 });
+    const target = useRef({ x: 0, y: 0 });
 
+    useEffect(() => {
+        const onMove = (e: MouseEvent) => {
+            // Normalise to -1 → +1 relative to viewport
+            mouse.current.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+            mouse.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
+        };
+        window.addEventListener("mousemove", onMove);
+        return () => window.removeEventListener("mousemove", onMove);
+    }, []);
+
+    useFrame(() => {
+        // Smooth lerp — camera drifts toward mouse, not snaps
+        target.current.x += (mouse.current.x - target.current.x) * 0.04;
+        target.current.y += (mouse.current.y - target.current.y) * 0.04;
+
+        // Subtle offset — ±0.6 units max so the orb never leaves frame
+        camera.position.x = target.current.x * 0.6;
+        camera.position.y = -target.current.y * 0.4;
+        camera.lookAt(0, 0, 0);
+    });
+
+    return null;
+};
+
+// ─── Orb geometry ─────────────────────────────────────────────────────────────
 const OrbGeometry = () => {
     const outerRef = useRef<THREE.Mesh>(null);
     const innerRef = useRef<THREE.Mesh>(null);
@@ -13,7 +42,6 @@ const OrbGeometry = () => {
 
     useFrame(({ clock }) => {
         const t = clock.getElapsedTime();
-
         if (outerRef.current) {
             outerRef.current.rotation.y = t * 0.18;
             outerRef.current.rotation.x = Math.sin(t * 0.12) * 0.25;
@@ -34,7 +62,7 @@ const OrbGeometry = () => {
 
     return (
         <group>
-            {/* Outer distort sphere — liquid, breathing */}
+            {/* Outer distort sphere */}
             <mesh ref={outerRef}>
                 <icosahedronGeometry args={[1.6, 6]} />
                 <MeshDistortMaterial
@@ -49,7 +77,7 @@ const OrbGeometry = () => {
                 />
             </mesh>
 
-            {/* Inner denser icosahedron — fills with depth */}
+            {/* Inner denser icosahedron */}
             <mesh ref={innerRef}>
                 <icosahedronGeometry args={[1.1, 3]} />
                 <MeshDistortMaterial
@@ -76,15 +104,13 @@ const OrbGeometry = () => {
                 <meshBasicMaterial color="#6ee7b7" transparent opacity={0.18} />
             </mesh>
 
-            {/* Point light inside — gives the mesh a sense of glow */}
-            <pointLight position={[0, 0, 0]} intensity={3} color="#34d399" distance={6} decay={2} />
+            <pointLight position={[0, 0, 0]} intensity={3}   color="#34d399" distance={6} decay={2} />
             <pointLight position={[3, 2, 1]} intensity={0.8} color="#60a5fa" distance={8} decay={2} />
         </group>
     );
 };
 
 // ─── Canvas wrapper ───────────────────────────────────────────────────────────
-
 export const HeroOrb3D = () => {
     return (
         <div
@@ -96,12 +122,13 @@ export const HeroOrb3D = () => {
                 gl={{ antialias: true, alpha: true }}
                 style={{ background: "transparent" }}
             >
-                {/* Ambient — keeps the mesh visible in both themes */}
                 <ambientLight intensity={0.15} />
                 <directionalLight position={[5, 5, 5]} intensity={0.5} />
 
                 <Suspense fallback={null}>
                     <OrbGeometry />
+                    {/* Parallax driven by mouse — smooth lerp, no snapping */}
+                    <MouseParallax />
                     <OrbitControls
                         enableZoom={false}
                         enablePan={false}

@@ -5,6 +5,7 @@ import { ProjectOverlay } from "@/components/ProjectOverlay";
 import { ContributionGraph } from "@/components/ContributionGraph";
 import { SocialSidebar } from "@/components/social-sidebar";
 import { MatrixBackground } from "@/components/MatrixBackground";
+import { TechMarquee } from "@/components/TechMarquee";
 import Footer from "@/pages/Footer";
 import { Project } from "@/data/projects";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
@@ -196,15 +197,15 @@ const Index = () => {
                   <h2 className="text-2xl text-[var(--text)] font-semibold tracking-tight mb-1">
                     Alexander Dyrane
                   </h2>
-                  <p className="text-emerald-400/80 text-[11px] font-mono uppercase tracking-[0.15em]">
-                    Systems Architect · Full-Stack Engineer
+                  <p className="text-[var(--cat-ux)] text-[11px] font-mono uppercase tracking-[0.15em]">
+                    Systems Architect · Full-Stack Engineer · Human Interface Engineer
                   </p>
                 </div>
                 <p className="text-[var(--text-muted)] leading-relaxed max-w-2xl text-lg font-light">
-                  I design and build production-grade software systems — from emergency logistics platforms processing real-time dispatch, to AI-powered educational tools, to fintech infrastructure for emerging markets. Every project below is live, maintained, and serving real users.
+                  I design and engineer production-grade systems — spanning real-time logistics infrastructure, AI-powered platforms, and high-fidelity interfaces built to Apple Human Interface Guidelines. Every project is live, maintained, and serving real users. I write in TypeScript, Python, and Swift, and build in 3D.
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
-                  {["TypeScript", "React", "Next.js", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
+                  {["TypeScript", "React", "Next.js", "Swift", "Three.js / R3F", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
                     <span key={tech} className="squircle-chip px-3 py-1 glass-ultra-thin text-[var(--text-dim)] text-[11px] font-mono">
                       {tech}
                     </span>
@@ -221,6 +222,8 @@ const Index = () => {
         </div>
 
         <ProjectGrid onProjectSelect={handleProjectSelect} />
+
+        <TechMarquee />
       </main>
 
       <Footer />

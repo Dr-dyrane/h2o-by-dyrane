@@ -2,23 +2,13 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
-import { Menu } from "lucide-react"
-
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu, X } from "lucide-react"
 
 const navItems = [
-  { name: "Home", href: "#hero" },
-  { name: "Why Choose Us", href: "#features" },
-  { name: "Get Started", href: "#cta" },
-  { name: "More Projects", href: "#projects" },
+  { name: "Work",          href: "#logistics-engine" },
+  { name: "Architecture",  href: "#intelligence-bridge" },
+  { name: "Interface",     href: "#modernized-ux" },
+  { name: "Pulse",         href: "#engineering-dna" },
 ]
 
 export function Navbar() {
@@ -29,86 +19,75 @@ export function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed w-full top-0 left-0 z-50 bg-white/5 backdrop-blur-sm p-4"
+      className="fixed w-full top-0 left-0 z-50 glass-regular"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0">
-            <a href="#hero" className="flex items-center text-2xl font-bold text-black">
-              Dyrane <span className="italic text-lg ml-2">Intelligence Collective</span>
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        {/* Wordmark */}
+        <a href="#" className="text-[var(--text)] font-semibold tracking-tight text-base">
+          Dr. Dyrane
+          <span className="text-[var(--text-ghost)] font-light ml-1.5">Intelligence Collective</span>
+        </a>
+
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-1">
+          {navItems.map(item => (
+            <a
+              key={item.name}
+              href={item.href}
+              className="px-4 py-2 squircle-chip text-[var(--text-dim)] hover:text-[var(--text)] text-sm font-medium transition-colors duration-200"
+            >
+              {item.name}
             </a>
-          </div>
-          <div className="hidden md:block">
-            <NavigationMenu>
-              <NavigationMenuList>
-                {navItems.map((item) => (
-                  <NavigationMenuItem key={item.name}>
-                    <NavigationMenuLink
-                      href={item.href}
-                      className={navigationMenuTriggerStyle() + "relative overflow-hidden bg-transparent group hover:bg-black hover:text-white"}
-                    >
-                      {item.name}
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
-          <div className="hidden md:block">
-            <Button asChild className="rounded-full relative overflow-hidden group">
-              <a
-                href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-black text-white hover:text-black transition-colors duration-300"
-              >
-                <span className="relative z-10">Get Started</span>
-                <span className="absolute inset-0 rounded-full bg-white transform scale-x-0 transition-transform duration-500 origin-left group-hover:scale-x-100"></span>
-              </a>
-            </Button>
-          </div>
-          <div className="md:hidden">
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="w-[300px] sm:w-[400px] bg-white/80 backdrop-blur-md rounded-l-3xl border-none"
-              >
-                <nav className="flex flex-col gap-4 mt-8">
-                  {navItems.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="block px-4 py-2 text-lg hover:bg-black hover:text-white rounded-full transition-colors duration-200"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-                  <Button asChild className="mt-4 rounded-full relative overflow-hidden group py-6">
-                    <a
-                      href="https://wa.me/19517284218?text=Hi%20Dr.%20Dyrane,%20I'm%20interested%20in%20working%20with%20you!"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-black text-white hover:text-black transition-colors duration-300"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <span className="relative z-10">Get Started</span>
-                      <span className="absolute rounded-full inset-0 bg-white transform scale-x-0 transition-transform duration-500 origin-left group-hover:scale-x-100"></span>
-                    </a>
-                  </Button>
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
+          ))}
+        </nav>
+
+        {/* CTA */}
+        <a
+          href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
+          className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] text-sm font-medium hover:scale-105 hover:opacity-90 transition-all duration-300"
+        >
+          Hire Me
+        </a>
+
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setIsOpen(v => !v)}
+          className="md:hidden p-2.5 squircle-icon glass-ultra-thin text-[var(--text-dim)]"
+          aria-label="Toggle menu"
+        >
+          {isOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </div>
+
+      {/* Mobile drawer */}
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          className="md:hidden glass-thick mx-4 mb-4 squircle-panel overflow-hidden"
+        >
+          <nav className="flex flex-col p-4 gap-1">
+            {navItems.map(item => (
+              <a
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-3 squircle-chip text-[var(--text-muted)] hover:text-[var(--text)] text-base font-medium transition-colors duration-200"
+              >
+                {item.name}
+              </a>
+            ))}
+            <a
+              href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
+              onClick={() => setIsOpen(false)}
+              className="mt-2 px-5 py-3 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] text-sm font-medium text-center"
+            >
+              Hire Me
+            </a>
+          </nav>
+        </motion.div>
+      )}
     </motion.nav>
   )
 }
-
