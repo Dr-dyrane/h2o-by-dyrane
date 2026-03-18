@@ -159,8 +159,14 @@ const ProjectFeature = ({
                             text-sm font-medium
                             transition-all duration-300
                             hover:scale-105
-                            hover:shadow-[0_0_32px_${glow}]
                         `}
+                        style={{ '--hover-shadow': `0 0 32px ${glow}` } as React.CSSProperties}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.boxShadow = e.currentTarget.style.getPropertyValue('--hover-shadow') || '';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.boxShadow = '';
+                        }}
                     >
                         <GitBranch size={13} />
                         Full Case Study
