@@ -60,7 +60,22 @@ export const projects: Project[] = [
 	// --- Intelligence Bridges ---
 
 	{
+		title: "Dr. Dyrane",
+		description: "A Digital Clinical Registrar powered by Claude 3.5 Sonnet. Not a chatbot — a rigorous AI engine that maps symptoms to pathophysiology through recursive SOAP logic and progressive disclosure.",
+		link: "dr.dyrane.tech",
+		category: "Intelligence Bridge",
+		challenge: "Symptom checkers are dangerously shallow. Patients need structured clinical reasoning — not keyword matching — that can rule out life-threatening pathology before suggesting a prescription.",
+		architecture: "4-step algorithmic loop: Recursive SOAP intake → Bayesian DDx narrowing (P>95% threshold) → Guardian Agent red-flag interceptor (triggers Neon Red emergency state + geospatial ER handoff) → 4-Pillar resolution output (Diagnosis, Management, Prognosis, Prevention). Claude 3.5 Sonnet returns strict JSON. State managed via useReducer state machine. PWA with local-first session storage.",
+		proposal: "Deploy the Dr. Dyrane clinical engine as a triage layer for your healthcare platform. Reduce ER misuse by pre-qualifying patients with mathematically rigorous intake before escalation.",
+		github_stats: {
+			commits: 380,
+			languages: ["TypeScript", "React", "Claude AI", "Playwright"],
+		},
+	},
+
+	{
 		title: "SaySwitch",
+
 		description: "A comprehensive, feature-rich payment solution for seamless offline and online transactions.",
 		link: "sayswitchgroup.com",
 		category: "Intelligence Bridge",
@@ -242,6 +257,19 @@ export const projects: Project[] = [
 		github_stats: {
 			commits: 42,
 			languages: ["TypeScript", "Next.js", "Supabase", "Mapbox"],
+		},
+	},
+	{
+		title: "House of Prax",
+		description: "Advanced plant-based nutrition engineered for elite human performance. A premium e-commerce storefront with zero compromise on design or product integrity.",
+		link: "houseofprax.shop",
+		category: "Modernized UX",
+		challenge: "The plant-based supplement market is saturated with generic branding that fails to command premium positioning or convert serious athletes.",
+		architecture: "Next.js App Router storefront with a high-fidelity design system — SF Pro typography, AOS scroll choreography, and theme-adaptive visuals. Built for performance with structured SEO metadata, Open Graph, and Vercel Analytics.",
+		proposal: "Elevate your health brand's digital presence with a premium storefront built to convert high-intent buyers. Zero fillers in design, just like the product.",
+		github_stats: {
+			commits: 95,
+			languages: ["TypeScript", "Next.js", "Tailwind", "Framer Motion"],
 		},
 	},
 	{
