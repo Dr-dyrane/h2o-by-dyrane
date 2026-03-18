@@ -11,10 +11,18 @@
 		--surface-card: rgba(255, 255, 255, 0.80);      /* White card lifts off grey surface */
 		--surface-card-hover: rgba(255, 255, 255, 0.95);
 
-		--text: #1D1D1F;             /* Apple's off-black — slightly warmer than #111 */
-		--text-muted: rgba(29, 29, 31, 0.60);
-		--text-dim: rgba(29, 29, 31, 0.40);
-		--text-ghost: rgba(29, 29, 31, 0.28);
+		--text: #1D1D1F;             /* Apple's off-black — 15.6:1 on F5F5F7 ✅ AAA */
+		--text-muted: rgba(29, 29, 31, 0.72);   /* blended ~#666668 — 5.3:1 ✅ AA */
+		--text-dim: rgba(29, 29, 31, 0.55);     /* blended ~#898989 — 3.4:1 ✅ large text */
+		--text-ghost: rgba(29, 29, 31, 0.38);   /* blended ~#ADADAD — 2.1:1 decorative only */
+
+		/* Semantic category colours — WCAG-safe for light mode */
+		--cat-logistics:    #1d4ed8;  /* blue-700    — 5.9:1 ✅ AA */
+		--cat-intelligence: #6d28d9;  /* violet-700  — 6.7:1 ✅ AA */
+		--cat-ux:           #047857;  /* emerald-700 — 5.1:1 ✅ AA */
+		--cat-logistics-bg:    rgba(29, 78, 216, 0.08);
+		--cat-intelligence-bg: rgba(109, 40, 217, 0.08);
+		--cat-ux-bg:           rgba(4, 120, 87, 0.08);
 
 		--border-subtle: rgba(0, 0, 0, 0.06);
 		--glow-color: rgba(16, 185, 129, 0.18);
@@ -85,9 +93,17 @@
 		--surface-card-hover: rgba(255, 255, 255, 0.04);
 
 		--text: #FFFFFF;
-		--text-muted: rgba(255, 255, 255, 0.6);
-		--text-dim: rgba(255, 255, 255, 0.4);
-		--text-ghost: rgba(255, 255, 255, 0.3);
+		--text-muted: rgba(255, 255, 255, 0.65); /* ~4.6:1 on #0D0D0D ✅ AA */
+		--text-dim: rgba(255, 255, 255, 0.45);   /* ~3.1:1 ✅ large text */
+		--text-ghost: rgba(255, 255, 255, 0.30); /* ~2.1:1 decorative */
+
+		/* Semantic category colours — bright pastels for dark surfaces */
+		--cat-logistics:    #93c5fd;  /* blue-300   */
+		--cat-intelligence: #c4b5fd;  /* violet-300 */
+		--cat-ux:           #34d399;  /* emerald-400 */
+		--cat-logistics-bg:    rgba(147, 197, 253, 0.10);
+		--cat-intelligence-bg: rgba(196, 181, 253, 0.10);
+		--cat-ux-bg:           rgba(52, 211, 153, 0.10);
 
 		--border-subtle: rgba(255, 255, 255, 0.05);
 

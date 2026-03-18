@@ -8,9 +8,9 @@ interface ProjectGridProps {
 }
 
 const categoryColor: Record<Project["category"], { text: string; bg: string; glow: string }> = {
-    "Logistics Engine":    { text: "text-blue-300",    bg: "bg-blue-500/10",    glow: "rgba(59,130,246,0.15)"  },
-    "Intelligence Bridge": { text: "text-violet-300",  bg: "bg-violet-500/10",  glow: "rgba(139,92,246,0.15)" },
-    "Modernized UX":       { text: "text-emerald-300", bg: "bg-emerald-500/10", glow: "rgba(52,211,153,0.15)" },
+    "Logistics Engine":    { text: "text-[var(--cat-logistics)]",    bg: "bg-[var(--cat-logistics-bg)]",    glow: "var(--cat-logistics-bg)"   },
+    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]",  bg: "bg-[var(--cat-intelligence-bg)]", glow: "var(--cat-intelligence-bg)" },
+    "Modernized UX":       { text: "text-[var(--cat-ux)]",           bg: "bg-[var(--cat-ux-bg)]",           glow: "var(--cat-ux-bg)"          },
 };
 
 // ─── Intersection Observer hook for scroll reveal ─────────────────────────────
