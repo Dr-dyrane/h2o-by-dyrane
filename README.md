@@ -1,4 +1,4 @@
-# H₂O // Neural Layer
+# Dyrane // Neural Layer
 
 **Architecting the flow of digital intelligence.**
 
