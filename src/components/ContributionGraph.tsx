@@ -48,6 +48,7 @@ export const ContributionGraph = () => {
     useEffect(() => {
         const fetchContributions = async () => {
             try {
+                // Try to fetch from API, but use fallback if CSP blocks it
                 const res = await fetch(
                     "https://github-contributions-api.jogruber.de/v4/Dr-dyrane?y=last"
                 );
@@ -59,7 +60,6 @@ export const ContributionGraph = () => {
                 // Total = sum of all days this year
                 const total = data.contributions.reduce((sum, d) => sum + d.count, 0);
                 setTotalContributions(total);
-
 
                 // Current streak — count backwards from most recent day.
                 // Skip today (index 0 after reverse) if it's still 0 —

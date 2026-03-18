@@ -10,9 +10,15 @@ import { Navbar } from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
 import { Project } from "@/data/projects";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
+import { NoSSR } from "@/components/NoSSR";
+
 
 const HeroOrb3D = lazy(() =>
   import("@/components/HeroOrb3D").then(m => ({ default: m.HeroOrb3D }))
+);
+
+const Avatar3D = lazy(() =>
+  import("@/components/Avatar3D").then(m => ({ default: m.Avatar3D }))
 );
 
 const TypewriterEffect = ({ words }: { words: string[] }) => {
@@ -104,8 +110,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-[var(--surface)] font-sans text-[var(--text)] overflow-x-hidden selection:bg-emerald-500/30 selection:text-emerald-200 transition-colors duration-300">
       <Navbar />
-      {/* Interactive Matrix Background */}
-      <MatrixBackground />
+      {/* Interactive Matrix Background - Client-only */}
+      <NoSSR>
+        <MatrixBackground />
+      </NoSSR>
+
 
       {/* Background Ambience */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -164,9 +173,12 @@ const Index = () => {
               {/* Ambient glow behind orb */}
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.08)_0%,transparent_65%)] pointer-events-none" />
 
-              <Suspense fallback={null}>
-                <HeroOrb3D />
-              </Suspense>
+              <NoSSR>
+                <Suspense fallback={null}>
+                  <HeroOrb3D />
+                </Suspense>
+              </NoSSR>
+
 
               {/* Skill label — fades in below orb */}
               <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 flex items-center gap-2 transition-all duration-1000 delay-700 ${heroVisible ? "opacity-100" : "opacity-0"}`}>
@@ -185,10 +197,21 @@ const Index = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="relative flex flex-col md:flex-row gap-10 items-start">
-              {/* Identity — true squircle avatar */}
+              {/* Identity — 3D Custom Avatar */}
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 squircle-icon bg-[var(--surface-card-hover)] flex items-center justify-center text-2xl font-semibold text-[var(--text-muted)] tracking-tight">
-                  AD
+                <div className="w-24 h-24 squircle flex items-center justify-center overflow-hidden glass-regular relative">
+                  <NoSSR>
+                    <Suspense fallback={
+                      <div className="w-full h-full flex items-center justify-center text-xl font-semibold text-[var(--text-ghost)]">
+                        AD
+                      </div>
+                    }>
+                      <Avatar3D />
+                    </Suspense>
+                  </NoSSR>
+
+                  {/* Subtle rim highlight for the squircle itself */}
+                  <div className="absolute inset-0 squircle shadow-[inset_0_0_0_1px_rgba(52,211,153,0.1)] pointer-events-none" />
                 </div>
               </div>
 
@@ -205,11 +228,11 @@ const Index = () => {
                 <p className="text-[var(--text-muted)] leading-relaxed max-w-2xl text-lg font-light">
                   I design and engineer production-grade systems — spanning real-time logistics infrastructure, AI-powered platforms, and high-fidelity interfaces built to Apple Human Interface Guidelines. Every project is live, maintained, and serving real users. I write in TypeScript, Python, and Swift, and build in 3D.
                 </p>
-                  {["TypeScript", "React", "Next.js", "Swift", "Three.js / R3F", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
-                    <span key={tech} className="squircle-chip px-3 py-1 glass-ultra text-[var(--text-dim)] text-[11px] font-mono">
-                      {tech}
-                    </span>
-                  ))}
+                {["TypeScript", "React", "Next.js", "Swift", "Three.js / R3F", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
+                  <span key={tech} className="squircle-chip px-3 py-1 glass-ultra text-[var(--text-dim)] text-[11px] font-mono m-.5">
+                    {tech}
+                  </span>
+                ))}
               </div>
             </div>
           </div>

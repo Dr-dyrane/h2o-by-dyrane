@@ -15,10 +15,14 @@ export const MatrixBackground = () => {
     const resizeRef = useRef<number>(0);
 
     useEffect(() => {
+        // SSR safety: only run in browser
+        if (typeof window === 'undefined') return;
+        
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
+
 
         const GAP = 28;
         const DOT_SIZE = 1.5;

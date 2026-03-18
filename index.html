@@ -4,24 +4,59 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Dyrane Intelligence Collective</title>
-	<meta name="description"
-		content="Proprietary infrastructure, logistics engines, and high-fidelity interfaces built for the next generation of the web. View projects and start a conversation." />
-	<meta property="og:title" content="Dyrane Intelligence Collective" />
-	<meta property="og:description"
-		content="Proprietary infrastructure, logistics engines, and high-fidelity interfaces built for the next generation of the web." />
-	<meta property="og:image" content="/logo.png" />
-	<meta property="og:type" content="website" />
+	<title>H₂O by Dyrane | Premium Hydration Solutions</title>
+	<meta name="description" content="Refresh with purity, sustain the future. H₂O by Dyrane offers premium hydration solutions with cutting-edge technology and sustainable practices." />
+	<meta name="keywords" content="H2O, water, hydration, premium water, sustainable, Dyrane, clean water, eco-friendly" />
+	
+	<!-- Canonical URL -->
+	<link rel="canonical" href="https://dyrane.tech/" />
+	
+	<!-- Favicon -->
+	<link rel="icon" type="image/png" href="/logo.png" />
+	<link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+	
+	<!-- Preconnect for performance -->
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap"
-		rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+	
+	<!-- OpenGraph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://dyrane.tech/" />
+	<meta property="og:site_name" content="by Dyrane" />
+	<meta property="og:title" content="by Dyrane | Premium Solutions" />
+	<meta property="og:description" content="Refresh with purity, sustain the future. by Dyrane offers premium solutions with cutting-edge technology and sustainable practices." />
+	<meta property="og:image" content="https://dyrane.tech/og-image.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:url" content="https://dyrane.tech/" />
+	<meta name="twitter:title" content="by Dyrane | Premium SAS Solutions" />
+	<meta name="twitter:description" content="Refresh with purity, sustain the future. by Dyrane offers premium solutions with cutting-edge technology and sustainable practices." />
+	<meta name="twitter:image" content="https://dyrane.tech/og-image.png" />
+	
+	<!-- Structured Data -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "Organization",
+		"name": "by Dyrane",
+		"url": "https://dyrane.tech",
+		"logo": "https://dyrane.tech/logo.png",
+		"description": "Premium hydration solutions with cutting-edge technology and sustainable practices.",
+		"sameAs": [
+			"https://github.com/dyrane"
+		]
+	}
+	</script>
 </head>
 
 <body>
-	<div id="root"></div>
-	<script type="module" src="/src/main.tsx"></script>
+	<div id="root"><!--ssr-outlet--><!--app-html--></div>
+	<script type="module" src="/src/entry-client.tsx"></script>
 </body>
+
 
 </html>

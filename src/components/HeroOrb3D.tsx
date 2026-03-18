@@ -114,7 +114,7 @@ const OrbGeometry = () => {
 export const HeroOrb3D = () => {
     return (
         <div
-            className="w-full h-full absolute inset-0 pointer-events-none md:pointer-events-auto"
+            className="w-full h-full absolute inset-0 pointer-events-none"
             aria-hidden="true"
         >
             <Canvas
@@ -129,14 +129,6 @@ export const HeroOrb3D = () => {
                     <OrbGeometry />
                     {/* Parallax driven by mouse — smooth lerp, no snapping */}
                     <MouseParallax />
-                    <OrbitControls
-                        enableZoom={false}
-                        enablePan={false}
-                        autoRotate
-                        autoRotateSpeed={0.4}
-                        maxPolarAngle={Math.PI}
-                        minPolarAngle={0}
-                    />
                 </Suspense>
             </Canvas>
         </div>
