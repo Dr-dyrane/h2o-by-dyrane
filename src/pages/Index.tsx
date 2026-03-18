@@ -6,6 +6,7 @@ import { ContributionGraph } from "@/components/ContributionGraph";
 import { SocialSidebar } from "@/components/social-sidebar";
 import { MatrixBackground } from "@/components/MatrixBackground";
 import { TechMarquee } from "@/components/TechMarquee";
+import { Navbar } from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
 import { Project } from "@/data/projects";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
@@ -102,7 +103,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[var(--surface)] font-sans text-[var(--text)] overflow-x-hidden selection:bg-emerald-500/30 selection:text-emerald-200 transition-colors duration-300">
-
+      <Navbar />
       {/* Interactive Matrix Background */}
       <MatrixBackground />
 
@@ -112,7 +113,7 @@ const Index = () => {
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 blur-[120px] rounded-full animate-pulse-slow delay-1000" />
       </div>
 
-      <CommandCenter />
+      <CommandCenter visible={!isOverlayOpen} />
       <SocialSidebar />
 
       <main className="relative z-10 pt-32 pb-20 md:pb-20 pb-24">
@@ -179,7 +180,7 @@ const Index = () => {
 
         {/* About Section */}
         <div ref={aboutFade.ref} className={`max-w-7xl mx-auto px-6 mb-20 ${aboutFade.className}`}>
-          <div className="relative squircle bg-[var(--surface-card)] p-8 md:p-12 overflow-hidden glass-ultra-thin">
+          <div className="relative squircle p-8 md:p-12 overflow-hidden glass-ultra-thin">
             {/* Ambient glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
 
@@ -204,13 +205,11 @@ const Index = () => {
                 <p className="text-[var(--text-muted)] leading-relaxed max-w-2xl text-lg font-light">
                   I design and engineer production-grade systems — spanning real-time logistics infrastructure, AI-powered platforms, and high-fidelity interfaces built to Apple Human Interface Guidelines. Every project is live, maintained, and serving real users. I write in TypeScript, Python, and Swift, and build in 3D.
                 </p>
-                <div className="flex flex-wrap gap-2 pt-1">
                   {["TypeScript", "React", "Next.js", "Swift", "Three.js / R3F", "Node.js", "Python", "PostgreSQL", "Supabase"].map(tech => (
-                    <span key={tech} className="squircle-chip px-3 py-1 glass-ultra-thin text-[var(--text-dim)] text-[11px] font-mono">
+                    <span key={tech} className="squircle-chip px-3 py-1 glass-ultra text-[var(--text-dim)] text-[11px] font-mono">
                       {tech}
                     </span>
                   ))}
-                </div>
               </div>
             </div>
           </div>

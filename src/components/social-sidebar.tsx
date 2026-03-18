@@ -72,7 +72,7 @@ export function SocialSidebar() {
   return (
     <>
       {/* Desktop: fixed left sidebar */}
-      <div className="hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 p-2.5 squircle-nav glass-thin shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+      <div className="hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 p-2.5 squircle-nav glass-ultra shadow-[0_8px_48px_rgba(0,0,0,0.15)]">
         {socialLinks.map((link) => (
           <IconButton key={link.name} label={link.name} href={link.url}>
             <link.icon className="h-[15px] w-[15px]" />
@@ -91,8 +91,8 @@ export function SocialSidebar() {
         </IconButton>
       </div>
 
-      {/* Mobile: bottom dock */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-3 py-3 px-6 glass-regular shadow-[0_-8px_32px_rgba(0,0,0,0.15)]">
+      {/* Mobile: bottom dock — glass-tight suppresses bottom gutter shadow */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-3 py-3 px-6 glass-ultra glass-tight shadow-[0_-8px_32px_rgba(0,0,0,0.10)]">
         {socialLinks.map((link) => (
           <a
             key={link.name}

@@ -11,9 +11,9 @@ interface ProjectOverlayProps {
 }
 
 const categoryColor: Record<string, { text: string; bg: string; }> = {
-    "Logistics Engine":    { text: "text-[var(--cat-logistics)]",   bg: "bg-[var(--cat-logistics-bg)]"    },
-    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]", bg: "bg-[var(--cat-intelligence-bg)]" },
-    "Modernized UX":       { text: "text-[var(--cat-ux)]",          bg: "bg-[var(--cat-ux-bg)]"           },
+    "Logistics Engine": { text: "text-[var(--cat-logistics)]", bg: "glass-ultra-thin" },
+    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]", bg: "glass-ultra-thin" },
+    "Modernized UX": { text: "text-[var(--cat-ux)]", bg: "glass-ultra-thin" },
 };
 
 export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps) => {
@@ -63,13 +63,13 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     onClick={onClose}
                 />
 
-                {/* Sheet — explicit dark floor + glass-thick */}
+                {/* Sheet — vibrancy-powered Liquid Glass */}
                 <motion.div
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
                     transition={{ type: "spring", damping: 28, stiffness: 220 }}
-                    className="relative w-full h-[92vh] bg-white/85 dark:bg-[#0D0D0D]/90 glass-thick squircle-panel overflow-hidden flex flex-col"
+                    className="relative w-full h-[92vh] glass-ultra-thin squircle-panel overflow-hidden flex flex-col"
                     style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}
                 >
                     {/* Drag handle */}
@@ -230,8 +230,8 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                 onClick={onClose}
             />
 
-            {/* Panel — explicit dark floor + glass-thick */}
-            <div className="relative w-full max-w-5xl bg-white/85 dark:bg-[#0D0D0D]/90 glass-thick squircle-panel overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] md:h-[700px]">
+            {/* Panel — vibrancy-powered Liquid Glass */}
+            <div className="relative w-full max-w-5xl glass-thin squircle-panel overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] md:h-[700px]">
 
                 {/* Sidebar */}
                 <div className="w-full md:w-72 p-5 md:p-6 flex flex-col glass-ultra-thin shrink-0 md:h-full overflow-y-auto">
@@ -251,11 +251,10 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                             <button
                                 key={step.id}
                                 onClick={() => setActiveStep(step.id)}
-                                className={`w-full text-left px-4 py-3 squircle-chip text-sm font-medium transition-all duration-300 relative overflow-hidden ${
-                                    activeStep === step.id
-                                        ? `text-[var(--text)] glass-ultra-thin`
-                                        : "text-[var(--text-dim)] hover:text-[var(--text-muted)]"
-                                }`}
+                                className={`w-full text-left px-4 py-3 squircle-chip text-sm font-medium transition-all duration-300 relative overflow-hidden ${activeStep === step.id
+                                    ? `text-[var(--text)] glass-ultra-thin`
+                                    : "text-[var(--text-dim)] hover:text-[var(--text-muted)]"
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <span className={`font-mono text-[10px] tabular-nums ${activeStep === step.id ? catText : "text-[var(--text-ghost)]"}`}>

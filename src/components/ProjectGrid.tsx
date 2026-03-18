@@ -8,9 +8,9 @@ interface ProjectGridProps {
 }
 
 const categoryColor: Record<Project["category"], { text: string; bg: string; glow: string }> = {
-    "Logistics Engine":    { text: "text-[var(--cat-logistics)]",    bg: "bg-[var(--cat-logistics-bg)]",    glow: "var(--cat-logistics-bg)"   },
-    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]",  bg: "bg-[var(--cat-intelligence-bg)]", glow: "var(--cat-intelligence-bg)" },
-    "Modernized UX":       { text: "text-[var(--cat-ux)]",           bg: "bg-[var(--cat-ux-bg)]",           glow: "var(--cat-ux-bg)"          },
+    "Logistics Engine":    { text: "text-[var(--cat-logistics)]",    bg: "glass-ultra-thin",    glow: "var(--cat-logistics-bg)"   },
+    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]",  bg: "glass-ultra-thin",    glow: "var(--cat-intelligence-bg)" },
+    "Modernized UX":       { text: "text-[var(--cat-ux)]",           bg: "glass-ultra-thin",    glow: "var(--cat-ux-bg)"          },
 };
 
 // ─── Intersection Observer hook for scroll reveal ─────────────────────────────
@@ -158,8 +158,8 @@ const ProjectFeature = ({
                             ${bg} ${text}
                             text-sm font-medium
                             transition-all duration-300
-                            hover:shadow-[0_0_24px_${glow}]
                             hover:scale-105
+                            hover:shadow-[0_0_32px_${glow}]
                         `}
                     >
                         <GitBranch size={13} />

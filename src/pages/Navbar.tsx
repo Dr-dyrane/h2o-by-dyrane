@@ -1,14 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
-import { Menu, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Equal, X, Mail } from "lucide-react"
 
 const navItems = [
-  { name: "Work",          href: "#logistics-engine" },
-  { name: "Architecture",  href: "#intelligence-bridge" },
-  { name: "Interface",     href: "#modernized-ux" },
-  { name: "Pulse",         href: "#engineering-dna" },
+  { name: "Work", href: "#logistics-engine" },
+  { name: "Architecture", href: "#intelligence-bridge" },
+  { name: "Interface", href: "#modernized-ux" },
+  { name: "Pulse", href: "#engineering-dna" },
 ]
 
 export function Navbar() {
@@ -19,7 +19,7 @@ export function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed w-full top-0 left-0 z-50 glass-regular"
+      className="fixed w-full top-0 left-0 z-50 glass-ultra"
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Wordmark */}
@@ -49,45 +49,47 @@ export function Navbar() {
           Hire Me
         </a>
 
-        {/* Mobile toggle */}
         <button
           onClick={() => setIsOpen(v => !v)}
-          className="md:hidden p-2.5 squircle-icon glass-ultra-thin text-[var(--text-dim)]"
+          className="md:hidden p-2.5 squircle-icon glass-ultra-thin text-[var(--text-dim)] flex items-center justify-center"
           aria-label="Toggle menu"
         >
-          {isOpen ? <X size={18} /> : <Menu size={18} />}
+          {isOpen ? <X size={20} /> : <Equal size={20} />}
         </button>
       </div>
 
       {/* Mobile drawer */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          className="md:hidden glass-thick mx-4 mb-4 squircle-panel overflow-hidden"
-        >
-          <nav className="flex flex-col p-4 gap-1">
-            {navItems.map(item => (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: [0.32, 0, 0.67, 0] }}
+            className="md:hidden glass-ultra glass-tight mx-4 mb-4 squircle-panel overflow-hidden shadow-2xl"
+          >
+            <nav className="flex flex-col p-4 gap-1">
+              {navItems.map(item => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-3 squircle-chip text-[var(--text-muted)] hover:text-[var(--text)] text-base font-medium transition-colors duration-200"
+                >
+                  {item.name}
+                </a>
+              ))}
               <a
-                key={item.name}
-                href={item.href}
+                href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
                 onClick={() => setIsOpen(false)}
-                className="px-4 py-3 squircle-chip text-[var(--text-muted)] hover:text-[var(--text)] text-base font-medium transition-colors duration-200"
+                className="mt-2 px-5 py-4 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] text-sm font-semibold text-center hover:opacity-90 active:scale-95 transition-all"
               >
-                {item.name}
+                Hire Me
               </a>
-            ))}
-            <a
-              href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
-              onClick={() => setIsOpen(false)}
-              className="mt-2 px-5 py-3 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] text-sm font-medium text-center"
-            >
-              Hire Me
-            </a>
-          </nav>
-        </motion.div>
-      )}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   )
 }

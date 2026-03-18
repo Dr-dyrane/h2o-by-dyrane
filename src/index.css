@@ -38,14 +38,16 @@
 		/* Liquid Glass material tokens — light mode
 		   Uses dark-tinted alpha fills over the grey surface
 		   (same as macOS light sidebar / Control Center)        */
-		--glass-ultra-thin-bg: rgba(255, 255, 255, 0.55);
-		--glass-ultra-thin-blur: blur(12px);
-		--glass-thin-bg: rgba(255, 255, 255, 0.70);
-		--glass-thin-blur: blur(20px);
-		--glass-regular-bg: rgba(255, 255, 255, 0.80);
-		--glass-regular-blur: blur(28px);
-		--glass-thick-bg: rgba(255, 255, 255, 0.92);
-		--glass-thick-blur: blur(48px);
+		/* Soap Bubble (Zero Paint) material tokens — light mode 
+		   Recalibrated for WCAG Contrast: higher brightness floor, moderated saturation */
+		--glass-ultra-thin-bg: rgba(255, 255, 255, 0.02);
+		--glass-ultra-thin-blur: blur(12px) saturate(140%) brightness(1.30);
+		--glass-thin-bg: rgba(255, 255, 255, 0.03);
+		--glass-thin-blur: blur(20px) saturate(145%) brightness(1.35);
+		--glass-regular-bg: rgba(255, 255, 255, 0.04);
+		--glass-regular-blur: blur(28px) saturate(150%) brightness(1.38);
+		--glass-thick-bg: rgba(255, 255, 255, 0.05);
+		--glass-thick-blur: blur(48px) saturate(160%) brightness(1.40);
 		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.50) 40%, transparent 70%);
 
 		--cta-bg: #1D1D1F;
@@ -108,10 +110,15 @@
 		--border-subtle: rgba(255, 255, 255, 0.05);
 
 		/* Liquid Glass material tokens — dark */
-		--glass-ultra-thin-bg: rgba(255, 255, 255, 0.04);
-		--glass-thin-bg: rgba(255, 255, 255, 0.07);
-		--glass-regular-bg: rgba(255, 255, 255, 0.10);
-		--glass-thick-bg: rgba(255, 255, 255, 0.15);
+		/* Soap Bubble (Zero Paint) material tokens — dark mode */
+		--glass-ultra-thin-bg: transparent;
+		--glass-ultra-thin-blur: blur(12px) saturate(200%) brightness(0.85);
+		--glass-thin-bg: transparent;
+		--glass-thin-blur: blur(20px) saturate(210%) brightness(0.75);
+		--glass-regular-bg: transparent;
+		--glass-regular-blur: blur(28px) saturate(220%) brightness(0.65);
+		--glass-thick-bg: transparent;
+		--glass-thick-blur: blur(48px) saturate(230%) brightness(0.55);
 		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.65) 45%, transparent 72%);
 		--glow-color: rgba(16, 185, 129, 0.3);
 
@@ -243,60 +250,83 @@
 	   Never to content layers. Never stacked on top of each other.
 	─────────────────────────────────────────────────────────────────────────── */
 
+	/* Ultra — zero alpha, purely optical vibrancy */
+	.glass-ultra {
+		--glass-outer-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		background: transparent;
+		backdrop-filter: var(--glass-ultra-thin-blur);
+		-webkit-backdrop-filter: var(--glass-ultra-thin-blur);
+	}
+
 	/* Ultra-thin — for small chips, tags, pills on a surface */
 	.glass-ultra-thin {
+		--glass-outer-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 		background: var(--glass-ultra-thin-bg);
 		backdrop-filter: var(--glass-ultra-thin-blur);
 		-webkit-backdrop-filter: var(--glass-ultra-thin-blur);
-		/* Specular: barely-there top edge highlight */
-		box-shadow:
-			inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
-			inset 0 -1px 0 0 rgba(0, 0, 0, 0.04);
 	}
 
 	/* Thin — sidebar icons, floating icon groups */
 	.glass-thin {
+		--glass-outer-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 		background: var(--glass-thin-bg);
 		backdrop-filter: var(--glass-thin-blur);
 		-webkit-backdrop-filter: var(--glass-thin-blur);
-		/* Specular: visible top edge + subtle bottom depth */
-		box-shadow:
-			inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
-			inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
-			0 4px 16px rgba(0, 0, 0, 0.08);
 	}
 
 	/* Regular — CommandCenter nav bar, floating panels */
 	.glass-regular {
+		--glass-outer-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.10);
 		background: var(--glass-regular-bg);
 		backdrop-filter: var(--glass-regular-blur);
 		-webkit-backdrop-filter: var(--glass-regular-blur);
-		/* Specular: bright top-edge, subtle drop shadow */
-		box-shadow:
-			inset 0 1px 0 0 rgba(255, 255, 255, 0.40),
-			inset 0 -1px 0 0 rgba(0, 0, 0, 0.08),
-			0 8px 32px rgba(0, 0, 0, 0.14),
-			0 2px 8px rgba(0, 0, 0, 0.08);
 	}
 
 	/* Thick — modal sheets, ProjectOverlay, deep panels */
 	.glass-thick {
+		--glass-outer-shadow: 0 32px 80px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.12);
 		background: var(--glass-thick-bg);
 		backdrop-filter: var(--glass-thick-blur);
 		-webkit-backdrop-filter: var(--glass-thick-blur);
-		/* Specular: strong top-edge highlight, substantial shadow */
-		box-shadow:
-			inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
-			inset 0 -1px 0 0 rgba(0, 0, 0, 0.10),
-			0 24px 64px rgba(0, 0, 0, 0.24),
-			0 4px 16px rgba(0, 0, 0, 0.12);
 	}
 
-	/* Dark mode specular adjustment — invert highlight intensity */
-	.dark .glass-ultra-thin { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.08), inset 0 -1px 0 0 rgba(0,0,0,0.20); }
-	.dark .glass-thin        { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.12), inset 0 -1px 0 0 rgba(0,0,0,0.30), 0 4px 16px rgba(0,0,0,0.30); }
-	.dark .glass-regular     { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.16), inset 0 -1px 0 0 rgba(0,0,0,0.40), 0 8px 32px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20); }
-	.dark .glass-thick       { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.20), inset 0 -1px 0 0 rgba(0,0,0,0.50), 0 24px 64px rgba(0,0,0,0.60), 0 4px 16px rgba(0,0,0,0.30); }
+	/* ─── Soap Bubble Iridescence — Edge & Membrane Speculars ─── */
+	.glass-ultra-thin, .glass-thin, .glass-regular, .glass-thick {
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* The chromatic "rim" split — simulates thin-film interference */
+	.glass-ultra, .glass-ultra-thin, .glass-thin, .glass-regular, .glass-thick {
+		box-shadow: 
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.15), /* top edge */
+			inset 1px 0 0 0 rgba(16, 185, 129, 0.08),  /* emerald tint left */
+			inset -1px 0 0 0 rgba(99, 102, 241, 0.08),  /* indigo tint right */
+			var(--glass-outer-shadow);
+	}
+
+	.dark .glass-ultra, .dark .glass-ultra-thin, .dark .glass-thin, .dark .glass-regular, .dark .glass-thick {
+		box-shadow: 
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+			inset 1px 0 0 0 rgba(16, 185, 129, 0.12),
+			inset -1px 0 0 0 rgba(167, 139, 250, 0.12), /* violet right */
+			var(--glass-outer-shadow);
+	}
+
+	/* Tight utility — suppresses outer shadow in space-constrained areas */
+	.glass-tight {
+		--glass-outer-shadow: 0 0 transparent !important;
+	}
+
+	/* The shimmering membrane — radial gloss overlay */
+	.glass-ultra::after, .glass-ultra-thin::after, .glass-thin::after, .glass-regular::after, .glass-thick::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+		pointer-events: none;
+		z-index: 1;
+	}
 }
 
 /* ─── Marquee animations — TechMarquee component ─────────────────────────── */
