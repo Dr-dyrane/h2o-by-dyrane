@@ -47,7 +47,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
       href={`https://${project.link}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="animate-on-scroll glass group cursor-pointer rounded-xl p-6 transition-all duration-300 hover:bg-black hover:text-white border-black/10"
+      className="animate-on-scroll glass-regular group cursor-pointer rounded-xl p-6 transition-all duration-300 hover:scale-105"
       style={{ animationDelay: `${index * 100}ms` }}
     >
       <div className="mb-4 overflow-hidden rounded-lg h-40">

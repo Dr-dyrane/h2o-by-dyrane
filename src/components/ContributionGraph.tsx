@@ -145,7 +145,7 @@ export const ContributionGraph = () => {
                                             className={`w-3 h-3 squircle-chip transition-all duration-300 hover:scale-125 hover:z-10 cursor-crosshair ${LEVEL_CLASSES[day.level]}`}
                                         />
                                     </TooltipTrigger>
-                                    <TooltipContent className="squircle-chip glass-ultra-thin border-white/5 text-[var(--text)] text-xs text-center p-2 shadow-2xl">
+                                    <TooltipContent className="squircle-chip glass-ultra-thin text-[var(--text)] text-xs text-center p-2 shadow-2xl">
                                         {day.date && (
                                             <p className="text-[var(--text-dim)] text-[10px] mb-0.5">{day.date}</p>
                                         )}
