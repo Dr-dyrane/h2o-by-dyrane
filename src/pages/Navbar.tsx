@@ -64,6 +64,9 @@ export function Navbar() {
 
   return (
     <nav className="fixed inset-x-0 top-0 z-[60]">
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <div className="safe-top px-3 md:px-6 relative z-20">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 squircle-nav glass-ultra px-4 shadow-[0_16px_48px_rgba(0,0,0,0.08)] md:h-16 md:px-6">
         <a href="#" className="min-w-0 text-[15px] font-semibold tracking-tight text-[var(--text)] md:text-base">

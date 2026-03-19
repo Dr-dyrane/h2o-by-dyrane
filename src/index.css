@@ -34,6 +34,53 @@
 	font-display: swap;
 }
 
+/* Accessibility & Utility — Thesis Grade rigor */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+.skip-link {
+	position: absolute;
+	top: -3rem;
+	left: 1rem;
+	z-index: 100;
+	padding: 0.5rem 1rem;
+	background: var(--cta-bg);
+	color: var(--cta-text);
+	border-radius: var(--radius-chip);
+	transition: top 300ms ease;
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.skip-link:focus {
+	top: 1rem;
+}
+
+/* Premium Focus — defined by Rule 20 (Glass, not gloss) */
+:focus-visible {
+	outline: 2px solid var(--cat-ux);
+	outline-offset: 4px;
+}
+
+/* Specialized focus for squircle shapes to prevent outline mismatch */
+.squircle-icon:focus-visible,
+.squircle-chip:focus-visible,
+.squircle-pill:focus-visible,
+.squircle-nav:focus-visible,
+.squircle-panel:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--cat-ux);
+}
+
 @layer base {
 	/* Design language: Quiet Performance */
 	:root {
