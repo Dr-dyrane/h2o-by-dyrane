@@ -32,7 +32,7 @@ const Footer = () => {
 
         <h2 className="text-4xl md:text-6xl font-light text-[var(--text)] tracking-tighter mb-4">
           Let's Build{" "}
-          <span className="text-[var(--text-ghost)]">Something Intelligent.</span>
+          <span className="text-[var(--text-dim)]">Something Intelligent.</span>
         </h2>
         <p className="text-[var(--text-muted)] max-w-lg mx-auto mb-10 leading-relaxed font-light">
           Whether it's a new product, a systems overhaul, or a conversation
@@ -52,7 +52,7 @@ const Footer = () => {
       {/* Bottom bar — depth separated, no border */}
       <div className="glass-ultra-thin">
         <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-[var(--text-ghost)] text-[13px] font-mono">
+          <p className="text-[var(--text-dim)] text-[13px] font-mono">
             © {new Date().getFullYear()} Dyrane Intelligence Collective.{" "}
             <span className="text-emerald-500/60">All Systems Nominal.</span>
           </p>

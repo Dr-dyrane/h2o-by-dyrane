@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ContributionDay {
@@ -107,7 +107,8 @@ export const ContributionGraph = () => {
     ];
 
     return (
-        <div className="w-full max-w-7xl mx-auto px-6 py-20">
+        <TooltipProvider delayDuration={0}>
+            <div className="w-full max-w-7xl mx-auto px-6 py-20">
 
             {/* Header */}
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 gap-4">
@@ -176,6 +177,7 @@ export const ContributionGraph = () => {
                     </div>
                 ))}
             </div>
-        </div>
+            </div>
+        </TooltipProvider>
     );
 };

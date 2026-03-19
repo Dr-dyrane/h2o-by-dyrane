@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Github, Mail, MessageCircle, Sun, Moon } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
 
@@ -66,6 +67,16 @@ const IconButton = ({
   )
 }
 
+// Separate icon component that only renders after mount to avoid SSR theme mismatch
+const ThemeIcon = ({ theme, size = "h-[15px] w-[15px]" }: { theme: string; size?: string }) => {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+  if (!mounted) return <span className={size} />  // same dimensions, no icon yet
+  return theme === "dark"
+    ? <Sun className={size} />
+    : <Moon className={size} />
+}
+
 export function SocialSidebar() {
   const { theme, toggleTheme } = useTheme()
 
@@ -79,19 +90,16 @@ export function SocialSidebar() {
           </IconButton>
         ))}
 
-        {/* Separator — depth line, not a border */}
+        {/* Separator */}
         <div className="h-px w-5 mx-auto bg-[var(--text-ghost)]/30 my-1" />
 
         {/* Theme Toggle */}
         <IconButton label={theme === "dark" ? "Light Mode" : "Dark Mode"} onClick={toggleTheme}>
-          {theme === "dark"
-            ? <Sun className="h-[15px] w-[15px]" />
-            : <Moon className="h-[15px] w-[15px]" />
-          }
+          <ThemeIcon theme={theme} />
         </IconButton>
       </div>
 
-      {/* Mobile: bottom dock — glass-tight suppresses bottom gutter shadow */}
+      {/* Mobile: bottom dock */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-3 py-3 px-6 glass-ultra glass-tight shadow-[0_-8px_32px_rgba(0,0,0,0.10)]">
         {socialLinks.map((link) => (
           <a
@@ -113,7 +121,7 @@ export function SocialSidebar() {
           className="flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-all duration-200 active:scale-95 hover:text-emerald-400"
           aria-label="Toggle theme"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <ThemeIcon theme={theme} size="h-4 w-4" />
         </button>
       </div>
     </>

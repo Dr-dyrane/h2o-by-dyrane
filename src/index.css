@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	font-family: "SF Pro Display";
+	src: url("/fonts/SF-Pro-Display-Regular.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "SF Pro Display";
+	src: url("/fonts/SF-Pro-Display-Medium.woff2") format("woff2");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "SF Pro Display";
+	src: url("/fonts/SF-Pro-Display-Semibold.woff2") format("woff2");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "SF Pro Display";
+	src: url("/fonts/SF-Pro-Display-Bold.woff2") format("woff2");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
 @layer base {
 	:root {
 		/* Semantic theme tokens — light mode */
@@ -178,10 +210,30 @@
 		box-sizing: border-box;
 	}
 
+	/* Eliminate layout shifts from scroll */
+	html {
+		scroll-behavior: smooth;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	/* Global reduced-motion kill switch */
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+			scroll-behavior: auto !important;
+		}
+	}
+
 	body {
 		/* SF Pro system font stack — resolves to SF Pro on all Apple devices */
-		font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-			"Helvetica Neue", Inter, sans-serif;
+		font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+			"Helvetica Neue", sans-serif;
 		@apply bg-[var(--surface)] text-[var(--text)] transition-colors duration-300;
 	}
 
@@ -207,6 +259,63 @@
 }
 
 @layer utilities {
+	/* ─── GPU Compositing & CSS Containment ───────────────────────────────────── */
+
+	/* Force GPU layer — use on elements that animate transform/opacity */
+	.will-gpu {
+		will-change: transform;
+		transform: translateZ(0);
+		backface-visibility: hidden;
+	}
+
+	/* Containment — isolate layout/paint cost of independent regions */
+	.contain-strict  { contain: strict; }
+	.contain-content { contain: content; }
+	.contain-layout  { contain: layout style; }
+
+	/* ─── Perf Tier CSS Overrides — applied via html.perf-* class by UIProvider ── */
+
+	/* Medium tier (mobile) — reduce blur cost */
+	html.perf-medium .glass-thick {
+		backdrop-filter: blur(20px) saturate(160%) brightness(1.2);
+		-webkit-backdrop-filter: blur(20px) saturate(160%) brightness(1.2);
+	}
+	html.perf-medium .glass-regular {
+		backdrop-filter: blur(14px) saturate(140%);
+		-webkit-backdrop-filter: blur(14px) saturate(140%);
+	}
+	html.perf-medium .glass-thin {
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+	}
+	html.perf-medium .glass-ultra-thin {
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+	}
+
+	/* Low tier (reduced-motion / no WebGL / very low dpr) — kill expensive filters */
+	html.perf-low .glass-thick,
+	html.perf-low .glass-regular,
+	html.perf-low .glass-thin {
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+	}
+	html.perf-low .glass-ultra-thin {
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+
+	/* Disable all backdrop filters for prefers-reduced-motion */
+	@media (prefers-reduced-motion: reduce) {
+		.glass-ultra, .glass-ultra-thin, .glass-thin, .glass-regular, .glass-thick {
+			backdrop-filter: none !important;
+			-webkit-backdrop-filter: none !important;
+		}
+		.animate-marquee, .animate-marquee-reverse {
+			animation-play-state: paused !important;
+		}
+	}
+
 	.bg-grid-pattern {
 		background-size: 40px 40px;
 		background-image: linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
@@ -386,10 +495,16 @@
 
 .animate-marquee {
 	animation: marquee 35s linear infinite;
+	will-change: transform;
+	transform: translateZ(0);
+	backface-visibility: hidden;
 }
 
 .animate-marquee-reverse {
 	animation: marquee-reverse 35s linear infinite;
+	will-change: transform;
+	transform: translateZ(0);
+	backface-visibility: hidden;
 }
 
 .animate-marquee:hover,

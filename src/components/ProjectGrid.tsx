@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Project, projects } from "@/data/projects";
-import { ArrowUpRight, Globe, Loader2, GitBranch } from "lucide-react";
+import { ArrowUpRight, Globe, GitBranch } from "lucide-react";
 
 interface ProjectGridProps {
     onProjectSelect: (project: Project) => void;
@@ -30,46 +29,63 @@ const useReveal = () => {
 
 // ─── Live screenshot panel ─────────────────────────────────────────────────────
 const ProjectScreen = ({ project }: { project: Project }) => {
-    const [loaded, setLoaded] = useState(false);
-    const [error, setError] = useState(false);
-    const url = `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`;
-    const { text, glow } = categoryColor[project.category];
+    const { text, glow, bg } = categoryColor[project.category];
 
     return (
-        <div className="relative w-full aspect-[16/10] squircle overflow-hidden"
+        <div
+            className="relative w-full aspect-[16/10] squircle overflow-hidden p-6 md:p-8 glass-ultra-thin"
             style={{ boxShadow: `0 32px 80px -8px ${glow}, 0 8px 32px rgba(0,0,0,0.4)` }}>
-            {/* Loading state */}
-            {!loaded && !error && (
-                <div className="absolute inset-0 glass-ultra-thin flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-3">
-                        <Loader2 className={`w-6 h-6 animate-spin ${text}`} />
-                        <span className="text-[var(--text-dim)] text-[11px] font-mono uppercase tracking-widest">
-                            Loading Preview
-                        </span>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(52,211,153,0.12),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.12),transparent_42%)]" />
+            <div className="absolute inset-0 opacity-40 bg-grid-pattern" />
+            <div className="relative z-10 flex h-full flex-col">
+                <div className="flex items-start justify-between gap-4">
+                    <span className={`squircle-chip px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.15em] font-medium ${text} ${bg}`}>
+                        {project.category}
+                    </span>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-[var(--text-dim)]">
+                        <Globe size={12} />
+                        {project.link}
                     </div>
                 </div>
-            )}
 
-            {/* Fallback */}
-            {error && (
-                <div className="absolute inset-0 glass-ultra-thin flex items-center justify-center">
-                    <div className="text-center">
-                        <Globe className={`w-8 h-8 mx-auto mb-2 ${text} opacity-50`} />
-                        <span className="text-[var(--text-dim)] text-[11px] font-mono">{project.link}</span>
+                <div className="mt-8 max-w-[22rem]">
+                    <div className="mb-3 text-[10px] font-mono uppercase tracking-[0.22em] text-[var(--text-dim)]">
+                        Product Surface
+                    </div>
+                    <p className="text-3xl font-semibold tracking-tight text-[var(--text)]">
+                        {project.title}
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">
+                        {project.architecture}
+                    </p>
+                </div>
+
+                <div className="mt-auto grid grid-cols-2 gap-3">
+                    <div className="squircle-nav p-4 glass-ultra-thin">
+                        <div className={`mb-1 text-2xl font-light tracking-tight ${text}`}>
+                            {project.github_stats.commits.toLocaleString()}
+                        </div>
+                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--text-dim)]">
+                            Commit Depth
+                        </div>
+                    </div>
+                    <div className="squircle-nav p-4 glass-ultra-thin">
+                        <div className="mb-2 flex flex-wrap gap-1">
+                            {project.github_stats.languages.slice(0, 3).map((lang) => (
+                                <span
+                                    key={lang}
+                                    className="squircle-chip px-2 py-1 text-[9px] font-mono uppercase tracking-[0.14em] text-[var(--text-dim)] bg-white/5"
+                                >
+                                    {lang}
+                                </span>
+                            ))}
+                        </div>
+                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--text-dim)]">
+                            Core Stack
+                        </div>
                     </div>
                 </div>
-            )}
-
-            {!error && (
-                <img
-                    src={url}
-                    alt={`${project.title} live preview`}
-                    className={`w-full h-full object-cover object-top transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}
-                    loading="lazy"
-                    onLoad={() => setLoaded(true)}
-                    onError={() => setError(true)}
-                />
-            )}
+            </div>
         </div>
     );
 };
@@ -111,7 +127,7 @@ const ProjectFeature = ({
                     <span className={`squircle-chip px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.15em] font-medium ${text} ${bg}`}>
                         {project.category}
                     </span>
-                    <span className="text-[var(--text-ghost)] text-[11px] font-mono tabular-nums">
+                    <span className="text-[var(--text-dim)] text-[11px] font-mono tabular-nums">
                         {String(index + 1).padStart(2, "0")}
                     </span>
                 </div>
@@ -143,7 +159,7 @@ const ProjectFeature = ({
                             {lang}
                         </span>
                     ))}
-                    <span className="text-[var(--text-ghost)] text-[11px] font-mono ml-1">
+                    <span className="text-[var(--text-dim)] text-[11px] font-mono ml-1">
                         {project.github_stats.commits.toLocaleString()} commits
                     </span>
                 </div>
@@ -215,7 +231,7 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
                             </p>
                             <h2 className="text-5xl md:text-6xl font-light text-[var(--text)] tracking-tighter mb-4">
                                 {category.label.split(" ")[0]}{" "}
-                                <span className="text-[var(--text-ghost)]">
+                                <span className="text-[var(--text-dim)]">
                                     {category.label.split(" ").slice(1).join(" ")}
                                 </span>
                             </h2>

@@ -70,7 +70,6 @@ async function createServer() {
 
       const html = template
         .replace(`<!--ssr-outlet-->`, appHtml)
-        .replace(`<!--app-html-->`, appHtml)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {

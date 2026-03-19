@@ -1,34 +1,26 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ThemeProvider } from '@/components/ThemeProvider'
-import { TooltipProvider } from '@/components/ui/tooltip'
-import { Toaster } from '@/components/ui/toaster'
-import { Toaster as Sonner } from '@/components/ui/sonner'
-import { Analytics } from '@vercel/analytics/react'
-import { NoSSR } from '@/components/NoSSR'
-import App from './App'
+import { AppContent } from './App'
 
 import './index.css'
 
-const queryClient = new QueryClient()
+const rootElement = document.getElementById('root')
 
-ReactDOM.hydrateRoot(
-  document.getElementById('root')!,
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <TooltipProvider>
-        <NoSSR>
-          <Toaster />
-          <Sonner />
-          <Analytics />
-        </NoSSR>
-        <BrowserRouter>
+if (!rootElement) {
+  throw new Error('Root element #root was not found')
+}
 
-          <App />
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+const app = (
+  <BrowserRouter>
+    <AppContent />
+  </BrowserRouter>
 )
+
+// `vite` dev serves a plain index.html with an empty root, while SSR paths inject
+// rendered markup into #root. Hydrate only when real SSR element content exists.
+if (rootElement.firstElementChild) {
+  ReactDOM.hydrateRoot(rootElement, app)
+} else {
+  ReactDOM.createRoot(rootElement).render(app)
+}

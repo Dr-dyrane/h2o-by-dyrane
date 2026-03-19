@@ -78,7 +78,7 @@ export const TechMarquee = () => {
             <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--text-ghost)]/15 to-transparent mb-10" />
 
             <div className="max-w-7xl mx-auto px-6 mb-6">
-                <p className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-[0.2em]">
+                <p className="text-[var(--text-dim)] text-[10px] font-mono uppercase tracking-[0.2em]">
                     Built with
                 </p>
             </div>
