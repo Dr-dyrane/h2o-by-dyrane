@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Project, projects } from "@/data/projects";
-import { ArrowUpRight, Globe, GitBranch } from "lucide-react";
+import { ArrowUpRight, Globe, GitBranch } from "@/components/icons/lucide";
 
 interface ProjectGridProps {
     onProjectSelect: (project: Project) => void;
 }
 
 const categoryColor: Record<Project["category"], { text: string; bg: string; glow: string }> = {
-    "Logistics Engine":    { text: "text-[var(--cat-logistics)]",    bg: "glass-ultra-thin",    glow: "var(--cat-logistics-bg)"   },
-    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]",  bg: "glass-ultra-thin",    glow: "var(--cat-intelligence-bg)" },
-    "Modernized UX":       { text: "text-[var(--cat-ux)]",           bg: "glass-ultra-thin",    glow: "var(--cat-ux-bg)"          },
+    "Logistics Engine":    { text: "text-[var(--cat-logistics)]",    bg: "surface-chip",    glow: "var(--cat-logistics-bg)"   },
+    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]",  bg: "surface-chip",    glow: "var(--cat-intelligence-bg)" },
+    "Modernized UX":       { text: "text-[var(--cat-ux)]",           bg: "surface-chip",    glow: "var(--cat-ux-bg)"          },
 };
 
 // ─── Intersection Observer hook for scroll reveal ─────────────────────────────
@@ -33,8 +33,8 @@ const ProjectScreen = ({ project }: { project: Project }) => {
 
     return (
         <div
-            className="relative w-full aspect-[16/10] squircle overflow-hidden p-6 md:p-8 glass-ultra-thin"
-            style={{ boxShadow: `0 32px 80px -8px ${glow}, 0 8px 32px rgba(0,0,0,0.4)` }}>
+            className="relative w-full aspect-[16/10] squircle overflow-hidden p-6 md:p-8 surface-panel"
+            style={{ boxShadow: `0 24px 64px -28px ${glow}, var(--surface-shadow)` }}>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(52,211,153,0.12),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.12),transparent_42%)]" />
             <div className="absolute inset-0 opacity-40 bg-grid-pattern" />
             <div className="relative z-10 flex h-full flex-col">
@@ -42,7 +42,7 @@ const ProjectScreen = ({ project }: { project: Project }) => {
                     <span className={`squircle-chip px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.15em] font-medium ${text} ${bg}`}>
                         {project.category}
                     </span>
-                    <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-[var(--text-dim)]">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 squircle-chip surface-chip text-[11px] font-mono text-[var(--text-dim)]">
                         <Globe size={12} />
                         {project.link}
                     </div>
@@ -61,7 +61,7 @@ const ProjectScreen = ({ project }: { project: Project }) => {
                 </div>
 
                 <div className="mt-auto grid grid-cols-2 gap-3">
-                    <div className="squircle-nav p-4 glass-ultra-thin">
+                    <div className="squircle-nav p-4 surface-card">
                         <div className={`mb-1 text-2xl font-light tracking-tight ${text}`}>
                             {project.github_stats.commits.toLocaleString()}
                         </div>
@@ -69,12 +69,12 @@ const ProjectScreen = ({ project }: { project: Project }) => {
                             Commit Depth
                         </div>
                     </div>
-                    <div className="squircle-nav p-4 glass-ultra-thin">
+                    <div className="squircle-nav p-4 surface-card">
                         <div className="mb-2 flex flex-wrap gap-1">
                             {project.github_stats.languages.slice(0, 3).map((lang) => (
                                 <span
                                     key={lang}
-                                    className="squircle-chip px-2 py-1 text-[9px] font-mono uppercase tracking-[0.14em] text-[var(--text-dim)] bg-white/5"
+                                    className="squircle-chip surface-chip px-2 py-1 text-[9px] font-mono uppercase tracking-[0.14em] text-[var(--text-dim)]"
                                 >
                                     {lang}
                                 </span>
@@ -109,9 +109,9 @@ const ProjectFeature = ({
             ref={ref}
             className={`
                 flex flex-col lg:flex-row items-center gap-12 xl:gap-20
-                transition-all duration-700
+                transition-all duration-700 ease-out
                 ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"}
-                ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}
+                ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
             `}
         >
             {/* Screenshot — 58% width */}
@@ -143,7 +143,7 @@ const ProjectFeature = ({
                 </p>
 
                 {/* The challenge — the story */}
-                <div className="squircle-nav p-4 glass-ultra-thin" style={{ boxShadow: `inset 0 0 40px ${glow}` }}>
+                <div className="squircle-nav p-4 surface-card" style={{ boxShadow: `inset 0 0 0 1px ${glow}, var(--surface-shadow-tight)` }}>
                     <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-2 ${text}`}>
                         The Challenge
                     </p>
@@ -155,7 +155,7 @@ const ProjectFeature = ({
                 {/* Languages */}
                 <div className="flex items-center gap-2 flex-wrap">
                     {project.github_stats.languages.map((lang) => (
-                        <span key={lang} className="squircle-chip px-2.5 py-1 glass-ultra-thin text-[var(--text-dim)] text-[11px] font-mono">
+                        <span key={lang} className="squircle-chip surface-chip px-2.5 py-1 text-[var(--text-dim)] text-[11px] font-mono">
                             {lang}
                         </span>
                     ))}
@@ -174,9 +174,9 @@ const ProjectFeature = ({
                             ${bg} ${text}
                             text-sm font-medium
                             transition-all duration-300
-                            hover:scale-105
+                            hover:-translate-y-px
                         `}
-                        style={{ '--hover-shadow': `0 0 32px ${glow}` } as React.CSSProperties}
+                        style={{ '--hover-shadow': `0 10px 24px ${glow}` } as React.CSSProperties}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.boxShadow = e.currentTarget.style.getPropertyValue('--hover-shadow') || '';
                         }}
@@ -186,7 +186,7 @@ const ProjectFeature = ({
                     >
                         <GitBranch size={13} />
                         Full Case Study
-                        <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        <ArrowUpRight size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
                     </button>
 
                     <a
@@ -213,7 +213,7 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
     ] as const;
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-24 space-y-40">
+        <div className="max-w-7xl mx-auto px-4 py-20 md:px-6 md:py-24 space-y-32 md:space-y-40">
             {categories.map((category) => {
                 const cat = projects.filter((p) => p.category === category.id);
                 if (cat.length === 0) return null;
@@ -225,8 +225,8 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
                         className="scroll-mt-28"
                     >
                         {/* Category header */}
-                        <div className="mb-20 max-w-2xl">
-                            <p className="text-[var(--text-dim)] text-[11px] font-mono uppercase tracking-[0.2em] mb-3">
+                        <div className="mb-16 max-w-2xl md:mb-20">
+                            <p className="text-[var(--text-muted)] text-[11px] font-mono uppercase tracking-[0.2em] mb-3">
                                 {category.id}
                             </p>
                             <h2 className="text-5xl md:text-6xl font-light text-[var(--text)] tracking-tighter mb-4">
@@ -235,7 +235,7 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
                                     {category.label.split(" ").slice(1).join(" ")}
                                 </span>
                             </h2>
-                            <p className="text-[var(--text-dim)] text-base font-light">
+                            <p className="text-[var(--text-muted)] text-base font-light">
                                 {category.sub}
                             </p>
                         </div>

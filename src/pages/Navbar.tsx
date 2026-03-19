@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { Equal, X } from "lucide-react"
+import { ArrowUpRight, Equal, Github, Moon, Sun, X } from "@/components/icons/lucide"
+import { useTheme } from "@/components/ThemeProvider"
 
 const navItems = [
   { name: "Work", href: "#logistics-engine" },
@@ -11,93 +11,189 @@ const navItems = [
   { name: "Pulse", href: "#engineering-dna" },
 ]
 
-export function Navbar() {
-  const [isOpen, setIsOpen] = React.useState(false)
-  // mounted flag ensures the animation only fires on the client, never during SSR
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+)
+
+const ThemeGlyph = ({ theme }: { theme: "light" | "dark" }) => {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
     setMounted(true)
   }, [])
 
+  if (!mounted) {
+    return <span className="block h-[15px] w-[15px]" />
+  }
+
+  return theme === "dark" ? <Sun size={15} /> : <Moon size={15} />
+}
+
+const utilityButtonClass =
+  "flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)]"
+
+export function Navbar() {
+  const [isOpen, setIsOpen] = React.useState(false)
+  const { theme, toggleTheme } = useTheme()
+
+  React.useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [isOpen])
+
+  React.useEffect(() => {
+    if (!isOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isOpen])
+
   return (
-    // Plain <nav> at root — framer-motion root elements differ between SSR and client
-    <nav className="fixed w-full top-0 left-0 z-50 glass-ultra">
-      <motion.div
-        initial={mounted ? { opacity: 0, y: -20 } : false}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Wordmark */}
-          <a href="#" className="text-[var(--text)] font-semibold tracking-tight text-base">
-            Dr. Dyrane
-            <span className="text-[var(--text-ghost)] font-light ml-1.5">Intelligence Collective</span>
-          </a>
+    <nav className="fixed inset-x-0 top-0 z-[60]">
+      <div className="safe-top px-3 md:px-6 relative z-20">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 squircle-nav glass-ultra px-4 shadow-[0_16px_48px_rgba(0,0,0,0.08)] md:h-16 md:px-6">
+        <a href="#" className="min-w-0 text-[15px] font-semibold tracking-tight text-[var(--text)] md:text-base">
+          Dr. Dyrane
+          <span className="ml-1.5 hidden font-light text-[var(--text-muted)] md:inline">
+            Intelligence Collective
+          </span>
+        </a>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navItems.map(item => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="px-4 py-2 squircle-chip text-[var(--text-dim)] hover:text-[var(--text)] text-sm font-medium transition-colors duration-200"
-              >
-                {item.name}
-              </a>
-            ))}
-          </nav>
-
-          {/* CTA */}
-          <a
-            href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
-            className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] text-sm font-medium hover:scale-105 hover:opacity-90 transition-all duration-300"
-          >
-            Hire Me
-          </a>
-
-          <button
-            onClick={() => setIsOpen(v => !v)}
-            className="md:hidden p-2.5 squircle-icon glass-ultra-thin text-[var(--text-dim)] flex items-center justify-center"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={20} /> : <Equal size={20} />}
-          </button>
+        <div className="hidden items-center gap-1 md:flex">
+          {navItems.map((item) => (
+            <a
+              key={item.name}
+              href={item.href}
+              className="px-4 py-2 squircle-chip text-sm font-medium text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)]"
+            >
+              {item.name}
+            </a>
+          ))}
         </div>
 
-        {/* Mobile drawer */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, ease: [0.32, 0, 0.67, 0] }}
-              className="md:hidden glass-ultra glass-tight mx-4 mb-4 squircle-panel overflow-hidden shadow-2xl"
-            >
-              <nav className="flex flex-col p-4 gap-1">
-                {navItems.map(item => (
+        <div className="hidden items-center gap-2 md:flex">
+          <a
+            href="https://x.com/dr_dyrane"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={utilityButtonClass}
+            aria-label="X"
+          >
+            <XIcon className="h-[15px] w-[15px]" />
+          </a>
+          <a
+            href="https://github.com/Dr-dyrane"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={utilityButtonClass}
+            aria-label="GitHub"
+          >
+            <Github size={15} />
+          </a>
+          <button onClick={toggleTheme} className={utilityButtonClass} aria-label="Toggle theme">
+            <ThemeGlyph theme={theme} />
+          </button>
+          <a
+            href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
+            className="ml-1 inline-flex items-center gap-2 px-5 py-2.5 squircle-pill bg-[var(--cta-bg)] text-sm font-medium text-[var(--cta-text)] transition-colors duration-200 hover:bg-[var(--cta-hover)]"
+          >
+            Start Project
+            <ArrowUpRight size={16} />
+          </a>
+        </div>
+
+        <button
+          onClick={() => setIsOpen((value) => !value)}
+          className="flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)] md:hidden"
+          aria-expanded={isOpen}
+          aria-controls="mobile-nav-sheet"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+        >
+          {isOpen ? <X size={20} /> : <Equal size={20} />}
+        </button>
+        </div>
+      </div>
+
+      {isOpen ? (
+        <div className="fixed inset-0 z-10 md:hidden" aria-hidden="true">
+          <button
+            className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu overlay"
+          />
+          <div
+            id="mobile-nav-sheet"
+            className="absolute inset-x-0 bottom-0 top-0 flex flex-col safe-top safe-x safe-bottom"
+          >
+            <div className="mt-16 flex-1 overflow-hidden squircle-panel glass-regular shadow-[0_28px_80px_rgba(0,0,0,0.18)]">
+              <div className="flex h-full flex-col px-4 pb-4 pt-4">
+                <div className="mb-4 space-y-1">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-between px-4 py-4 squircle-chip text-base font-medium text-[var(--text)] transition-colors duration-200 active:bg-white/5"
+                    >
+                      <span>{item.name}</span>
+                      <ArrowUpRight size={16} className="text-[var(--text-ghost)]" />
+                    </a>
+                  ))}
+                </div>
+
+                <div className="mt-auto space-y-4">
+                  <div className="flex items-center gap-2">
+                    <a
+                      href="https://x.com/dr_dyrane"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={utilityButtonClass}
+                      aria-label="X"
+                    >
+                      <XIcon className="h-[15px] w-[15px]" />
+                    </a>
+                    <a
+                      href="https://github.com/Dr-dyrane"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={utilityButtonClass}
+                      aria-label="GitHub"
+                    >
+                      <Github size={15} />
+                    </a>
+                    <button onClick={toggleTheme} className={utilityButtonClass} aria-label="Toggle theme">
+                      <ThemeGlyph theme={theme} />
+                    </button>
+                  </div>
+
                   <a
-                    key={item.name}
-                    href={item.href}
+                    href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
                     onClick={() => setIsOpen(false)}
-                    className="px-4 py-3 squircle-chip text-[var(--text-muted)] hover:text-[var(--text)] text-base font-medium transition-colors duration-200"
+                    className="inline-flex w-full items-center justify-center gap-2 px-5 py-4 squircle-pill bg-[var(--cta-bg)] text-sm font-semibold text-[var(--cta-text)] transition-colors duration-200 hover:bg-[var(--cta-hover)]"
                   >
-                    {item.name}
+                    Start Project
+                    <ArrowUpRight size={16} />
                   </a>
-                ))}
-                <a
-                  href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
-                  onClick={() => setIsOpen(false)}
-                  className="mt-2 px-5 py-4 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] text-sm font-semibold text-center hover:opacity-90 active:scale-95 transition-all"
-                >
-                  Hire Me
-                </a>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </nav>
   )
 }

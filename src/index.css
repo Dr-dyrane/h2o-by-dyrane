@@ -44,6 +44,17 @@
 		--surface-card: rgba(255, 255, 255, 0.80);
 		/* White card lifts off grey surface */
 		--surface-card-hover: rgba(255, 255, 255, 0.95);
+		--surface-elevated: rgba(255, 255, 255, 0.72);
+		--surface-elevated-strong: rgba(255, 255, 255, 0.90);
+		--surface-chip: rgba(255, 255, 255, 0.82);
+		--surface-stroke: rgba(29, 29, 31, 0.08);
+		--surface-stroke-strong: rgba(29, 29, 31, 0.14);
+		--surface-shadow: 0 18px 48px rgba(15, 23, 42, 0.06), 0 4px 14px rgba(15, 23, 42, 0.04);
+		--surface-shadow-tight: 0 10px 28px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.04);
+		--safe-top: env(safe-area-inset-top, 0px);
+		--safe-right: env(safe-area-inset-right, 0px);
+		--safe-bottom: env(safe-area-inset-bottom, 0px);
+		--safe-left: env(safe-area-inset-left, 0px);
 
 		--text: #1D1D1F;
 		/* Apple's off-black — 15.6:1 on F5F5F7 ✅ AAA */
@@ -66,7 +77,7 @@
 		--cat-ux-bg: rgba(4, 120, 87, 0.08);
 
 		--border-subtle: transparent;
-		--glow-color: rgba(16, 185, 129, 0.18);
+		--glow-color: rgba(16, 185, 129, 0.10);
 
 		/* Shape tokens */
 		--radius-icon: 22.5%;
@@ -134,6 +145,13 @@
 		--surface-glass: rgba(13, 13, 13, 0.7);
 		--surface-card: rgba(255, 255, 255, 0.02);
 		--surface-card-hover: rgba(255, 255, 255, 0.04);
+		--surface-elevated: rgba(255, 255, 255, 0.04);
+		--surface-elevated-strong: rgba(255, 255, 255, 0.06);
+		--surface-chip: rgba(255, 255, 255, 0.08);
+		--surface-stroke: rgba(255, 255, 255, 0.07);
+		--surface-stroke-strong: rgba(255, 255, 255, 0.12);
+		--surface-shadow: 0 24px 56px rgba(0, 0, 0, 0.26), 0 6px 18px rgba(0, 0, 0, 0.20);
+		--surface-shadow-tight: 0 14px 32px rgba(0, 0, 0, 0.20), 0 4px 12px rgba(0, 0, 0, 0.16);
 
 		--text: #FFFFFF;
 		--text-muted: rgba(255, 255, 255, 0.65);
@@ -167,7 +185,7 @@
 		--glass-thick-bg: transparent;
 		--glass-thick-blur: blur(48px) saturate(230%) brightness(0.55);
 		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.65) 45%, transparent 72%);
-		--glow-color: rgba(16, 185, 129, 0.3);
+		--glow-color: rgba(16, 185, 129, 0.18);
 
 		--cta-bg: #FFFFFF;
 		--cta-text: #000000;
@@ -343,7 +361,7 @@
 		border-radius: var(--radius-panel);
 	}
 
-	/* Nav — CommandCenter, floating bars */
+	/* Nav — floating bars and top chrome */
 	.squircle-nav {
 		corner-shape: squircle;
 		border-radius: var(--radius-nav);
@@ -359,6 +377,49 @@
 	.squircle-pill {
 		corner-shape: squircle;
 		border-radius: var(--radius-pill);
+	}
+
+	.surface-panel,
+	.surface-card,
+	.surface-chip {
+		border: 1px solid var(--surface-stroke);
+		transition:
+			background-color 300ms ease,
+			border-color 300ms ease,
+			box-shadow 300ms ease,
+			transform 300ms ease;
+	}
+
+	.surface-panel {
+		background: var(--surface-elevated);
+		box-shadow: var(--surface-shadow);
+	}
+
+	.surface-card {
+		background: var(--surface-elevated-strong);
+		box-shadow: var(--surface-shadow-tight);
+	}
+
+	.surface-chip {
+		background: var(--surface-chip);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	.safe-top {
+		padding-top: max(0.75rem, var(--safe-top));
+	}
+
+	.safe-x {
+		padding-left: max(1rem, var(--safe-left));
+		padding-right: max(1rem, var(--safe-right));
+	}
+
+	.safe-bottom {
+		padding-bottom: max(0.75rem, var(--safe-bottom));
+	}
+
+	.safe-bottom-float {
+		bottom: calc(0.75rem + var(--safe-bottom));
 	}
 
 	/* ─── Liquid Glass — Web Approximation of Apple's 3-Layer Optical Material ─
@@ -398,7 +459,7 @@
 		-webkit-backdrop-filter: var(--glass-thin-blur);
 	}
 
-	/* Regular — CommandCenter nav bar, floating panels */
+	/* Regular — floating panels and primary chrome */
 	.glass-regular {
 		--glass-outer-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.10);
 		background: var(--glass-regular-bg);
@@ -430,11 +491,11 @@
 	.glass-regular,
 	.glass-thick {
 		box-shadow:
-			inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
 			/* top edge */
-			inset 1px 0 0 0 rgba(16, 185, 129, 0.08),
+			inset 1px 0 0 0 rgba(16, 185, 129, 0.03),
 			/* emerald tint left */
-			inset -1px 0 0 0 rgba(99, 102, 241, 0.08),
+			inset -1px 0 0 0 rgba(99, 102, 241, 0.03),
 			/* indigo tint right */
 			var(--glass-outer-shadow);
 	}
@@ -445,9 +506,9 @@
 	.dark .glass-regular,
 	.dark .glass-thick {
 		box-shadow:
-			inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
-			inset 1px 0 0 0 rgba(16, 185, 129, 0.12),
-			inset -1px 0 0 0 rgba(167, 139, 250, 0.12),
+			inset 0 1px 0 0 rgba(255, 255, 255, 0.10),
+			inset 1px 0 0 0 rgba(16, 185, 129, 0.05),
+			inset -1px 0 0 0 rgba(167, 139, 250, 0.05),
 			/* violet right */
 			var(--glass-outer-shadow);
 	}
@@ -466,13 +527,53 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+		background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 58%);
 		pointer-events: none;
 		z-index: 1;
 	}
 }
 
 /* ─── Marquee animations — TechMarquee component ─────────────────────────── */
+@keyframes orb-float {
+	0%, 100% {
+		transform: translate3d(0, 0, 0);
+	}
+
+	50% {
+		transform: translate3d(0, -8px, 0);
+	}
+}
+
+@keyframes orb-spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes orb-spin-reverse {
+	from {
+		transform: rotate(360deg);
+	}
+
+	to {
+		transform: rotate(0deg);
+	}
+}
+
+@keyframes orb-breathe {
+	0%, 100% {
+		opacity: 0.62;
+	}
+
+	50% {
+		opacity: 0.9;
+	}
+}
+
 @keyframes marquee {
 	0% {
 		transform: translateX(0);
@@ -494,14 +595,14 @@
 }
 
 .animate-marquee {
-	animation: marquee 35s linear infinite;
+	animation: marquee 48s linear infinite;
 	will-change: transform;
 	transform: translateZ(0);
 	backface-visibility: hidden;
 }
 
 .animate-marquee-reverse {
-	animation: marquee-reverse 35s linear infinite;
+	animation: marquee-reverse 48s linear infinite;
 	will-change: transform;
 	transform: translateZ(0);
 	backface-visibility: hidden;

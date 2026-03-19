@@ -9,8 +9,9 @@ export const MatrixBackground = () => {
     const resizeRef = useRef<number>(0);
     const lastFrameRef = useRef<number>(0);
     const themeRef = useRef<"dark" | "light">("dark");
+    const viewportRef = useRef({ width: 0, height: 0 });
 
-    const shouldSkip = prefersReducedMotion || (isLowPower && isMobile);
+    const shouldSkip = prefersReducedMotion || isLowPower || isMobile;
 
     useEffect(() => {
         if (shouldSkip || typeof window === "undefined") return;
@@ -21,11 +22,13 @@ export const MatrixBackground = () => {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const gap = isMobile ? 36 : 28;
-        const dotSize = isMobile ? 1.2 : 1.5;
-        const mouseRadius = isMobile ? 100 : 160;
-        const fadeSpeed = 0.04;
-        const targetInterval = isMobile ? 1000 / 24 : 1000 / 45;
+        const gap = 34;
+        const dotSize = 1.25;
+        const mouseRadius = 128;
+        const mouseRadiusSq = mouseRadius * mouseRadius;
+        const glowRadiusSq = (mouseRadius * 0.5) ** 2;
+        const fadeSpeed = 0.028;
+        const targetInterval = 1000 / 30;
 
         const syncTheme = () => {
             themeRef.current = document.documentElement.classList.contains("dark")
@@ -41,16 +44,22 @@ export const MatrixBackground = () => {
         });
 
         const buildGrid = () => {
-            const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+            viewportRef.current = { width, height };
+            lastFrameRef.current = 0;
+
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            canvas.width = window.innerWidth * dpr;
-            canvas.height = window.innerHeight * dpr;
-            canvas.style.width = `${window.innerWidth}px`;
-            canvas.style.height = `${window.innerHeight}px`;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
             ctx.scale(dpr, dpr);
 
-            const cols = Math.ceil(window.innerWidth / gap);
-            const rows = Math.ceil(window.innerHeight / gap);
+            const cols = Math.ceil(width / gap);
+            const rows = Math.ceil(height / gap);
             const nextPoints: typeof pointsRef.current = [];
 
             for (let row = 0; row < rows; row++) {
@@ -78,8 +87,9 @@ export const MatrixBackground = () => {
             if (timestamp - lastFrameRef.current < targetInterval) return;
             lastFrameRef.current = timestamp;
 
-            const width = window.innerWidth;
-            const height = window.innerHeight;
+            const { width, height } = viewportRef.current;
+            if (!width || !height) return;
+
             ctx.clearRect(0, 0, width, height);
 
             const { x: mouseX, y: mouseY } = getMousePos();
@@ -90,19 +100,19 @@ export const MatrixBackground = () => {
             for (const point of pointsRef.current) {
                 const dx = point.x - mouseX;
                 const dy = point.y - mouseY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const distSq = dx * dx + dy * dy;
 
                 let targetAlpha = point.baseAlpha;
-                if (dist < mouseRadius) {
-                    const proximity = 1 - dist / mouseRadius;
-                    targetAlpha = Math.min(0.5, point.baseAlpha + proximity * 0.45);
+                if (distSq < mouseRadiusSq) {
+                    const proximity = 1 - Math.sqrt(distSq) / mouseRadius;
+                    targetAlpha = Math.min(0.28, point.baseAlpha + proximity * 0.22);
                 }
 
                 point.alpha += (targetAlpha - point.alpha) * fadeSpeed;
 
                 if (point.alpha <= 0.005) continue;
 
-                const isGlowing = dist < mouseRadius * 0.5 && dist > 0;
+                const isGlowing = distSq > 0 && distSq < glowRadiusSq;
                 const color = isGlowing ? glowColor : dotColor;
 
                 ctx.beginPath();
@@ -110,10 +120,10 @@ export const MatrixBackground = () => {
                 ctx.fillStyle = `rgba(${color},${point.alpha})`;
                 ctx.fill();
 
-                if (isGlowing && point.alpha > 0.15) {
+                if (isGlowing && point.alpha > 0.12) {
                     ctx.beginPath();
                     ctx.arc(point.x, point.y, dotSize * 2.5, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(${glowColor},${point.alpha * 0.15})`;
+                    ctx.fillStyle = `rgba(${glowColor},${point.alpha * 0.08})`;
                     ctx.fill();
                 }
             }
@@ -134,7 +144,7 @@ export const MatrixBackground = () => {
             window.removeEventListener("resize", handleResize);
             themeObserver.disconnect();
         };
-    }, [getMousePos, isMobile, shouldSkip]);
+    }, [getMousePos, shouldSkip]);
 
     if (shouldSkip) return null;
 

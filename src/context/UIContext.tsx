@@ -32,8 +32,12 @@ const SSR_DEFAULTS: Omit<UIContextValue, "getMousePos"> = {
 
 const UIContext = createContext<UIContextValue | undefined>(undefined);
 
+const MOBILE_MEDIA_QUERY = "(max-width: 767px)";
+const MOTION_MEDIA_QUERY = "(prefers-reduced-motion: reduce)";
+const COARSE_POINTER_MEDIA_QUERY = "(pointer: coarse)";
+
 function detectCapabilities(): Omit<UIContextValue, "getMousePos"> {
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.matchMedia(MOBILE_MEDIA_QUERY).matches;
 
     let canUseWebGL = false;
     try {
@@ -46,11 +50,9 @@ function detectCapabilities(): Omit<UIContextValue, "getMousePos"> {
         canUseWebGL = false;
     }
 
-    const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const prefersReducedMotion = window.matchMedia(MOTION_MEDIA_QUERY).matches;
 
-    const pointerType: PointerType = window.matchMedia("(pointer: coarse)").matches
+    const pointerType: PointerType = window.matchMedia(COARSE_POINTER_MEDIA_QUERY).matches
         ? "touch"
         : "mouse";
 
@@ -87,22 +89,40 @@ export function UIProvider({ children }: { children: ReactNode }) {
     const rafRef = useRef<number>(0);
 
     useEffect(() => {
-        const detected = detectCapabilities();
-        setCaps(detected);
-        applyPerfClass(detected.perfTier);
-
-        const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-        const onChange = () => {
+        const syncCapabilities = () => {
             const updated = detectCapabilities();
             setCaps(updated);
             applyPerfClass(updated.perfTier);
         };
 
-        mq.addEventListener("change", onChange);
-        return () => mq.removeEventListener("change", onChange);
+        const mobileQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
+        const motionQuery = window.matchMedia(MOTION_MEDIA_QUERY);
+        const pointerQuery = window.matchMedia(COARSE_POINTER_MEDIA_QUERY);
+
+        syncCapabilities();
+
+        mobileQuery.addEventListener("change", syncCapabilities);
+        motionQuery.addEventListener("change", syncCapabilities);
+        pointerQuery.addEventListener("change", syncCapabilities);
+        window.addEventListener("resize", syncCapabilities, { passive: true });
+
+        return () => {
+            mobileQuery.removeEventListener("change", syncCapabilities);
+            motionQuery.removeEventListener("change", syncCapabilities);
+            pointerQuery.removeEventListener("change", syncCapabilities);
+            window.removeEventListener("resize", syncCapabilities);
+        };
     }, []);
 
     useEffect(() => {
+        if (caps.pointerType !== "mouse") {
+            mousePosRef.current = { x: -1000, y: -1000 };
+            rawMouseRef.current = { x: -1000, y: -1000 };
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = 0;
+            return;
+        }
+
         const settleThreshold = 0.5;
 
         const tick = () => {
@@ -138,29 +158,20 @@ export function UIProvider({ children }: { children: ReactNode }) {
             scheduleTick();
         };
 
-        const onTouchMove = (e: TouchEvent) => {
-            const touch = e.touches[0];
-            if (!touch) return;
-            rawMouseRef.current = { x: touch.clientX, y: touch.clientY };
-            scheduleTick();
-        };
-
         const onLeave = () => {
             rawMouseRef.current = { x: -1000, y: -1000 };
             scheduleTick();
         };
 
         window.addEventListener("mousemove", onMouseMove, { passive: true });
-        window.addEventListener("touchmove", onTouchMove, { passive: true });
         window.addEventListener("mouseleave", onLeave, { passive: true });
 
         return () => {
             cancelAnimationFrame(rafRef.current);
             window.removeEventListener("mousemove", onMouseMove);
-            window.removeEventListener("touchmove", onTouchMove);
             window.removeEventListener("mouseleave", onLeave);
         };
-    }, []);
+    }, [caps.pointerType]);
 
     const getMousePos = useCallback(() => ({ ...mousePosRef.current }), []);
 

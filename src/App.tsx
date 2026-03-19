@@ -1,9 +1,13 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { UIProvider } from "@/context/UIContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { Analytics } from "@vercel/analytics/react";
+
+const Analytics = lazy(() =>
+  import("@vercel/analytics/react").then((module) => ({ default: module.Analytics }))
+);
 
 export const AppRoutes = () => (
   <Routes>
@@ -15,7 +19,11 @@ export const AppRoutes = () => (
 export const AppContent = () => (
   <UIProvider>
     <ThemeProvider>
-      <Analytics />
+      {import.meta.env.PROD ? (
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
+      ) : null}
       <AppRoutes />
     </ThemeProvider>
   </UIProvider>

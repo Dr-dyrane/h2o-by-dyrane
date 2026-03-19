@@ -1,6 +1,19 @@
 
 import { Project } from "@/data/projects";
-import { X, ArrowRight, ArrowUpRight, Github, Code, GitCommit, Star, ExternalLink, Globe, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import {
+    X,
+    ArrowRight,
+    ArrowUpRight,
+    Github,
+    Code,
+    GitCommit,
+    Star,
+    ExternalLink,
+    Globe,
+    ChevronLeft,
+    ChevronRight,
+    Loader2,
+} from "@/components/icons/lucide";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,10 +23,10 @@ interface ProjectOverlayProps {
     onClose: () => void;
 }
 
-const categoryColor: Record<string, { text: string; bg: string; }> = {
-    "Logistics Engine": { text: "text-[var(--cat-logistics)]", bg: "glass-ultra-thin" },
-    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]", bg: "glass-ultra-thin" },
-    "Modernized UX": { text: "text-[var(--cat-ux)]", bg: "glass-ultra-thin" },
+const categoryColor: Record<string, { text: string; accentBg: string; }> = {
+    "Logistics Engine": { text: "text-[var(--cat-logistics)]", accentBg: "bg-[var(--cat-logistics-bg)]" },
+    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]", accentBg: "bg-[var(--cat-intelligence-bg)]" },
+    "Modernized UX": { text: "text-[var(--cat-ux)]", accentBg: "bg-[var(--cat-ux-bg)]" },
 };
 
 export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps) => {
@@ -41,7 +54,10 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
     if (!project || !isOpen) return null;
 
     const screenshotUrl = `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`;
-    const { text: catText, bg: catBg } = categoryColor[project.category] ?? { text: "text-emerald-400", bg: "bg-emerald-500/10" };
+    const { text: catText, accentBg: catAccentBg } = categoryColor[project.category] ?? {
+        text: "text-emerald-400",
+        accentBg: "bg-emerald-500/20",
+    };
 
     const steps = [
         { id: 1, label: "Visual Intelligence" },
@@ -55,7 +71,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
     // ─── MOBILE — Multiphasic Bottom Sheet ───────────────────────────────────
     if (isMobile) {
         return (
-            <div className="fixed inset-0 z-[60] flex items-end justify-center">
+            <div className="fixed inset-0 z-[60] flex items-end justify-center safe-x safe-bottom">
                 {/* Scrim — dark enough to signal modal depth in both modes */}
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -68,15 +84,19 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 28, stiffness: 220 }}
-                    className="relative w-full h-[92vh] glass-ultra-thin squircle-panel overflow-hidden flex flex-col"
-                    style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}
+                    transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative flex w-full max-w-xl flex-col overflow-hidden squircle-panel glass-regular overscroll-contain"
+                    style={{
+                        borderBottomLeftRadius: 0,
+                        borderBottomRightRadius: 0,
+                        maxHeight: "calc(100dvh - max(env(safe-area-inset-top), 0.75rem) - 0.5rem)",
+                    }}
                 >
                     {/* Drag handle */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 squircle-pill bg-[var(--text-ghost)]/30 z-50" />
 
                     {/* Sheet Header */}
-                    <div className="px-6 pt-10 pb-4 flex items-center justify-between">
+                    <div className="px-5 pt-7 pb-4 flex items-center justify-between">
                         <div>
                             <span className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-0.5 block ${catText}`}>
                                 Step 0{activeStep}
@@ -94,7 +114,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     </div>
 
                     {/* Stage */}
-                    <div className="flex-1 relative overflow-hidden">
+                    <div className="relative flex-1 overflow-hidden">
                         <AnimatePresence mode="wait">
 
                             {/* Step 1 — Live Screenshot */}
@@ -102,6 +122,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 <motion.div
                                     key="m-step1"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
+                                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                                     className="absolute inset-0 flex flex-col"
                                 >
                                     <div className="flex-1 relative bg-black overflow-hidden">
@@ -117,7 +138,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             <a
                                                 href={`https://${project.link}`}
                                                 target="_blank" rel="noopener noreferrer"
-                                                className={`flex items-center gap-2 px-5 py-2.5 squircle-pill glass-regular ${catText} text-[10px] font-mono uppercase tracking-widest`}
+                                                className={`flex items-center gap-2 px-5 py-2.5 squircle-pill surface-chip ${catText} text-[10px] font-mono uppercase tracking-widest`}
                                             >
                                                 Launch <ExternalLink size={12} />
                                             </a>
@@ -136,15 +157,16 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 <motion.div
                                     key="m-step2"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-                                    className="absolute inset-0 px-8 flex flex-col justify-center space-y-8"
+                                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                    className="absolute inset-0 px-5 flex flex-col justify-center space-y-7"
                                 >
                                     <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{project.architecture}</p>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-7 squircle-nav glass-ultra-thin">
+                                        <div className="p-7 squircle-nav surface-card">
                                             <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.commits}</div>
                                             <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Commits</div>
                                         </div>
-                                        <div className="p-7 squircle-nav glass-ultra-thin">
+                                        <div className="p-7 squircle-nav surface-card">
                                             <div className="text-blue-400 text-4xl font-light mb-1 tracking-tighter">99.9%</div>
                                             <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Stability</div>
                                         </div>
@@ -157,15 +179,16 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 <motion.div
                                     key="m-step3"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-                                    className="absolute inset-0 px-8 flex flex-col justify-center space-y-8"
+                                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                    className="absolute inset-0 px-5 flex flex-col justify-center space-y-7"
                                 >
-                                    <div className="squircle p-7 glass-ultra-thin">
+                                    <div className="squircle p-7 surface-card">
                                         <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Protocol Resolution</h4>
                                         <p className="text-[var(--text-muted)] text-xl font-light tracking-tight italic">"{project.proposal}"</p>
                                     </div>
                                     <div className="flex flex-col gap-3">
                                         <a href={`https://${project.link}`} target="_blank"
-                                            className="group flex items-center justify-between p-5 squircle-nav glass-ultra-thin active:scale-95 transition-all">
+                                            className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
                                             <div>
                                                 <span className={`text-[10px] font-mono uppercase tracking-widest mb-0.5 block ${catText}`}>Live Interface</span>
                                                 <span className="text-[var(--text)] text-base font-medium">Deploy Intelligence</span>
@@ -173,7 +196,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             <ArrowUpRight size={20} className={`${catText} group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform`} />
                                         </a>
                                         <a href={`mailto:hello@dyrane.tech?subject=Inquiry: ${project.title}`}
-                                            className="group flex items-center justify-between p-5 squircle-nav glass-ultra-thin active:scale-95 transition-all">
+                                            className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
                                             <div>
                                                 <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block text-[var(--text-ghost)]">Partner Up</span>
                                                 <span className="text-[var(--text-dim)] text-base font-medium">Interface Architect</span>
@@ -187,14 +210,14 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     </div>
 
                     {/* Navigation Footer */}
-                    <div className="px-8 py-8 mt-auto glass-ultra-thin">
+                    <div className="mt-auto border-t border-[var(--surface-stroke)] bg-[var(--surface-elevated)]/88 px-5 py-5">
                         <div className="flex items-center justify-between">
                             {/* Progress dots */}
                             <div className="flex gap-2">
                                 {steps.map(s => (
                                     <div
                                         key={s.id}
-                                        className={`h-1 squircle-pill transition-all duration-500 ${activeStep === s.id ? `w-8 ${catBg.replace('/10', '/80')}` : 'w-2 bg-[var(--text-ghost)]/20'}`}
+                                        className={`h-1 squircle-pill transition-all duration-500 ${activeStep === s.id ? `w-8 ${catAccentBg}` : 'w-2 bg-[var(--text-ghost)]/20'}`}
                                     />
                                 ))}
                             </div>
@@ -202,14 +225,14 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 <button
                                     onClick={handlePrev}
                                     disabled={activeStep === 1}
-                                    className={`p-3.5 squircle-icon glass-ultra-thin text-[var(--text)] transition-all ${activeStep === 1 ? 'opacity-20' : 'opacity-100 active:scale-90'}`}
+                                    className={`p-3.5 squircle-icon glass-ultra-thin text-[var(--text)] transition-opacity duration-200 ${activeStep === 1 ? 'opacity-20' : 'opacity-100'}`}
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
                                 <button
                                     onClick={handleNext}
                                     disabled={activeStep === 3}
-                                    className={`px-7 py-3.5 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-semibold flex items-center gap-2 text-sm transition-all ${activeStep === 3 ? 'opacity-20' : 'opacity-100 active:scale-95'}`}
+                                    className={`px-7 py-3.5 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-semibold flex items-center gap-2 text-sm transition-colors duration-200 ${activeStep === 3 ? 'opacity-20' : 'opacity-100 hover:bg-[var(--cta-hover)]'}`}
                                 >
                                     Next <ChevronRight size={16} />
                                 </button>
@@ -231,10 +254,10 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
             />
 
             {/* Panel — vibrancy-powered Liquid Glass */}
-            <div className="relative w-full max-w-5xl glass-thin squircle-panel overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] md:h-[700px]">
+            <div className="relative flex h-full max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden squircle-panel glass-regular md:h-[700px] md:flex-row">
 
                 {/* Sidebar */}
-                <div className="w-full md:w-72 p-5 md:p-6 flex flex-col glass-ultra-thin shrink-0 md:h-full overflow-y-auto">
+                <div className="flex w-full shrink-0 flex-col overflow-y-auto border-b border-[var(--surface-stroke)] p-5 md:h-full md:w-72 md:border-b-0 md:border-r md:p-6">
                     {/* Project identity */}
                     <div className="mb-6 md:mb-8">
                         <span className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-1.5 block ${catText}`}>
@@ -252,7 +275,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 key={step.id}
                                 onClick={() => setActiveStep(step.id)}
                                 className={`w-full text-left px-4 py-3 squircle-chip text-sm font-medium transition-all duration-300 relative overflow-hidden ${activeStep === step.id
-                                    ? `text-[var(--text)] glass-ultra-thin`
+                                    ? `text-[var(--text)] surface-chip`
                                     : "text-[var(--text-dim)] hover:text-[var(--text-muted)]"
                                     }`}
                             >
@@ -263,7 +286,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     {step.label}
                                 </div>
                                 {activeStep === step.id && (
-                                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 squircle-pill ${catBg.replace('/10', '/80')}`} />
+                                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 squircle-pill ${catAccentBg}`} />
                                 )}
                             </button>
                         ))}
@@ -271,7 +294,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                     {/* Repo stats */}
                     <div className="mt-auto">
-                        <div className="squircle-nav p-4 glass-ultra-thin space-y-3">
+                        <div className="squircle-nav p-4 surface-card space-y-3">
                             <div className={`flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider ${catText} opacity-70`}>
                                 <Github size={11} /> Source Intelligence
                             </div>
@@ -285,7 +308,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                             </div>
                             <div className="flex flex-wrap gap-1">
                                 {project.github_stats.languages.map(lang => (
-                                    <span key={lang} className="squircle-chip px-2 py-0.5 glass-ultra-thin text-[9px] text-[var(--text-ghost)] font-mono uppercase tracking-wider">
+                                    <span key={lang} className="squircle-chip surface-chip px-2 py-0.5 text-[9px] text-[var(--text-ghost)] font-mono uppercase tracking-wider">
                                         {lang}
                                     </span>
                                 ))}
@@ -311,7 +334,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -8 }}
-                                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                 className="h-full flex flex-col"
                             >
                                 {/* Step 1 — Screenshot */}
@@ -328,7 +351,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 onLoad={() => setImageLoaded(true)}
                                             />
                                             {!imageLoaded && (
-                                                <div className="absolute inset-0 glass-ultra-thin flex items-center justify-center">
+                                                <div className="absolute inset-0 flex items-center justify-center bg-[var(--surface-elevated)]/75">
                                                     <Loader2 className={`w-6 h-6 animate-spin ${catText}`} />
                                                 </div>
                                             )}
@@ -338,7 +361,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 <a
                                                     href={`https://${project.link}`}
                                                     target="_blank" rel="noopener noreferrer"
-                                                    className={`flex items-center gap-2 px-5 py-2.5 squircle-pill glass-regular ${catText} text-[10px] font-mono uppercase tracking-widest hover:scale-105 transition-all`}
+                                                    className={`flex items-center gap-2 px-5 py-2.5 squircle-pill surface-chip ${catText} text-[10px] font-mono uppercase tracking-widest transition-colors duration-200`}
                                                 >
                                                     Launch <ExternalLink size={11} />
                                                 </a>
@@ -350,7 +373,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         </div>
                                         <button
                                             onClick={() => setActiveStep(2)}
-                                            className="mt-4 self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-all text-[10px] font-mono tracking-[0.2em] uppercase"
+                                            className="mt-4 self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-colors duration-200 text-[10px] font-mono tracking-[0.2em] uppercase"
                                         >
                                             Deconstruct Architecture <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                                         </button>
@@ -365,13 +388,13 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             <div className="space-y-5">
                                                 <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">{project.architecture}</p>
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <div className="squircle-nav p-5 glass-ultra-thin">
+                                                    <div className="squircle-nav p-5 surface-card">
                                                         <div className={`text-3xl font-light mb-1 tracking-tighter tabular-nums ${catText}`}>
                                                             {project.github_stats.commits > 1000 ? '1.2k+' : project.github_stats.commits}
                                                         </div>
                                                         <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Core Modules</div>
                                                     </div>
-                                                    <div className="squircle-nav p-5 glass-ultra-thin">
+                                                    <div className="squircle-nav p-5 surface-card">
                                                         <div className="text-blue-400 text-3xl font-light mb-1 tracking-tighter">99.9%</div>
                                                         <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Uptime Target</div>
                                                     </div>
@@ -379,9 +402,9 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             </div>
 
                                             {/* Ambient orb — no borders */}
-                                            <div className="relative aspect-square squircle glass-ultra-thin flex items-center justify-center group overflow-hidden">
-                                                <div className={`absolute inset-0 opacity-10 group-hover:opacity-25 transition-opacity duration-1000 pointer-events-none blur-3xl ${catBg}`} />
-                                                <Code className="w-16 h-16 md:w-20 md:h-20 text-[var(--text)] opacity-10 relative z-10 group-hover:scale-110 transition-transform duration-700" />
+                                            <div className="relative aspect-square squircle surface-card flex items-center justify-center group overflow-hidden">
+                                                <div className={`absolute inset-0 opacity-[0.08] group-hover:opacity-[0.16] transition-opacity duration-700 pointer-events-none blur-3xl ${catAccentBg}`} />
+                                                <Code className="w-16 h-16 md:w-20 md:h-20 text-[var(--text)] opacity-10 relative z-10 transition-opacity duration-500 group-hover:opacity-20" />
                                                 {/* Depth rings — shadow-based, not border */}
                                                 <div className="absolute inset-8 squircle shadow-[0_0_0_1px_rgba(255,255,255,0.04)] pointer-events-none" />
                                                 <div className="absolute inset-16 squircle shadow-[0_0_0_1px_rgba(255,255,255,0.03)] pointer-events-none" />
@@ -389,7 +412,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         </div>
                                         <button
                                             onClick={() => setActiveStep(3)}
-                                            className="self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-all text-[10px] font-mono tracking-[0.2em] uppercase"
+                                            className="self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-colors duration-200 text-[10px] font-mono tracking-[0.2em] uppercase"
                                         >
                                             Impact Assessment <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                                         </button>
@@ -401,11 +424,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     <div className="max-w-2xl flex flex-col pt-4 pb-8">
                                         <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight mb-6">Strategic Impact</h3>
                                         <div className="space-y-4 mb-10">
-                                            <div className="squircle p-7 glass-ultra-thin">
+                                            <div className="squircle p-7 surface-card">
                                                 <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">The Challenge</h4>
                                                 <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{project.challenge}</p>
                                             </div>
-                                            <div className={`squircle p-7 ${catBg} glass-ultra-thin`}>
+                                            <div className={`squircle p-7 surface-card ${catAccentBg}`}>
                                                 <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>The Proposal</h4>
                                                 <p className="text-[var(--text-muted)] text-lg leading-relaxed font-light italic">"{project.proposal}"</p>
                                             </div>
@@ -414,7 +437,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         <div className="flex flex-col sm:flex-row items-center gap-10">
                                             <a
                                                 href={`mailto:hello@dyrane.tech?subject=Intelligence Inquiry: ${project.title} Deployment`}
-                                                className="group flex items-center gap-4 text-[var(--text)] hover:text-emerald-400 transition-all duration-400"
+                                                className="group flex items-center gap-4 text-[var(--text)] transition-colors duration-200 hover:text-[var(--text)]"
                                             >
                                                 <div>
                                                     <span className={`text-[10px] font-mono uppercase tracking-widest mb-0.5 block opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-y-0 ${catText}`}>
@@ -422,8 +445,8 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                     </span>
                                                     <span className="text-xl font-semibold tracking-tight">Deploy Intelligence</span>
                                                 </div>
-                                                <div className="p-4 squircle-icon glass-thin group-hover:scale-110 transition-all duration-300">
-                                                    <ArrowUpRight size={22} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                                <div className="p-4 squircle-icon surface-chip transition-colors duration-200">
+                                                    <ArrowUpRight size={22} className="transition-transform duration-200 group-hover:translate-x-0.5" />
                                                 </div>
                                             </a>
 
@@ -433,7 +456,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             <a
                                                 href={`https://${project.link}`}
                                                 target="_blank" rel="noopener noreferrer"
-                                                className="group flex items-center gap-4 text-[var(--text-dim)] hover:text-[var(--text)] transition-all duration-400"
+                                                className="group flex items-center gap-4 text-[var(--text-dim)] hover:text-[var(--text)] transition-colors duration-200"
                                             >
                                                 <div>
                                                     <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-y-0 text-[var(--text-ghost)]">
@@ -441,7 +464,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                     </span>
                                                     <span className="text-xl font-semibold tracking-tight">Full System</span>
                                                 </div>
-                                                <div className="p-4 squircle-icon glass-thin group-hover:scale-110 transition-all duration-300">
+                                                <div className="p-4 squircle-icon surface-chip transition-colors duration-200">
                                                     <Globe size={22} className="group-hover:rotate-12 transition-transform duration-400" />
                                                 </div>
                                             </a>

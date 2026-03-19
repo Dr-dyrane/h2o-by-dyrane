@@ -33,7 +33,7 @@ const TYPE_COLOR: Record<string, string> = {
     styling:   "text-[var(--cat-ux)]",
     runtime:   "text-[var(--cat-logistics)]",
     data:      "text-amber-600 dark:text-amber-400",
-    infra:     "text-[var(--text-dim)]",
+    infra:     "text-[var(--text-muted)]",
     design:    "text-pink-600 dark:text-pink-300",
 };
 
@@ -52,10 +52,10 @@ const MarqueeRow = ({ reversed = false }: { reversed?: boolean }) => {
                 {items.map((tech, i) => (
                     <div
                         key={`${tech.label}-${i}`}
-                        className="flex items-center gap-2 squircle-chip px-3 py-1.5 glass-ultra-thin shrink-0"
+                        className="flex items-center gap-2 squircle-chip px-3 py-1.5 surface-chip shrink-0"
                     >
                         <span
-                            className={`text-[9px] font-mono uppercase tracking-[0.15em] ${
+                            className={`text-[10px] font-mono uppercase tracking-[0.15em] ${
                                 TYPE_COLOR[tech.type] ?? "text-[var(--text-dim)]"
                             }`}
                         >
@@ -73,12 +73,12 @@ const MarqueeRow = ({ reversed = false }: { reversed?: boolean }) => {
 
 export const TechMarquee = () => {
     return (
-        <section className="w-full py-16 overflow-hidden">
+        <section className="w-full py-14 md:py-16 overflow-hidden">
             {/* Depth separator */}
             <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--text-ghost)]/15 to-transparent mb-10" />
 
-            <div className="max-w-7xl mx-auto px-6 mb-6">
-                <p className="text-[var(--text-dim)] text-[10px] font-mono uppercase tracking-[0.2em]">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 mb-6">
+                <p className="text-[var(--text-muted)] text-[10px] font-mono uppercase tracking-[0.2em]">
                     Built with
                 </p>
             </div>
