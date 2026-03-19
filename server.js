@@ -38,6 +38,7 @@ async function createServer() {
     app.use(vite.middlewares)
   } else {
     app.use(express.static(path.resolve(__dirname, 'dist/client'), {
+      index: false,
       maxAge: '1y',
       immutable: true
     }))
@@ -69,6 +70,7 @@ async function createServer() {
       const { html: appHtml } = render(url)
 
       const html = template
+        .replace(/<script id="vite-plugin-pwa:register-sw"[^>]*><\/script>/, '')
         .replace(`<!--ssr-outlet-->`, appHtml)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)

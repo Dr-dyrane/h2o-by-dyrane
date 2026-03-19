@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
 import { AppContent } from './App'
 
 import './index.css'
@@ -11,11 +10,7 @@ if (!rootElement) {
   throw new Error('Root element #root was not found')
 }
 
-const app = (
-  <BrowserRouter>
-    <AppContent />
-  </BrowserRouter>
-)
+const app = <AppContent path={window.location.pathname} />
 
 // `vite` dev serves a plain index.html with an empty root, while SSR paths inject
 // rendered markup into #root. Hydrate only when real SSR element content exists.

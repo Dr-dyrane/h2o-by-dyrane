@@ -35,49 +35,55 @@
 }
 
 @layer base {
+	/* Design language: Quiet Performance */
 	:root {
 		/* Semantic theme tokens — light mode */
-		--surface: #F5F5F7;
+		--surface: #fbf5ee;
 		/* Apple's signature light grey — not pure white */
-		--surface-alt: #ECECEC;
-		--surface-glass: rgba(245, 245, 247, 0.85);
-		--surface-card: rgba(255, 255, 255, 0.80);
+		--surface-alt: #f1e6d8;
+		--surface-glass: rgba(251, 245, 238, 0.82);
+		--surface-card: rgba(255, 251, 247, 0.88);
 		/* White card lifts off grey surface */
-		--surface-card-hover: rgba(255, 255, 255, 0.95);
-		--surface-elevated: rgba(255, 255, 255, 0.72);
-		--surface-elevated-strong: rgba(255, 255, 255, 0.90);
-		--surface-chip: rgba(255, 255, 255, 0.82);
-		--surface-stroke: rgba(29, 29, 31, 0.08);
-		--surface-stroke-strong: rgba(29, 29, 31, 0.14);
-		--surface-shadow: 0 18px 48px rgba(15, 23, 42, 0.06), 0 4px 14px rgba(15, 23, 42, 0.04);
-		--surface-shadow-tight: 0 10px 28px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.04);
+		--surface-card-hover: rgba(255, 252, 249, 0.96);
+		--surface-elevated: rgba(255, 250, 245, 0.78);
+		--surface-elevated-strong: rgba(255, 252, 248, 0.92);
+		--surface-chip: rgba(255, 251, 247, 0.88);
+		--surface-stroke: rgba(53, 45, 38, 0.08);
+		--surface-stroke-strong: rgba(53, 45, 38, 0.14);
+		--surface-shadow: 0 22px 56px rgba(69, 49, 30, 0.08), 0 6px 16px rgba(69, 49, 30, 0.05);
+		--surface-shadow-tight: 0 12px 30px rgba(69, 49, 30, 0.07), 0 3px 10px rgba(69, 49, 30, 0.04);
 		--safe-top: env(safe-area-inset-top, 0px);
 		--safe-right: env(safe-area-inset-right, 0px);
 		--safe-bottom: env(safe-area-inset-bottom, 0px);
 		--safe-left: env(safe-area-inset-left, 0px);
 
-		--text: #1D1D1F;
+		--text: #231f20;
 		/* Apple's off-black — 15.6:1 on F5F5F7 ✅ AAA */
-		--text-muted: rgba(29, 29, 31, 0.72);
+		--text-muted: rgba(35, 31, 32, 0.72);
 		/* blended ~#666668 — 5.3:1 ✅ AA */
-		--text-dim: rgba(29, 29, 31, 0.55);
+		--text-dim: rgba(35, 31, 32, 0.56);
 		/* blended ~#898989 — 3.4:1 ✅ large text */
-		--text-ghost: rgba(29, 29, 31, 0.38);
+		--text-ghost: rgba(35, 31, 32, 0.36);
 		/* blended ~#ADADAD — 2.1:1 decorative only */
 
 		/* Semantic category colours — WCAG-safe for light mode */
-		--cat-logistics: #1d4ed8;
+		--cat-logistics: #3d61cf;
 		/* blue-700    — 5.9:1 ✅ AA */
-		--cat-intelligence: #6d28d9;
+		--cat-intelligence: #835ad6;
 		/* violet-700  — 6.7:1 ✅ AA */
-		--cat-ux: #047857;
+		--cat-ux: #be6f52;
 		/* emerald-700 — 5.1:1 ✅ AA */
-		--cat-logistics-bg: rgba(29, 78, 216, 0.08);
-		--cat-intelligence-bg: rgba(109, 40, 217, 0.08);
-		--cat-ux-bg: rgba(4, 120, 87, 0.08);
+		--cat-logistics-bg: rgba(61, 97, 207, 0.10);
+		--cat-intelligence-bg: rgba(131, 90, 214, 0.10);
+		--cat-ux-bg: rgba(190, 111, 82, 0.10);
 
 		--border-subtle: transparent;
-		--glow-color: rgba(16, 185, 129, 0.10);
+		--glow-color: rgba(190, 111, 82, 0.14);
+		--activity-1: rgba(217, 159, 114, 0.22);
+		--activity-2: rgba(208, 132, 95, 0.36);
+		--activity-3: rgba(195, 111, 82, 0.54);
+		--activity-4: rgba(190, 111, 82, 0.88);
+		--activity-glow: rgba(190, 111, 82, 0.26);
 
 		/* Shape tokens */
 		--radius-icon: 22.5%;
@@ -102,18 +108,18 @@
 		--glass-thick-blur: blur(48px) saturate(160%) brightness(1.40);
 		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.50) 40%, transparent 70%);
 
-		--cta-bg: #1D1D1F;
+		--cta-bg: #231f20;
 		--cta-text: #FFFFFF;
-		--cta-hover: rgba(29, 29, 31, 0.85);
+		--cta-hover: rgba(35, 31, 32, 0.88);
 
-		--cta-secondary-bg: rgba(0, 0, 0, 0.06);
-		--cta-secondary-text: rgba(29, 29, 31, 0.70);
-		--cta-secondary-hover: rgba(0, 0, 0, 0.10);
+		--cta-secondary-bg: rgba(35, 31, 32, 0.05);
+		--cta-secondary-text: rgba(35, 31, 32, 0.70);
+		--cta-secondary-hover: rgba(35, 31, 32, 0.10);
 
-		--gradient-mask-from: #F5F5F7;
-		--gradient-mask-via: rgba(245, 245, 247, 0.8);
+		--gradient-mask-from: #fbf5ee;
+		--gradient-mask-via: rgba(251, 245, 238, 0.8);
 
-		--scrollbar-track: #E5E5E5;
+		--scrollbar-track: #efe5da;
 
 		/* shadcn tokens */
 		--background: 0 0% 100%;
@@ -140,37 +146,37 @@
 
 	.dark {
 		/* Semantic theme tokens — dark mode */
-		--surface: #0D0D0D;
-		--surface-alt: #131313;
-		--surface-glass: rgba(13, 13, 13, 0.7);
-		--surface-card: rgba(255, 255, 255, 0.02);
-		--surface-card-hover: rgba(255, 255, 255, 0.04);
-		--surface-elevated: rgba(255, 255, 255, 0.04);
-		--surface-elevated-strong: rgba(255, 255, 255, 0.06);
-		--surface-chip: rgba(255, 255, 255, 0.08);
-		--surface-stroke: rgba(255, 255, 255, 0.07);
-		--surface-stroke-strong: rgba(255, 255, 255, 0.12);
-		--surface-shadow: 0 24px 56px rgba(0, 0, 0, 0.26), 0 6px 18px rgba(0, 0, 0, 0.20);
-		--surface-shadow-tight: 0 14px 32px rgba(0, 0, 0, 0.20), 0 4px 12px rgba(0, 0, 0, 0.16);
+		--surface: #171312;
+		--surface-alt: #201a19;
+		--surface-glass: rgba(23, 19, 18, 0.72);
+		--surface-card: rgba(255, 248, 243, 0.03);
+		--surface-card-hover: rgba(255, 248, 243, 0.05);
+		--surface-elevated: rgba(255, 248, 243, 0.05);
+		--surface-elevated-strong: rgba(255, 248, 243, 0.07);
+		--surface-chip: rgba(255, 248, 243, 0.12);
+		--surface-stroke: rgba(255, 244, 238, 0.08);
+		--surface-stroke-strong: rgba(255, 244, 238, 0.14);
+		--surface-shadow: 0 24px 56px rgba(0, 0, 0, 0.30), 0 6px 18px rgba(0, 0, 0, 0.22);
+		--surface-shadow-tight: 0 14px 32px rgba(0, 0, 0, 0.22), 0 4px 12px rgba(0, 0, 0, 0.18);
 
-		--text: #FFFFFF;
-		--text-muted: rgba(255, 255, 255, 0.65);
+		--text: #f8f3ef;
+		--text-muted: rgba(248, 243, 239, 0.68);
 		/* ~4.6:1 on #0D0D0D ✅ AA */
-		--text-dim: rgba(255, 255, 255, 0.45);
+		--text-dim: rgba(248, 243, 239, 0.66);
 		/* ~3.1:1 ✅ large text */
-		--text-ghost: rgba(255, 255, 255, 0.30);
+		--text-ghost: rgba(248, 243, 239, 0.56);
 		/* ~2.1:1 decorative */
 
 		/* Semantic category colours — bright pastels for dark surfaces */
-		--cat-logistics: #93c5fd;
+		--cat-logistics: #9fb7ff;
 		/* blue-300   */
-		--cat-intelligence: #c4b5fd;
+		--cat-intelligence: #d0bbff;
 		/* violet-300 */
-		--cat-ux: #34d399;
+		--cat-ux: #f0a17f;
 		/* emerald-400 */
-		--cat-logistics-bg: rgba(147, 197, 253, 0.10);
-		--cat-intelligence-bg: rgba(196, 181, 253, 0.10);
-		--cat-ux-bg: rgba(52, 211, 153, 0.10);
+		--cat-logistics-bg: rgba(159, 183, 255, 0.12);
+		--cat-intelligence-bg: rgba(208, 187, 255, 0.12);
+		--cat-ux-bg: rgba(240, 161, 127, 0.12);
 
 		--border-subtle: transparent;
 
@@ -185,7 +191,12 @@
 		--glass-thick-bg: transparent;
 		--glass-thick-blur: blur(48px) saturate(230%) brightness(0.55);
 		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.65) 45%, transparent 72%);
-		--glow-color: rgba(16, 185, 129, 0.18);
+		--glow-color: rgba(240, 161, 127, 0.18);
+		--activity-1: rgba(240, 177, 141, 0.22);
+		--activity-2: rgba(230, 154, 118, 0.34);
+		--activity-3: rgba(223, 136, 101, 0.56);
+		--activity-4: rgba(240, 161, 127, 0.92);
+		--activity-glow: rgba(240, 161, 127, 0.30);
 
 		--cta-bg: #FFFFFF;
 		--cta-text: #000000;
@@ -195,10 +206,10 @@
 		--cta-secondary-text: rgba(255, 255, 255, 0.7);
 		--cta-secondary-hover: rgba(255, 255, 255, 0.1);
 
-		--gradient-mask-from: #0D0D0D;
-		--gradient-mask-via: rgba(13, 13, 13, 0.8);
+		--gradient-mask-from: #171312;
+		--gradient-mask-via: rgba(23, 19, 18, 0.8);
 
-		--scrollbar-track: #0D0D0D;
+		--scrollbar-track: #171312;
 
 		/* shadcn tokens */
 		--background: 222.2 84% 4.9%;
@@ -266,13 +277,14 @@
 	}
 
 	::-webkit-scrollbar-thumb {
-		@apply bg-emerald-500 rounded-full;
-		box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+		background: var(--cat-ux);
+		border-radius: 9999px;
+		box-shadow: 0 0 10px color-mix(in srgb, var(--cat-ux) 45%, transparent);
 	}
 
 	::-webkit-scrollbar-thumb:hover {
-		@apply bg-emerald-400;
-		box-shadow: 0 0 15px rgba(16, 185, 129, 0.8);
+		background: color-mix(in srgb, var(--cat-ux) 84%, white 16%);
+		box-shadow: 0 0 15px color-mix(in srgb, var(--cat-ux) 65%, transparent);
 	}
 }
 
@@ -291,50 +303,7 @@
 	.contain-content { contain: content; }
 	.contain-layout  { contain: layout style; }
 
-	/* ─── Perf Tier CSS Overrides — applied via html.perf-* class by UIProvider ── */
-
-	/* Medium tier (mobile) — reduce blur cost */
-	html.perf-medium .glass-thick {
-		backdrop-filter: blur(20px) saturate(160%) brightness(1.2);
-		-webkit-backdrop-filter: blur(20px) saturate(160%) brightness(1.2);
-	}
-	html.perf-medium .glass-regular {
-		backdrop-filter: blur(14px) saturate(140%);
-		-webkit-backdrop-filter: blur(14px) saturate(140%);
-	}
-	html.perf-medium .glass-thin {
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
-	}
-	html.perf-medium .glass-ultra-thin {
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
-	}
-
-	/* Low tier (reduced-motion / no WebGL / very low dpr) — kill expensive filters */
-	html.perf-low .glass-thick,
-	html.perf-low .glass-regular,
-	html.perf-low .glass-thin {
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
-	}
-	html.perf-low .glass-ultra-thin {
-		backdrop-filter: none;
-		-webkit-backdrop-filter: none;
-	}
-
-	/* Disable all backdrop filters for prefers-reduced-motion */
-	@media (prefers-reduced-motion: reduce) {
-		.glass-ultra, .glass-ultra-thin, .glass-thin, .glass-regular, .glass-thick {
-			backdrop-filter: none !important;
-			-webkit-backdrop-filter: none !important;
-		}
-		.animate-marquee, .animate-marquee-reverse {
-			animation-play-state: paused !important;
-		}
-	}
-
-	.bg-grid-pattern {
+		.bg-grid-pattern {
 		background-size: 40px 40px;
 		background-image: linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
 			linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
@@ -382,10 +351,8 @@
 	.surface-panel,
 	.surface-card,
 	.surface-chip {
-		border: 1px solid var(--surface-stroke);
 		transition:
 			background-color 300ms ease,
-			border-color 300ms ease,
 			box-shadow 300ms ease,
 			transform 300ms ease;
 	}
@@ -402,7 +369,9 @@
 
 	.surface-chip {
 		background: var(--surface-chip);
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			0 6px 18px rgba(69, 49, 30, 0.05);
 	}
 
 	.safe-top {
@@ -531,84 +500,4 @@
 		pointer-events: none;
 		z-index: 1;
 	}
-}
-
-/* ─── Marquee animations — TechMarquee component ─────────────────────────── */
-@keyframes orb-float {
-	0%, 100% {
-		transform: translate3d(0, 0, 0);
-	}
-
-	50% {
-		transform: translate3d(0, -8px, 0);
-	}
-}
-
-@keyframes orb-spin {
-	from {
-		transform: rotate(0deg);
-	}
-
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-@keyframes orb-spin-reverse {
-	from {
-		transform: rotate(360deg);
-	}
-
-	to {
-		transform: rotate(0deg);
-	}
-}
-
-@keyframes orb-breathe {
-	0%, 100% {
-		opacity: 0.62;
-	}
-
-	50% {
-		opacity: 0.9;
-	}
-}
-
-@keyframes marquee {
-	0% {
-		transform: translateX(0);
-	}
-
-	100% {
-		transform: translateX(-50%);
-	}
-}
-
-@keyframes marquee-reverse {
-	0% {
-		transform: translateX(-50%);
-	}
-
-	100% {
-		transform: translateX(0);
-	}
-}
-
-.animate-marquee {
-	animation: marquee 48s linear infinite;
-	will-change: transform;
-	transform: translateZ(0);
-	backface-visibility: hidden;
-}
-
-.animate-marquee-reverse {
-	animation: marquee-reverse 48s linear infinite;
-	will-change: transform;
-	transform: translateZ(0);
-	backface-visibility: hidden;
-}
-
-.animate-marquee:hover,
-.animate-marquee-reverse:hover {
-	animation-play-state: paused;
 }

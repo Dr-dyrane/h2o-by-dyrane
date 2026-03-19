@@ -4,46 +4,112 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-	<title>H₂O by Dyrane | Premium Hydration Solutions</title>
-	<meta name="description" content="Refresh with purity, sustain the future. H₂O by Dyrane offers premium hydration solutions with cutting-edge technology and sustainable practices." />
-	<meta name="keywords" content="H2O, water, hydration, premium water, sustainable, Dyrane, clean water, eco-friendly" />
-	
-	<!-- Canonical URL -->
+	<title>Dyrane | Premium Websites, AI Tools, and Custom Platforms</title>
+	<meta name="description" content="I design and build premium websites, AI tools, and custom platforms that help brands and teams communicate clearly, move faster, and feel more trustworthy." />
+	<meta name="keywords" content="Dyrane, portfolio, premium websites, AI tools, custom platforms, product design, frontend development" />
+	<meta name="theme-color" content="#fbf5ee" />
+
 	<link rel="canonical" href="https://dyrane.tech/" />
-	
-	<!-- Favicon -->
+
 	<link rel="icon" type="image/png" href="/logo.png" />
 	<link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-	
+
+	<script>
+		(() => {
+			try {
+				const storedTheme = localStorage.getItem("theme");
+				const resolvedTheme =
+					storedTheme === "light" || storedTheme === "dark"
+						? storedTheme
+						: window.matchMedia("(prefers-color-scheme: dark)").matches
+							? "dark"
+							: "light";
+
+				const root = document.documentElement;
+				root.classList.remove("light", "dark");
+				root.classList.add(resolvedTheme);
+			} catch {
+				document.documentElement.classList.add("dark");
+			}
+		})();
+	</script>
+
+	<script>
+		(() => {
+			const hostname = window.location.hostname;
+			const isLocalHost =
+				hostname === "localhost" ||
+				hostname === "127.0.0.1" ||
+				hostname === "[::1]";
+
+			window.__ENABLE_VERCEL_ANALYTICS__ = !isLocalHost;
+
+			if (!("serviceWorker" in navigator)) {
+				return;
+			}
+
+			if (isLocalHost) {
+				window.addEventListener(
+					"load",
+					() => {
+						navigator.serviceWorker
+							.getRegistrations()
+							.then((registrations) =>
+								Promise.all(registrations.map((registration) => registration.unregister()))
+							)
+							.catch(() => undefined);
+
+						if ("caches" in window) {
+							caches
+								.keys()
+								.then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+								.catch(() => undefined);
+						}
+					},
+					{ once: true }
+				);
+				return;
+			}
+
+			window.addEventListener(
+				"load",
+				() => {
+					navigator.serviceWorker
+						.register("/sw.js", { scope: "/" })
+						.catch(() => undefined);
+				},
+				{ once: true }
+			);
+		})();
+	</script>
+
 	<link rel="preload" href="/fonts/SF-Pro-Display-Regular.woff2" as="font" type="font/woff2" crossorigin />
 	<link rel="preload" href="/fonts/SF-Pro-Display-Semibold.woff2" as="font" type="font/woff2" crossorigin />
-	
-	<!-- OpenGraph / Facebook -->
+
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://dyrane.tech/" />
-	<meta property="og:site_name" content="by Dyrane" />
-	<meta property="og:title" content="by Dyrane | Premium Solutions" />
-	<meta property="og:description" content="Refresh with purity, sustain the future. by Dyrane offers premium solutions with cutting-edge technology and sustainable practices." />
+	<meta property="og:site_name" content="Dyrane" />
+	<meta property="og:title" content="Dyrane | Premium Websites, AI Tools, and Custom Platforms" />
+	<meta property="og:description" content="Premium websites, AI tools, and custom platforms designed to make products easier to understand, easier to trust, and easier to use." />
 	<meta property="og:image" content="https://dyrane.tech/og-image.png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 
-	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:url" content="https://dyrane.tech/" />
-	<meta name="twitter:title" content="by Dyrane | Premium SAS Solutions" />
-	<meta name="twitter:description" content="Refresh with purity, sustain the future. by Dyrane offers premium solutions with cutting-edge technology and sustainable practices." />
+	<meta name="twitter:title" content="Dyrane | Premium Websites, AI Tools, and Custom Platforms" />
+	<meta name="twitter:description" content="Premium websites, AI tools, and custom platforms designed to make products easier to understand, easier to trust, and easier to use." />
 	<meta name="twitter:image" content="https://dyrane.tech/og-image.png" />
-	
-	<!-- Structured Data -->
+
 	<script type="application/ld+json">
 	{
 		"@context": "https://schema.org",
-		"@type": "Organization",
-		"name": "by Dyrane",
+		"@type": "Person",
+		"name": "Dyrane",
 		"url": "https://dyrane.tech",
-		"logo": "https://dyrane.tech/logo.png",
-		"description": "Premium hydration solutions with cutting-edge technology and sustainable practices.",
+		"image": "https://dyrane.tech/logo.png",
+		"jobTitle": "Product Designer and Developer",
+		"description": "I design and build premium websites, AI tools, and custom platforms for brands and teams that need clarity, trust, and speed.",
 		"sameAs": [
 			"https://github.com/dyrane"
 		]
@@ -55,6 +121,5 @@
 	<div id="root"><!--ssr-outlet--></div>
 	<script type="module" src="/src/entry-client.tsx"></script>
 </body>
-
 
 </html>

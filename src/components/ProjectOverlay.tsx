@@ -1,5 +1,4 @@
-
-import { Project } from "@/data/projects";
+import type { Project } from "@/data/projects";
 import {
     X,
     ArrowRight,
@@ -24,10 +23,68 @@ interface ProjectOverlayProps {
 }
 
 const categoryColor: Record<string, { text: string; accentBg: string; }> = {
-    "Logistics Engine": { text: "text-[var(--cat-logistics)]", accentBg: "bg-[var(--cat-logistics-bg)]" },
-    "Intelligence Bridge": { text: "text-[var(--cat-intelligence)]", accentBg: "bg-[var(--cat-intelligence-bg)]" },
+    "Logistics Engine": { text: "text-[var(--cat-ux)]", accentBg: "bg-[var(--cat-ux-bg)]" },
+    "Intelligence Bridge": { text: "text-[var(--cat-ux)]", accentBg: "bg-[var(--cat-ux-bg)]" },
     "Modernized UX": { text: "text-[var(--cat-ux)]", accentBg: "bg-[var(--cat-ux-bg)]" },
 };
+
+const categoryNarratives: Record<Project["category"], { works: string; fallbackNeed: string }> = {
+    "Logistics Engine": {
+        works: "Built as an operations product with live system states, clear routing, and a decision surface teams can trust when timing matters.",
+        fallbackNeed: "Best for teams that need clearer dispatch, routing, coordination, or visibility across moving parts.",
+    },
+    "Intelligence Bridge": {
+        works: "Built to turn complex logic into a product people can actually use, trust, and act on without needing to understand the underlying model behavior.",
+        fallbackNeed: "Best for teams that want AI or automation to support real decisions without making the experience feel vague or risky.",
+    },
+    "Modernized UX": {
+        works: "Built to make the product easier to trust, easier to understand, and more persuasive at the moment a client decides whether to move forward.",
+        fallbackNeed: "Best for products that already exist but need stronger clarity, premium positioning, or a smoother path to conversion.",
+    },
+};
+
+const cleanCopy = (value: string) =>
+    value
+        .replace(/â€”/g, "—")
+        .replace(/â†’/g, "->")
+        .replace(/Â·/g, "·")
+        .replace(/â€™/g, "'")
+        .replace(/â€œ|â€/g, '"')
+        .replace(/\s+/g, " ")
+        .trim();
+
+const firstSentence = (value: string) => {
+    const cleaned = cleanCopy(value);
+    const match = cleaned.match(/^.+?[.!?](?=\s|$)/);
+    return match ? match[0].trim() : cleaned;
+};
+
+const formatList = (items: string[]) => {
+    if (items.length === 0) return "";
+    if (items.length === 1) return items[0];
+    if (items.length === 2) return `${items[0]} and ${items[1]}`;
+    return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+};
+
+const getTopLanguages = (project: Project, count = 3) =>
+    project.github_stats.languages.slice(0, count).map(cleanCopy);
+
+const getDeliverySummary = (project: Project) => {
+    const stack = formatList(getTopLanguages(project));
+    return stack
+        ? `${categoryNarratives[project.category].works} Core systems include ${stack}.`
+        : categoryNarratives[project.category].works;
+};
+
+const getNeedSummary = (project: Project) => {
+    const summary = firstSentence(project.challenge);
+    return summary.length <= 170
+        ? summary
+        : categoryNarratives[project.category].fallbackNeed;
+};
+
+const formatCommitCount = (commits: number) =>
+    commits >= 1000 ? `${(commits / 1000).toFixed(commits >= 10000 ? 0 : 1)}k` : `${commits}`;
 
 export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps) => {
     const [activeStep, setActiveStep] = useState(1);
@@ -55,14 +112,24 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
     const screenshotUrl = `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`;
     const { text: catText, accentBg: catAccentBg } = categoryColor[project.category] ?? {
-        text: "text-emerald-400",
-        accentBg: "bg-emerald-500/20",
+        text: "text-[var(--cat-ux)]",
+        accentBg: "bg-[var(--cat-ux-bg)]",
     };
+    const cleanedDescription = cleanCopy(project.description);
+    const deliverySummary = getDeliverySummary(project);
+    const needSummary = getNeedSummary(project);
+    const directionSummary = cleanCopy(project.proposal);
+    const topLanguages = getTopLanguages(project);
+    const secondarySignal = project.github_stats.stars
+        ? { label: "Stars", value: `${project.github_stats.stars}`, icon: Star }
+        : { label: "Status", value: "Live", icon: Globe };
+    const SecondarySignalIcon = secondarySignal.icon;
+    const mailSubject = `Project Inquiry: ${project.title}`;
 
     const steps = [
-        { id: 1, label: "Visual Intelligence" },
-        { id: 2, label: "Intelligence Architecture" },
-        { id: 3, label: "Strategic Impact" }
+        { id: 1, label: "Product Overview" },
+        { id: 2, label: "How It Works" },
+        { id: 3, label: "Business Fit" }
     ];
 
     const handleNext = () => { if (activeStep < 3) setActiveStep(p => p + 1); };
@@ -141,13 +208,13 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 target="_blank" rel="noopener noreferrer"
                                                 className={`flex items-center gap-2 px-5 py-2.5 squircle-pill surface-chip ${catText} text-[10px] font-mono uppercase tracking-widest`}
                                             >
-                                                Launch <ExternalLink size={12} />
+                                                View Live Site <ExternalLink size={12} />
                                             </a>
                                         </div>
 
                                         <div className="absolute bottom-8 left-6 right-6">
                                             <h4 className="text-3xl font-semibold text-white tracking-tighter mb-2">{project.title}</h4>
-                                            <p className="text-white/70 text-base font-light leading-relaxed">{project.description}</p>
+                                            <p className="text-white/70 text-base font-light leading-relaxed">{cleanedDescription}</p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -161,15 +228,15 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                                     className="absolute inset-0 px-5 flex flex-col justify-center space-y-7"
                                 >
-                                    <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{project.architecture}</p>
+                                    <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{deliverySummary}</p>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="p-7 squircle-nav surface-card">
-                                            <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.commits}</div>
-                                            <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Commits</div>
+                                            <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{formatCommitCount(project.github_stats.commits)}</div>
+                                            <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Build Depth</div>
                                         </div>
                                         <div className="p-7 squircle-nav surface-card">
-                                            <div className="text-blue-400 text-4xl font-light mb-1 tracking-tighter">99.9%</div>
-                                            <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Stability</div>
+                                            <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.languages.length}</div>
+                                            <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Core Systems</div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -184,23 +251,27 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     className="absolute inset-0 px-5 flex flex-col justify-center space-y-7"
                                 >
                                     <div className="squircle p-7 surface-card">
-                                        <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Protocol Resolution</h4>
-                                        <p className="text-[var(--text-muted)] text-xl font-light tracking-tight italic">"{project.proposal}"</p>
+                                        <h4 className="text-[10px] font-mono uppercase tracking-widest mb-3 text-[var(--text-ghost)]">Best When</h4>
+                                        <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{needSummary}</p>
+                                    </div>
+                                    <div className={`squircle p-7 surface-card ${catAccentBg}`}>
+                                        <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Recommended Direction</h4>
+                                        <p className="text-[var(--text-muted)] text-xl font-light tracking-tight italic">"{directionSummary}"</p>
                                     </div>
                                     <div className="flex flex-col gap-3">
                                         <a href={`https://${project.link}`} target="_blank"
                                             className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
                                             <div>
-                                                <span className={`text-[10px] font-mono uppercase tracking-widest mb-0.5 block ${catText}`}>Live Interface</span>
-                                                <span className="text-[var(--text)] text-base font-medium">Deploy Intelligence</span>
+                                                <span className={`text-[10px] font-mono uppercase tracking-widest mb-0.5 block ${catText}`}>Live Product</span>
+                                                <span className="text-[var(--text)] text-base font-medium">Open Live Site</span>
                                             </div>
                                             <ArrowUpRight size={20} className={`${catText} group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform`} />
                                         </a>
-                                        <a href={`mailto:hello@dyrane.tech?subject=Inquiry: ${project.title}`}
+                                        <a href={`mailto:hello@dyrane.tech?subject=${encodeURIComponent(mailSubject)}`}
                                             className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
                                             <div>
-                                                <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block text-[var(--text-ghost)]">Partner Up</span>
-                                                <span className="text-[var(--text-dim)] text-base font-medium">Interface Architect</span>
+                                                <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block text-[var(--text-ghost)]">Next Step</span>
+                                                <span className="text-[var(--text-dim)] text-base font-medium">Start a Conversation</span>
                                             </div>
                                             <Globe size={20} className="text-[var(--text-ghost)] group-hover:rotate-12 transition-transform" />
                                         </a>
@@ -297,18 +368,18 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     <div className="mt-auto">
                         <div className="squircle-nav p-4 surface-card space-y-3">
                             <div className={`flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider ${catText} opacity-70`}>
-                                <Github size={11} /> Source Intelligence
+                                <Github size={11} /> Delivery Signals
                             </div>
                             <div className="flex items-center justify-between text-[var(--text-dim)] text-xs font-mono">
                                 <span className="flex items-center gap-1.5">
-                                    <GitCommit size={13} className={catText} /> {project.github_stats.commits}
+                                    <GitCommit size={13} className={catText} /> {formatCommitCount(project.github_stats.commits)}
                                 </span>
                                 <span className="flex items-center gap-1.5">
-                                    <Star size={13} className="text-amber-400/70" /> {project.github_stats.stars || 0}
+                                    <SecondarySignalIcon size={13} className={catText} /> {secondarySignal.value}
                                 </span>
                             </div>
                             <div className="flex flex-wrap gap-1">
-                                {project.github_stats.languages.map(lang => (
+                                {topLanguages.map(lang => (
                                     <span key={lang} className="squircle-chip surface-chip px-2 py-0.5 text-[9px] text-[var(--text-ghost)] font-mono uppercase tracking-wider">
                                         {lang}
                                     </span>
@@ -342,7 +413,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {activeStep === 1 && (
                                     <div className="flex flex-col h-full">
                                         <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">Visual Intelligence</h3>
+                                            <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">Product Overview</h3>
                                         </div>
                                         <div className="flex-1 relative squircle overflow-hidden bg-black shrink-0 min-h-[360px] shadow-[0_32px_64px_rgba(0,0,0,0.4)]">
                                             <img
@@ -364,19 +435,19 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                     target="_blank" rel="noopener noreferrer"
                                                     className={`flex items-center gap-2 px-5 py-2.5 squircle-pill surface-chip ${catText} text-[10px] font-mono uppercase tracking-widest transition-colors duration-200`}
                                                 >
-                                                    Launch <ExternalLink size={11} />
+                                                    View Live Site <ExternalLink size={11} />
                                                 </a>
                                             </div>
 
                                             <div className="absolute bottom-6 left-6 right-6">
-                                                <p className="text-white/80 text-lg leading-relaxed font-light">{project.description}</p>
+                                                <p className="text-white/80 text-lg leading-relaxed font-light">{cleanedDescription}</p>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => setActiveStep(2)}
                                             className="mt-4 self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-colors duration-200 text-[10px] font-mono tracking-[0.2em] uppercase"
                                         >
-                                            Deconstruct Architecture <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                                            See How It Works <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
                                 )}
@@ -384,20 +455,20 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {/* Step 2 — Architecture */}
                                 {activeStep === 2 && (
                                     <div className="flex flex-col justify-center h-full space-y-6">
-                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">Intelligence Architecture</h3>
+                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">How It Works</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-center">
                                             <div className="space-y-5">
-                                                <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">{project.architecture}</p>
+                                                <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">{deliverySummary}</p>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="squircle-nav p-5 surface-card">
                                                         <div className={`text-3xl font-light mb-1 tracking-tighter tabular-nums ${catText}`}>
-                                                            {project.github_stats.commits > 1000 ? '1.2k+' : project.github_stats.commits}
+                                                            {formatCommitCount(project.github_stats.commits)}
                                                         </div>
-                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Core Modules</div>
+                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Build Depth</div>
                                                     </div>
                                                     <div className="squircle-nav p-5 surface-card">
-                                                        <div className="text-blue-400 text-3xl font-light mb-1 tracking-tighter">99.9%</div>
-                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Uptime Target</div>
+                                                        <div className={`text-3xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.languages.length}</div>
+                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Core Systems</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -415,7 +486,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             onClick={() => setActiveStep(3)}
                                             className="self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-colors duration-200 text-[10px] font-mono tracking-[0.2em] uppercase"
                                         >
-                                            Impact Assessment <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                                            See Business Fit <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
                                 )}
@@ -423,28 +494,28 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {/* Step 3 — Impact */}
                                 {activeStep === 3 && (
                                     <div className="max-w-2xl flex flex-col pt-4 pb-8">
-                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight mb-6">Strategic Impact</h3>
+                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight mb-6">Business Fit</h3>
                                         <div className="space-y-4 mb-10">
                                             <div className="squircle p-7 surface-card">
-                                                <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">The Challenge</h4>
-                                                <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{project.challenge}</p>
+                                                <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">Best When</h4>
+                                                <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{needSummary}</p>
                                             </div>
                                             <div className={`squircle p-7 surface-card ${catAccentBg}`}>
-                                                <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>The Proposal</h4>
-                                                <p className="text-[var(--text-muted)] text-lg leading-relaxed font-light italic">"{project.proposal}"</p>
+                                                <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>Recommended Direction</h4>
+                                                <p className="text-[var(--text-muted)] text-lg leading-relaxed font-light italic">"{directionSummary}"</p>
                                             </div>
                                         </div>
 
                                         <div className="flex flex-col sm:flex-row items-center gap-10">
                                             <a
-                                                href={`mailto:hello@dyrane.tech?subject=Intelligence Inquiry: ${project.title} Deployment`}
+                                                href={`mailto:hello@dyrane.tech?subject=${encodeURIComponent(mailSubject)}`}
                                                 className="group flex items-center gap-4 text-[var(--text)] transition-colors duration-200 hover:text-[var(--text)]"
                                             >
                                                 <div>
                                                     <span className={`text-[10px] font-mono uppercase tracking-widest mb-0.5 block opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-y-0 ${catText}`}>
-                                                        Request Access
+                                                        Start a Conversation
                                                     </span>
-                                                    <span className="text-xl font-semibold tracking-tight">Deploy Intelligence</span>
+                                                    <span className="text-xl font-semibold tracking-tight">Discuss This Kind of Project</span>
                                                 </div>
                                                 <div className="p-4 squircle-icon surface-chip transition-colors duration-200">
                                                     <ArrowUpRight size={22} className="transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -461,9 +532,9 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             >
                                                 <div>
                                                     <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-y-0 text-[var(--text-ghost)]">
-                                                        Visit Interface
+                                                        Visit Live Site
                                                     </span>
-                                                    <span className="text-xl font-semibold tracking-tight">Full System</span>
+                                                    <span className="text-xl font-semibold tracking-tight">Open Live Product</span>
                                                 </div>
                                                 <div className="p-4 squircle-icon surface-chip transition-colors duration-200">
                                                     <Globe size={22} className="group-hover:rotate-12 transition-transform duration-400" />

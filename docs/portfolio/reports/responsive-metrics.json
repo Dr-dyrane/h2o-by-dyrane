@@ -1,0 +1,207 @@
+[
+  {
+    "width": 768,
+    "scrollWidth": 764,
+    "hasHorizontalOverflow": false,
+    "nav": {
+      "left": 24,
+      "right": 740,
+      "width": 716,
+      "children": [
+        {
+          "tag": "A",
+          "display": "block",
+          "left": 48,
+          "right": 167,
+          "width": 119
+        },
+        {
+          "tag": "DIV",
+          "display": "none",
+          "left": 0,
+          "right": 0,
+          "width": 0
+        },
+        {
+          "tag": "DIV",
+          "display": "none",
+          "left": 0,
+          "right": 0,
+          "width": 0
+        },
+        {
+          "tag": "BUTTON",
+          "display": "flex",
+          "left": 676,
+          "right": 716,
+          "width": 40
+        }
+      ]
+    },
+    "overflowingSections": []
+  },
+  {
+    "width": 820,
+    "scrollWidth": 816,
+    "hasHorizontalOverflow": false,
+    "nav": {
+      "left": 24,
+      "right": 792,
+      "width": 768,
+      "children": [
+        {
+          "tag": "A",
+          "display": "block",
+          "left": 48,
+          "right": 167,
+          "width": 119
+        },
+        {
+          "tag": "DIV",
+          "display": "none",
+          "left": 0,
+          "right": 0,
+          "width": 0
+        },
+        {
+          "tag": "DIV",
+          "display": "none",
+          "left": 0,
+          "right": 0,
+          "width": 0
+        },
+        {
+          "tag": "BUTTON",
+          "display": "flex",
+          "left": 728,
+          "right": 768,
+          "width": 40
+        }
+      ]
+    },
+    "overflowingSections": []
+  },
+  {
+    "width": 1024,
+    "scrollWidth": 1020,
+    "hasHorizontalOverflow": false,
+    "nav": {
+      "left": 24,
+      "right": 996,
+      "width": 972,
+      "children": [
+        {
+          "tag": "A",
+          "display": "block",
+          "left": 48,
+          "right": 282,
+          "width": 234
+        },
+        {
+          "tag": "DIV",
+          "display": "flex",
+          "left": 326,
+          "right": 631,
+          "width": 305
+        },
+        {
+          "tag": "DIV",
+          "display": "flex",
+          "left": 675,
+          "right": 972,
+          "width": 297
+        },
+        {
+          "tag": "BUTTON",
+          "display": "none",
+          "left": 0,
+          "right": 0,
+          "width": 0
+        }
+      ]
+    },
+    "overflowingSections": []
+  },
+  {
+    "width": 1280,
+    "scrollWidth": 1276,
+    "hasHorizontalOverflow": false,
+    "nav": {
+      "left": 24,
+      "right": 1252,
+      "width": 1228,
+      "children": [
+        {
+          "tag": "A",
+          "display": "block",
+          "left": 48,
+          "right": 282,
+          "width": 234
+        },
+        {
+          "tag": "DIV",
+          "display": "flex",
+          "left": 454,
+          "right": 759,
+          "width": 305
+        },
+        {
+          "tag": "DIV",
+          "display": "flex",
+          "left": 931,
+          "right": 1228,
+          "width": 297
+        },
+        {
+          "tag": "BUTTON",
+          "display": "none",
+          "left": 0,
+          "right": 0,
+          "width": 0
+        }
+      ]
+    },
+    "overflowingSections": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1436,
+    "hasHorizontalOverflow": false,
+    "nav": {
+      "left": 78,
+      "right": 1358,
+      "width": 1280,
+      "children": [
+        {
+          "tag": "A",
+          "display": "block",
+          "left": 102,
+          "right": 336,
+          "width": 234
+        },
+        {
+          "tag": "DIV",
+          "display": "flex",
+          "left": 534,
+          "right": 839,
+          "width": 305
+        },
+        {
+          "tag": "DIV",
+          "display": "flex",
+          "left": 1037,
+          "right": 1334,
+          "width": 297
+        },
+        {
+          "tag": "BUTTON",
+          "display": "none",
+          "left": 0,
+          "right": 0,
+          "width": 0
+        }
+      ]
+    },
+    "overflowingSections": []
+  }
+]

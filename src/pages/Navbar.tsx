@@ -5,9 +5,9 @@ import { ArrowUpRight, Equal, Github, Moon, Sun, X } from "@/components/icons/lu
 import { useTheme } from "@/components/ThemeProvider"
 
 const navItems = [
-  { name: "Work", href: "#logistics-engine" },
-  { name: "Architecture", href: "#intelligence-bridge" },
-  { name: "Interface", href: "#modernized-ux" },
+  { name: "Services", href: "#services" },
+  { name: "Work", href: "#featured-work" },
+  { name: "Process", href: "#how-i-work" },
   { name: "Pulse", href: "#engineering-dna" },
 ]
 
@@ -67,13 +67,13 @@ export function Navbar() {
       <div className="safe-top px-3 md:px-6 relative z-20">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 squircle-nav glass-ultra px-4 shadow-[0_16px_48px_rgba(0,0,0,0.08)] md:h-16 md:px-6">
         <a href="#" className="min-w-0 text-[15px] font-semibold tracking-tight text-[var(--text)] md:text-base">
-          Dr. Dyrane
-          <span className="ml-1.5 hidden font-light text-[var(--text-muted)] md:inline">
-            Intelligence Collective
+          Alexander Dyrane
+          <span className="ml-1.5 hidden font-light text-[var(--text-muted)] lg:inline">
+            Product Engineer
           </span>
         </a>
 
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-1 lg:flex">
           {navItems.map((item) => (
             <a
               key={item.name}
@@ -85,7 +85,7 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <a
             href="https://x.com/dr_dyrane"
             target="_blank"
@@ -111,14 +111,14 @@ export function Navbar() {
             href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
             className="ml-1 inline-flex items-center gap-2 px-5 py-2.5 squircle-pill bg-[var(--cta-bg)] text-sm font-medium text-[var(--cta-text)] transition-colors duration-200 hover:bg-[var(--cta-hover)]"
           >
-            Start Project
+            Start a Project
             <ArrowUpRight size={16} />
           </a>
         </div>
 
         <button
           onClick={() => setIsOpen((value) => !value)}
-          className="flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)] md:hidden"
+          className="flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)] lg:hidden"
           aria-expanded={isOpen}
           aria-controls="mobile-nav-sheet"
           aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -129,7 +129,7 @@ export function Navbar() {
       </div>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-10 md:hidden" aria-hidden="true">
+        <div className="fixed inset-0 z-10 lg:hidden" aria-hidden="true">
           <button
             className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
             onClick={() => setIsOpen(false)}
@@ -185,7 +185,7 @@ export function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className="inline-flex w-full items-center justify-center gap-2 px-5 py-4 squircle-pill bg-[var(--cta-bg)] text-sm font-semibold text-[var(--cta-text)] transition-colors duration-200 hover:bg-[var(--cta-hover)]"
                   >
-                    Start Project
+                    Start a Project
                     <ArrowUpRight size={16} />
                   </a>
                 </div>

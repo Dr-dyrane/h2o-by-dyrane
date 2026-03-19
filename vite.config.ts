@@ -13,15 +13,17 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: false,
       includeAssets: ["favicon.ico", "robots.txt", "/icons/*.png", "og-image.png"],
       manifest: {
-        name: "H₂O by Dyrane",
-        short_name: "H₂O Dyrane",
-        description: "Refresh with purity, sustain the future. Premium hydration solutions with cutting-edge technology and sustainable practices.",
+        name: "Dyrane",
+        short_name: "Dyrane",
+        description:
+          "Premium websites, AI tools, and custom platforms designed to make products easier to understand, easier to trust, and easier to use.",
         start_url: "/",
         display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#0ea5e9",
+        background_color: "#fbf5ee",
+        theme_color: "#fbf5ee",
         orientation: "portrait",
         scope: "/",
         lang: "en",
@@ -39,16 +41,16 @@ export default defineConfig({
             purpose: "any maskable",
           },
         ],
-        categories: ["lifestyle", "health", "utilities"],
+        categories: ["business", "productivity", "technology"],
         screenshots: [
           {
             src: "/og-image.png",
             sizes: "1200x630",
             type: "image/png",
             form_factor: "wide",
-            label: "H₂O by Dyrane - Premium Hydration Solutions"
-          }
-        ]
+            label: "Dyrane - Premium websites, AI tools, and custom platforms",
+          },
+        ],
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
@@ -60,26 +62,24 @@ export default defineConfig({
               cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
               cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
-      }
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
     }),
   ],
   build: {
     outDir: "dist",
     sourcemap: true,
   },
-
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-
 });
