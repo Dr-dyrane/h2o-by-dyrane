@@ -15,6 +15,7 @@ import {
 } from "@/components/icons/lucide";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cleanCopy, getFirstSentence, formatList } from "@/utils/content";
 
 interface ProjectOverlayProps {
     project: Project | null;
@@ -22,10 +23,22 @@ interface ProjectOverlayProps {
     onClose: () => void;
 }
 
-const categoryColor: Record<string, { text: string; accentBg: string; }> = {
-    "Logistics Engine": { text: "text-[var(--cat-ux)]", accentBg: "bg-[var(--cat-ux-bg)]" },
-    "Intelligence Bridge": { text: "text-[var(--cat-ux)]", accentBg: "bg-[var(--cat-ux-bg)]" },
-    "Modernized UX": { text: "text-[var(--cat-ux)]", accentBg: "bg-[var(--cat-ux-bg)]" },
+const categoryColor: Record<string, { text: string; accentBg: string; accent: string }> = {
+    "Logistics Engine": { 
+        text: "text-[var(--cat-logistics)]", 
+        accentBg: "bg-[var(--cat-logistics-bg)]",
+        accent: "var(--cat-logistics)"
+    },
+    "Intelligence Bridge": { 
+        text: "text-[var(--cat-intelligence)]", 
+        accentBg: "bg-[var(--cat-intelligence-bg)]",
+        accent: "var(--cat-intelligence)"
+    },
+    "Modernized UX": { 
+        text: "text-[var(--cat-ux)]", 
+        accentBg: "bg-[var(--cat-ux-bg)]",
+        accent: "var(--cat-ux)"
+    },
 };
 
 const categoryNarratives: Record<Project["category"], { works: string; fallbackNeed: string }> = {
@@ -43,29 +56,6 @@ const categoryNarratives: Record<Project["category"], { works: string; fallbackN
     },
 };
 
-const cleanCopy = (value: string) =>
-    value
-        .replace(/â€”/g, "—")
-        .replace(/â†’/g, "->")
-        .replace(/Â·/g, "·")
-        .replace(/â€™/g, "'")
-        .replace(/â€œ|â€/g, '"')
-        .replace(/\s+/g, " ")
-        .trim();
-
-const firstSentence = (value: string) => {
-    const cleaned = cleanCopy(value);
-    const match = cleaned.match(/^.+?[.!?](?=\s|$)/);
-    return match ? match[0].trim() : cleaned;
-};
-
-const formatList = (items: string[]) => {
-    if (items.length === 0) return "";
-    if (items.length === 1) return items[0];
-    if (items.length === 2) return `${items[0]} and ${items[1]}`;
-    return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
-};
-
 const getTopLanguages = (project: Project, count = 3) =>
     project.github_stats.languages.slice(0, count).map(cleanCopy);
 
@@ -77,7 +67,7 @@ const getDeliverySummary = (project: Project) => {
 };
 
 const getNeedSummary = (project: Project) => {
-    const summary = firstSentence(project.challenge);
+    const summary = getFirstSentence(project.challenge);
     return summary.length <= 170
         ? summary
         : categoryNarratives[project.category].fallbackNeed;
@@ -111,9 +101,10 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
     if (!project || !isOpen) return null;
 
     const screenshotUrl = `https://api.microlink.io?url=https://${project.link}&screenshot=true&meta=false&embed=screenshot.url`;
-    const { text: catText, accentBg: catAccentBg } = categoryColor[project.category] ?? {
+    const { text: catText, accentBg: catAccentBg, accent: catAccent } = categoryColor[project.category] ?? {
         text: "text-[var(--cat-ux)]",
         accentBg: "bg-[var(--cat-ux-bg)]",
+        accent: "var(--cat-ux)"
     };
     const cleanedDescription = cleanCopy(project.description);
     const deliverySummary = getDeliverySummary(project);
@@ -254,9 +245,15 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         <h4 className="text-[10px] font-mono uppercase tracking-widest mb-3 text-[var(--text-ghost)]">Best When</h4>
                                         <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{needSummary}</p>
                                     </div>
-                                    <div className={`squircle p-7 surface-card ${catAccentBg}`}>
+                                    <div className={`squircle p-7 surface-card`}>
                                         <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Recommended Direction</h4>
-                                        <p className="text-[var(--text-muted)] text-xl font-light tracking-tight italic">"{directionSummary}"</p>
+                                        <p className="text-[var(--text-muted)] text-xl font-light tracking-tight italic">
+                                            "{directionSummary}"
+                                        </p>
+                                        <div className="mt-4 h-px w-full" style={{ background: `${catAccent}22` }} />
+                                        <p className="mt-4 text-[11px] font-mono text-[var(--text-ghost)] leading-relaxed uppercase tracking-wider">
+                                            Strategically built to solve the core business friction.
+                                        </p>
                                     </div>
                                     <div className="flex flex-col gap-3">
                                         <a href={`https://${project.link}`} target="_blank"
@@ -282,7 +279,10 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     </div>
 
                     {/* Navigation Footer */}
-                    <div className="mt-auto border-t border-[var(--surface-stroke)] bg-[var(--surface-elevated)]/88 px-5 py-5">
+                    <div 
+                        className="mt-auto bg-[var(--surface-elevated)]/88 px-5 py-5"
+                        style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}
+                    >
                         <div className="flex items-center justify-between">
                             {/* Progress dots */}
                             <div className="flex gap-2">
@@ -329,7 +329,12 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
             <div className="relative flex h-full max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden squircle-panel glass-regular md:h-[700px] md:flex-row">
 
                 {/* Sidebar */}
-                <div className="flex w-full shrink-0 flex-col overflow-y-auto border-b border-[var(--surface-stroke)] p-5 md:h-full md:w-72 md:border-b-0 md:border-r md:p-6">
+                <div 
+                    className="flex w-full shrink-0 flex-col overflow-y-auto p-5 md:h-full md:w-72 md:p-6"
+                    style={{ 
+                        boxShadow: isMobile ? `inset 0 -1px 0 0 ${catAccent}22` : `inset -1px 0 0 0 ${catAccent}22`
+                    }}
+                >
                     {/* Project identity */}
                     <div className="mb-6 md:mb-8">
                         <span className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-1.5 block ${catText}`}>
@@ -500,9 +505,15 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">Best When</h4>
                                                 <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{needSummary}</p>
                                             </div>
-                                            <div className={`squircle p-7 surface-card ${catAccentBg}`}>
+                                            <div className="squircle p-8 surface-card" style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}>
                                                 <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>Recommended Direction</h4>
-                                                <p className="text-[var(--text-muted)] text-lg leading-relaxed font-light italic">"{directionSummary}"</p>
+                                                <p className="text-[var(--text-muted)] text-xl leading-relaxed font-light italic">
+                                                    "{directionSummary}"
+                                                </p>
+                                                <div className="mt-6 h-px w-full" style={{ background: `${catAccent}11` }} />
+                                                <p className="mt-4 text-[12px] font-mono text-[var(--text-ghost)] uppercase tracking-widest">
+                                                    Engineering rationale: This architecture specifically addresses the {project.category.toLowerCase()} performance bottlenecks.
+                                                </p>
                                             </div>
                                         </div>
 

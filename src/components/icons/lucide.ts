@@ -11,6 +11,7 @@ export { default as GitCommit } from "lucide-react/dist/esm/icons/git-commit.js"
 export { default as Github } from "lucide-react/dist/esm/icons/github.js";
 export { default as Globe } from "lucide-react/dist/esm/icons/globe.js";
 export { default as Loader2 } from "lucide-react/dist/esm/icons/loader-2.js";
+export { default as Linkedin } from "lucide-react/dist/esm/icons/linkedin.js";
 export { default as Mail } from "lucide-react/dist/esm/icons/mail.js";
 export { default as MessageCircle } from "lucide-react/dist/esm/icons/message-circle.js";
 export { default as Moon } from "lucide-react/dist/esm/icons/moon.js";

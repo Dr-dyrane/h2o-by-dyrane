@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import type { Project } from "@/data/projects";
 import { projects } from "@/data/projects";
 import {
@@ -20,6 +21,8 @@ type CategoryMeta = {
   proof: string;
   signals: string[];
   featuredTitle: string;
+  accent: string;
+  accentBg: string;
 };
 
 type FeaturedStory = {
@@ -41,6 +44,8 @@ const categoryMeta: Record<Project["category"], CategoryMeta> = {
     proof: "Best fit when delays, handoffs, and blind spots are costing you money or trust.",
     signals: ["Real-time visibility", "Dispatch clarity", "Operational confidence"],
     featuredTitle: "iVisit Ecosystem",
+    accent: "var(--cat-logistics)",
+    accentBg: "var(--cat-logistics-bg)",
   },
   "Intelligence Bridge": {
     id: "intelligence-bridge",
@@ -51,6 +56,8 @@ const categoryMeta: Record<Project["category"], CategoryMeta> = {
     proof: "Best fit when you need smarter workflows, triage, or decision support that still feels human and trustworthy.",
     signals: ["Usable AI", "Clear workflows", "Decision support"],
     featuredTitle: "Dr. Dyrane",
+    accent: "var(--cat-intelligence)",
+    accentBg: "var(--cat-intelligence-bg)",
   },
   "Modernized UX": {
     id: "modernized-ux",
@@ -61,6 +68,8 @@ const categoryMeta: Record<Project["category"], CategoryMeta> = {
     proof: "Best fit when the product exists, but the presentation is not yet doing the business any favors.",
     signals: ["Premium trust", "Clear conversion", "Stronger positioning"],
     featuredTitle: "House of Prax",
+    accent: "var(--cat-ux)",
+    accentBg: "var(--cat-ux-bg)",
   },
 };
 
@@ -122,6 +131,175 @@ const getArchiveBlurb = (project: Project) => {
   return normalized.length > 112 ? `${normalized.slice(0, 109).trimEnd()}...` : normalized;
 };
 
+// ─── Live screenshot component ────────────────────────────────────────────────
+// Uses thum.io (free, no key) to fetch a real screenshot of the live project.
+// Falls back to the CSS composition if the image fails to load.
+
+const LogisticsVisual = () => (
+  <div className="relative flex h-full min-h-[14rem] flex-col gap-2 overflow-hidden rounded-2xl bg-[var(--surface-elevated)] p-4">
+    <div className="mb-1 flex items-center justify-between">
+      <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-[var(--cat-logistics)]">Live Dispatch</span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--cat-logistics)] opacity-90" style={{ boxShadow: "0 0 6px var(--cat-logistics)" }} />
+        <span className="text-[9px] font-mono text-[var(--text-ghost)]">4 active</span>
+      </span>
+    </div>
+    {[
+      { id: "U-04", status: "En Route", pct: 72, active: true },
+      { id: "U-11", status: "Dispatched", pct: 38, active: false },
+      { id: "U-07", status: "On Scene", pct: 91, active: false },
+      { id: "U-02", status: "Standby", pct: 12, active: false },
+    ].map((row) => (
+      <div key={row.id} className="squircle-chip surface-chip px-3 py-2.5">
+        <div className="mb-1.5 flex items-center justify-between">
+          <span className="text-[10px] font-mono font-medium text-[var(--text)]">{row.id}</span>
+          <span className="text-[9px] font-mono text-[var(--text-ghost)]">{row.status}</span>
+        </div>
+        <div className="h-0.5 w-full overflow-hidden rounded-full bg-[var(--surface-stroke)]">
+          <div className="h-full rounded-full bg-[var(--cat-logistics)]" style={{ width: `${row.pct}%`, opacity: row.active ? 1 : 0.45 }} />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const IntelligenceVisual = () => (
+  <div className="relative flex h-full min-h-[14rem] flex-col gap-2 overflow-hidden rounded-2xl bg-[var(--surface-elevated)] p-4">
+    <span className="mb-1 text-[9px] font-mono uppercase tracking-[0.16em] text-[var(--cat-intelligence)]">Clinical Reasoning</span>
+    {[
+      { step: "S", label: "Subjective", detail: "Chest pain 7/10, onset 2h ago", done: true },
+      { step: "O", label: "Objective", detail: "HR 112, BP 145/92, SpO₂ 97%", done: true },
+      { step: "A", label: "Assessment", detail: "DDx narrowing → ACS P>88%", active: true },
+      { step: "P", label: "Plan", detail: "Awaiting...", done: false },
+    ].map((item) => (
+      <div
+        key={item.step}
+        className="flex items-start gap-3 squircle-chip px-3 py-2.5"
+        style={{
+          background: item.active ? "var(--surface-elevated-strong)" : "var(--surface-elevated)",
+          opacity: item.done || item.active ? 1 : 0.35,
+        }}
+      >
+        <span className="mt-0.5 text-[10px] font-mono font-medium text-[var(--cat-intelligence)]">{item.step}</span>
+        <div className="min-w-0">
+          <p className="text-[9px] font-mono uppercase tracking-[0.12em] text-[var(--text-ghost)]">{item.label}</p>
+          <p className="truncate text-[11px] font-light text-[var(--text-muted)]">{item.detail}</p>
+        </div>
+        {item.done && <div className="ml-auto mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cat-intelligence)] opacity-70" />}
+      </div>
+    ))}
+  </div>
+);
+
+const UXVisual = () => (
+  <div className="relative flex h-full min-h-[14rem] flex-col gap-3 overflow-hidden rounded-2xl bg-[var(--surface-elevated)] p-4">
+    <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-[var(--cat-ux)]">Product Surface</span>
+    <div className="squircle-panel surface-card flex items-center gap-3 px-4 py-3">
+      <div className="h-7 w-7 shrink-0 rounded-lg bg-[var(--cat-ux)] opacity-80" />
+      <div className="flex-1 space-y-1.5">
+        <div className="h-2 w-24 rounded-full bg-[var(--text)] opacity-80" />
+        <div className="h-1.5 w-16 rounded-full bg-[var(--text-ghost)] opacity-60" />
+      </div>
+      <div className="squircle-pill px-2.5 py-1 text-[9px] font-mono font-medium text-[var(--cta-text)]" style={{ background: "var(--cta-bg)" }}>Buy</div>
+    </div>
+    <div className="grid grid-cols-3 gap-2">
+      {[{ label: "Conversion", val: "4.8%" }, { label: "Bounce", val: "18%" }, { label: "LCP", val: "82ms" }].map((m) => (
+        <div key={m.label} className="squircle-chip surface-chip p-2 text-center">
+          <div className="text-sm font-light tracking-tight text-[var(--text)]">{m.val}</div>
+          <div className="text-[8px] font-mono uppercase tracking-[0.1em] text-[var(--text-ghost)]">{m.label}</div>
+        </div>
+      ))}
+    </div>
+    <div className="space-y-1.5 px-1">
+      <div className="h-1.5 w-full rounded-full bg-[var(--surface-stroke)]" />
+      <div className="h-1.5 w-4/5 rounded-full bg-[var(--surface-stroke)]" />
+      <div className="h-1.5 w-3/5 rounded-full bg-[var(--surface-stroke)]" />
+    </div>
+  </div>
+);
+
+const CATEGORY_FALLBACK: Record<Project["category"], React.FC> = {
+  "Logistics Engine": LogisticsVisual,
+  "Intelligence Bridge": IntelligenceVisual,
+  "Modernized UX": UXVisual,
+};
+
+// Screenshot URL via thum.io — free, no API key, caches at edge
+// Fetch real og:image via microlink JSON API (respects the site's own OG image)
+const OGScreenshot = ({
+  project,
+}: {
+  project: Project;
+}) => {
+  const Fallback = CATEGORY_FALLBACK[project.category];
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [state, setState] = useState<"loading" | "loaded" | "error">("loading");
+  const siteUrl = getProjectUrl(project);
+
+  useEffect(() => {
+    let cancelled = false;
+    setState("loading");
+    setImgSrc(null);
+
+    fetch(`https://api.microlink.io?url=${encodeURIComponent(siteUrl)}&meta=true`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const url: string | undefined = data?.data?.image?.url ?? data?.data?.screenshot?.url;
+        if (url) {
+          // Pre-load to avoid layout shift
+          const img = new Image();
+          img.onload = () => { if (!cancelled) { setImgSrc(url); setState("loaded"); } };
+          img.onerror = () => { if (!cancelled) setState("error"); };
+          img.src = url;
+        } else {
+          setState("error");
+        }
+      })
+      .catch(() => { if (!cancelled) setState("error"); });
+
+    return () => { cancelled = true; };
+  }, [siteUrl]);
+
+  if (state === "error") return <Fallback />;
+
+  return (
+    <div
+      className="relative w-full overflow-hidden rounded-xl bg-[var(--surface-elevated)]"
+      style={{ aspectRatio: "16/9" }}
+    >
+      {/* Skeleton shimmer while loading */}
+      {state === "loading" && (
+        <div className="absolute inset-0 animate-pulse bg-[var(--surface-elevated-strong)]" />
+      )}
+
+      {/* Real OG image */}
+      {imgSrc && (
+        <img
+          src={imgSrc}
+          alt={`${project.title} — live product`}
+          className="h-full w-full object-cover object-top transition-opacity duration-500"
+          style={{ opacity: state === "loaded" ? 1 : 0 }}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+
+      {/* Bottom scrim */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-16"
+        style={{ background: "var(--scrim-card)" }}
+      />
+
+      {/* Live URL badge */}
+      <div className="absolute bottom-3 left-3 flex items-center gap-1.5 squircle-chip bg-[var(--surface-glass)] px-2.5 py-1 backdrop-blur-sm">
+        <Globe size={9} style={{ color: categoryMeta[project.category].accent }} />
+        <span className="text-[9px] font-mono text-[var(--text-muted)]">{project.link}</span>
+      </div>
+    </div>
+  );
+};
+
 const ProductPreview = ({
   project,
   meta,
@@ -130,19 +308,20 @@ const ProductPreview = ({
   project: Project;
   meta: CategoryMeta;
   story: FeaturedStory;
-}) => (
+}) => {
+  return (
   <div className="relative overflow-hidden squircle-panel bg-[var(--surface-elevated-strong)] p-4 md:p-5">
     <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent dark:from-white/5" />
-    <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[var(--cat-ux-bg)] blur-3xl" />
-    <div className="absolute -bottom-12 left-10 h-32 w-32 rounded-full bg-[var(--cat-ux-bg)] blur-3xl" />
+    <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full blur-3xl" style={{ background: meta.accentBg }} />
+    <div className="absolute -bottom-12 left-10 h-32 w-32 rounded-full blur-3xl" style={{ background: meta.accentBg }} />
 
     <div className="relative flex h-full flex-col gap-4">
       <div className="flex items-center justify-between gap-3 squircle-chip surface-chip px-3.5 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[var(--cat-ux)]/80" />
-            <span className="h-2 w-2 rounded-full bg-[var(--cat-ux)]/55" />
-            <span className="h-2 w-2 rounded-full bg-[var(--cat-ux)]/35" />
+            <span className="h-2 w-2 rounded-full opacity-80" style={{ background: meta.accent }} />
+            <span className="h-2 w-2 rounded-full opacity-55" style={{ background: meta.accent }} />
+            <span className="h-2 w-2 rounded-full opacity-35" style={{ background: meta.accent }} />
           </div>
           <span className="truncate text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-dim)]">
             {story.label}
@@ -154,24 +333,10 @@ const ProductPreview = ({
       </div>
 
       <div className="grid flex-1 gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="flex min-h-[19rem] flex-col justify-between squircle-panel surface-card p-5 md:min-h-[22rem] md:p-6">
-          <div>
-            <p className="mb-3 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--cat-ux)]">
-              {story.audience}
-            </p>
-            <div className="space-y-1.5">
-              {story.previewLines.map((line) => (
-                <div
-                  key={line}
-                  className="text-3xl font-light tracking-tight text-[var(--text)] md:text-5xl"
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-8 space-y-4">
+        {/* ── Live screenshot + CSS fallback ── */}
+        <div className="flex min-h-[19rem] flex-col gap-4 squircle-panel surface-card p-4 md:min-h-[22rem] md:p-5">
+          <OGScreenshot project={project} />
+          <div className="mt-auto space-y-3">
             <p className="max-w-lg text-sm font-light leading-relaxed text-[var(--text-muted)] md:text-base">
               {story.summary}
             </p>
@@ -239,7 +404,9 @@ const ProductPreview = ({
       </div>
     </div>
   </div>
-);
+  );
+};
+
 
 const ProjectSurface = ({
   project,
@@ -268,7 +435,7 @@ const ProjectSurface = ({
         <div className="relative flex h-full flex-col">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div className="space-y-2">
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--cat-ux)]">
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em]" style={{ color: meta.accent }}>
                 Featured Example
               </p>
               <h3 className="max-w-2xl text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
@@ -347,17 +514,17 @@ const ProjectSurface = ({
           </div>
           <div className="grid gap-3 text-sm text-[var(--text-muted)] sm:grid-cols-2">
             <div className="flex items-center gap-2">
-              <GitCommit size={14} className="text-[var(--cat-ux)]" />
+              <GitCommit size={14} style={{ color: meta.accent }} />
               <span>{project.github_stats.commits.toLocaleString()} commits</span>
             </div>
             {project.github_stats.stars ? (
               <div className="flex items-center gap-2">
-                <Star size={14} className="text-[var(--cat-ux)]" />
+                <Star size={14} style={{ color: meta.accent }} />
                 <span>{project.github_stats.stars} public stars</span>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Globe size={14} className="text-[var(--cat-ux)]" />
+                <Globe size={14} style={{ color: meta.accent }} />
                 <span>Live production deployment</span>
               </div>
             )}
@@ -457,7 +624,7 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
                 className="scroll-mt-28 pt-10 md:pt-12"
               >
                 <div className="mb-10 max-w-3xl space-y-3">
-                  <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--cat-ux)]">
+                  <p className="text-[11px] font-mono uppercase tracking-[0.18em]" style={{ color: meta.accent }}>
                     {meta.eyebrow}
                   </p>
                   <h3 className="text-3xl font-light tracking-tight text-[var(--text)] md:text-4xl">

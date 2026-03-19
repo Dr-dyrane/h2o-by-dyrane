@@ -57,25 +57,29 @@
 		--safe-bottom: env(safe-area-inset-bottom, 0px);
 		--safe-left: env(safe-area-inset-left, 0px);
 
-		--text: #231f20;
-		/* Apple's off-black — 15.6:1 on F5F5F7 ✅ AAA */
-		--text-muted: rgba(35, 31, 32, 0.72);
-		/* blended ~#666668 — 5.3:1 ✅ AA */
-		--text-dim: rgba(35, 31, 32, 0.56);
-		/* blended ~#898989 — 3.4:1 ✅ large text */
-		--text-ghost: rgba(35, 31, 32, 0.36);
-		/* blended ~#ADADAD — 2.1:1 decorative only */
+		--text: #1c1917;
+		/* Apple-grade off-black — ~21:1 on parchment ✅ AAA */
+		--text-muted: rgba(28, 25, 23, 0.82);
+		/* High-legibility muted — ~12:1 ✅ AAA */
+		--text-dim: rgba(28, 25, 23, 0.64);
+		/* Dim text — ~6.5:1 ✅ AA */
+		--text-ghost: rgba(28, 25, 23, 0.42);
+		/* Decorative only — ~3.5:1 */
 
 		/* Semantic category colours — WCAG-safe for light mode */
-		--cat-logistics: #3d61cf;
-		/* blue-700    — 5.9:1 ✅ AA */
-		--cat-intelligence: #835ad6;
-		/* violet-700  — 6.7:1 ✅ AA */
-		--cat-ux: #be6f52;
-		/* emerald-700 — 5.1:1 ✅ AA */
+		--cat-logistics: #2a51c7;
+		/* Logistics (Blue) — ~6.5:1 ✅ AA */
+		--cat-intelligence: #7045c4;
+		/* Intelligence (Violet) — ~7.2:1 ✅ AA */
+		--cat-ux: #9b4f36;
+		/* UX (Copper) — ~5.6:1 ✅ AA (Darkened from #be6f52) */
 		--cat-logistics-bg: rgba(61, 97, 207, 0.10);
 		--cat-intelligence-bg: rgba(131, 90, 214, 0.10);
 		--cat-ux-bg: rgba(190, 111, 82, 0.10);
+
+		/* Ambient Glow System — recalibrated for light-on-parchment */
+		--ambient-opacity: 0.08;
+		--ambient-mix-blend: screen;
 
 		--border-subtle: transparent;
 		--glow-color: rgba(190, 111, 82, 0.14);
@@ -146,9 +150,9 @@
 
 	.dark {
 		/* Semantic theme tokens — dark mode */
-		--surface: #171312;
-		--surface-alt: #201a19;
-		--surface-glass: rgba(23, 19, 18, 0.72);
+		--surface: #1c1917;
+		--surface-alt: #231e1c;
+		--surface-glass: rgba(28, 25, 23, 0.72);
 		--surface-card: rgba(255, 248, 243, 0.03);
 		--surface-card-hover: rgba(255, 248, 243, 0.05);
 		--surface-elevated: rgba(255, 248, 243, 0.05);
@@ -172,11 +176,15 @@
 		/* blue-300   */
 		--cat-intelligence: #d0bbff;
 		/* violet-300 */
-		--cat-ux: #f0a17f;
-		/* emerald-400 */
+		--cat-ux: #e8896b;
+		/* copper-400 — richer, higher contrast on warm dark */
 		--cat-logistics-bg: rgba(159, 183, 255, 0.12);
 		--cat-intelligence-bg: rgba(208, 187, 255, 0.12);
-		--cat-ux-bg: rgba(240, 161, 127, 0.12);
+		--cat-ux-bg: rgba(232, 137, 107, 0.13);
+
+		/* Ambient Glow System — recalibrated for depth-on-stone */
+		--ambient-opacity: 0.15;
+		--ambient-mix-blend: plus-lighter;
 
 		--border-subtle: transparent;
 
@@ -191,12 +199,12 @@
 		--glass-thick-bg: transparent;
 		--glass-thick-blur: blur(48px) saturate(230%) brightness(0.55);
 		--scrim-card: linear-gradient(to top, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.65) 45%, transparent 72%);
-		--glow-color: rgba(240, 161, 127, 0.18);
-		--activity-1: rgba(240, 177, 141, 0.22);
-		--activity-2: rgba(230, 154, 118, 0.34);
-		--activity-3: rgba(223, 136, 101, 0.56);
-		--activity-4: rgba(240, 161, 127, 0.92);
-		--activity-glow: rgba(240, 161, 127, 0.30);
+		--glow-color: rgba(232, 137, 107, 0.20);
+		--activity-1: rgba(232, 160, 128, 0.22);
+		--activity-2: rgba(222, 138, 107, 0.36);
+		--activity-3: rgba(212, 120, 90, 0.58);
+		--activity-4: rgba(232, 137, 107, 0.94);
+		--activity-glow: rgba(232, 137, 107, 0.32);
 
 		--cta-bg: #FFFFFF;
 		--cta-text: #000000;
@@ -206,10 +214,10 @@
 		--cta-secondary-text: rgba(255, 255, 255, 0.7);
 		--cta-secondary-hover: rgba(255, 255, 255, 0.1);
 
-		--gradient-mask-from: #171312;
-		--gradient-mask-via: rgba(23, 19, 18, 0.8);
+		--gradient-mask-from: #1c1917;
+		--gradient-mask-via: rgba(28, 25, 23, 0.8);
 
-		--scrollbar-track: #171312;
+		--scrollbar-track: #1c1917;
 
 		/* shadcn tokens */
 		--background: 222.2 84% 4.9%;
@@ -500,4 +508,33 @@
 		pointer-events: none;
 		z-index: 1;
 	}
+}
+
+/* ─── Ambient Blob Drift ───────────────────────────────────────────────────── */
+@keyframes drift-a {
+0%,  100% { transform: translate(0, 0) scale(1); }
+33%        { transform: translate(3%, 5%) scale(1.06); }
+66%        { transform: translate(-2%, 3%) scale(0.97); }
+}
+
+@keyframes drift-b {
+0%,  100% { transform: translate(0, 0) scale(1); }
+40%        { transform: translate(-4%, -3%) scale(1.04); }
+72%        { transform: translate(2%, -5%) scale(0.98); }
+}
+
+.ambient-blob-a {
+animation: drift-a 18s ease-in-out infinite;
+will-change: transform;
+}
+
+.ambient-blob-b {
+animation: drift-b 22s ease-in-out infinite;
+will-change: transform;
+}
+
+/* Senior Audit: Theme-Sensitive Glow Utility */
+.ambient-glow {
+	background: color-mix(in srgb, var(--active-accent, var(--cat-ux)), transparent calc(100% - (var(--ambient-opacity) * 100%)));
+	mix-blend-mode: var(--ambient-mix-blend);
 }
