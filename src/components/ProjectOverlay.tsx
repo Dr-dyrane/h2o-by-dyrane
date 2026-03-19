@@ -89,6 +89,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     style={{
                         borderBottomLeftRadius: 0,
                         borderBottomRightRadius: 0,
+                        height: "min(92dvh, calc(100dvh - max(env(safe-area-inset-top), 0.75rem) - 0.5rem))",
                         maxHeight: "calc(100dvh - max(env(safe-area-inset-top), 0.75rem) - 0.5rem)",
                     }}
                 >
