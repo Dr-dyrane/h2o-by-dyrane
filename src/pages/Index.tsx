@@ -274,13 +274,18 @@ const Index = () => {
         
         <section className="mx-auto mb-16 max-w-7xl px-4 md:mb-20 md:px-6">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {proofStrip.map((item) => (
+            {proofStrip.map((item, index) => {
+              const isFeaturedCard = index === proofStrip.length - 1;
+
+              return (
               <div
                 key={item.value}
-                className="squircle-nav surface-card group relative overflow-hidden p-5 md:p-7"
+                className={`squircle-nav surface-card group relative overflow-hidden p-5 md:p-7 ${
+                  isFeaturedCard ? "col-span-2 text-center md:col-span-1 md:text-left" : ""
+                }`}
               >
                 {/* Accent rule */}
-                <div className="mb-4 h-px w-8 bg-[var(--cat-ux)] opacity-60" />
+                <div className={`mb-4 h-px w-8 bg-[var(--cat-ux)] opacity-60 ${isFeaturedCard ? "mx-auto md:mx-0" : ""}`} />
                 <div className="text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
                   {item.value}
                 </div>
@@ -288,7 +293,7 @@ const Index = () => {
                   {item.label}
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </section>
 
