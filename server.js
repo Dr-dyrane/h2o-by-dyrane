@@ -39,8 +39,24 @@ async function createServer() {
   } else {
     app.use(express.static(path.resolve(__dirname, 'dist/client'), {
       index: false,
-      maxAge: '1y',
-      immutable: true
+      maxAge: 0,
+      setHeaders: (res, filePath) => {
+        if (
+          filePath.endsWith('index.html') ||
+          filePath.endsWith('sw.js') ||
+          filePath.endsWith('manifest.webmanifest')
+        ) {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+          return
+        }
+
+        if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+          return
+        }
+
+        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate')
+      }
     }))
   }
 
@@ -73,7 +89,10 @@ async function createServer() {
         .replace(/<script id="vite-plugin-pwa:register-sw"[^>]*><\/script>/, '')
         .replace(`<!--ssr-outlet-->`, appHtml)
 
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+      res.status(200).set({
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      }).end(html)
     } catch (e) {
       console.error('SSR Error:', e)
       if (!isProduction && vite) {

@@ -37,19 +37,19 @@ type FeaturedStory = {
 const categoryMeta: Record<Project["category"], CategoryMeta> = {
   "Logistics Engine": {
     id: "logistics-engine",
-    eyebrow: "If your business runs on timing",
+    eyebrow: "When timing and coordination matter",
     title: "Use software that keeps live operations clear and coordinated.",
     description:
       "These projects are for teams that need dispatch, routing, tracking, or real-time visibility without operational confusion.",
-    proof: "Best fit when delays, handoffs, and blind spots are costing you money or trust.",
+    proof: "Best fit when delays, handoffs, and blind spots are costing the team time, confidence, or customer trust.",
     signals: ["Real-time visibility", "Dispatch clarity", "Operational confidence"],
-    featuredTitle: "Slatechain",
+    featuredTitle: "iVisit Ecosystem",
     accent: "var(--cat-logistics)",
     accentBg: "var(--cat-logistics-bg)",
   },
   "Intelligence Bridge": {
     id: "intelligence-bridge",
-    eyebrow: "If you want AI to be useful",
+    eyebrow: "When AI needs to do real work",
     title: "Turn complex reasoning into tools your team can actually use.",
     description:
       "These products package AI and automation into clear workflows instead of making users deal with model complexity.",
@@ -61,13 +61,13 @@ const categoryMeta: Record<Project["category"], CategoryMeta> = {
   },
   "Modernized UX": {
     id: "modernized-ux",
-    eyebrow: "If your product needs to feel premium",
+    eyebrow: "When the product is good but the presentation is weak",
     title: "Make the experience clearer, stronger, and easier to trust.",
     description:
       "These projects focus on positioning, conversion, and interface polish so the product feels credible before the sales call.",
-    proof: "Best fit when the product exists, but the presentation is not yet doing the business any favors.",
-    signals: ["Premium trust", "Clear conversion", "Stronger positioning"],
-    featuredTitle: "Scholarix",
+    proof: "Best fit when the product exists, but the presentation is not yet helping the business sell, convert, or reassure.",
+    signals: ["Trust signals", "Clear positioning", "Stronger conversion path"],
+    featuredTitle: "House of Prax",
     accent: "var(--cat-ux)",
     accentBg: "var(--cat-ux-bg)",
   },
@@ -80,35 +80,35 @@ const categoryOrder: Project["category"][] = [
 ];
 
 const featuredStories: Record<string, FeaturedStory> = {
-  "Slatechain": {
-    label: "Supply chain intelligence",
-    audience: "SME logistics managers",
+  "iVisit Ecosystem": {
+    label: "Emergency dispatch platform",
+    audience: "Operations and response teams",
     summary:
-      "Predictive inventory management and tracking for small-to-medium supply chains.",
+      "A real-time dispatch product that keeps ambulance teams, routing, and hospital visibility in sync.",
     clientNeed:
-      "Best when inventory leads to dead stock or traceability falls apart in transit.",
-    previewLines: ["Stock clarity", "Traceable flow", "Predictive replenishment"],
-    outcomes: ["Reduced shrinkage", "Inventory visibility", "Demand forecasting"],
+      "Best when coordination is breaking down across the control room, field team, and receiving location.",
+    previewLines: ["Live dispatch", "Route visibility", "Cleaner handoffs"],
+    outcomes: ["Operational clarity", "Faster coordination", "Live system visibility"],
   },
   "Dr. Dyrane": {
     label: "Clinical AI triage engine",
     audience: "Health products using AI",
     summary:
-      "Structured symptom intake and clinical reasoning packaged into a product people can actually use.",
+      "Structured symptom intake and clinical reasoning packaged into a product people can actually use and trust.",
     clientNeed:
       "Best when AI needs to support real decisions without feeling vague, unsafe, or hard to trust.",
     previewLines: ["Structured intake", "Clinical logic", "Safer triage"],
     outcomes: ["Usable intelligence", "Safer escalation", "Decision support"],
   },
-  "Scholarix": {
-    label: "Premium education platform",
-    audience: "EdTech and learning teams",
+  "House of Prax": {
+    label: "E-commerce storefront",
+    audience: "Consumer and wellness brands",
     summary:
-      "An advanced learning ecosystem featuring Liquid Glass UI for maximum student focus.",
+      "A commerce experience designed to make product quality, trust, and buying intent feel obvious.",
     clientNeed:
-      "Best when retention is falling due to clunky, administrative-heavy learning tools.",
-    previewLines: ["Higher focus", "Frictionless access", "Premium aesthetics"],
-    outcomes: ["Increased session time", "Lower churn", "Superior UX positioning"],
+      "Best when the product is strong but the storefront is not doing enough to position or convert it.",
+    previewLines: ["Product clarity", "Brand trust", "Cleaner buying flow"],
+    outcomes: ["Stronger positioning", "Clearer product story", "Conversion support"],
   },
 };
 
@@ -203,10 +203,14 @@ const UXVisual = () => (
       <div className="squircle-pill px-2.5 py-1 text-[9px] font-mono font-medium text-[var(--cta-text)]" style={{ background: "var(--cta-bg)" }}>Buy</div>
     </div>
     <div className="grid grid-cols-3 gap-2">
-      {[{ label: "Conversion", val: "4.8%" }, { label: "Bounce", val: "18%" }, { label: "LCP", val: "82ms" }].map((m) => (
-        <div key={m.label} className="squircle-chip surface-chip p-2 text-center">
-          <div className="text-sm font-light tracking-tight text-[var(--text)]">{m.val}</div>
-          <div className="text-[8px] font-mono uppercase tracking-[0.1em] text-[var(--text-ghost)]">{m.label}</div>
+      {[
+        { label: "Offer", value: "Clear" },
+        { label: "Trust", value: "Visible" },
+        { label: "Action", value: "Direct" },
+      ].map((signal) => (
+        <div key={signal.label} className="squircle-chip surface-chip p-2.5 text-center">
+          <div className="text-sm font-light tracking-tight text-[var(--text)]">{signal.value}</div>
+          <div className="mt-1 text-[8px] font-mono uppercase tracking-[0.1em] text-[var(--text-ghost)]">{signal.label}</div>
         </div>
       ))}
     </div>
@@ -363,13 +367,13 @@ const ProductPreview = ({
         <div className="grid gap-3">
           <div className="squircle-panel surface-card p-4 md:p-5">
             <p className="mb-2 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-ghost)]">
-              Build depth
+              Build history
             </p>
             <div className="text-3xl font-light tracking-tight text-[var(--text)]">
               {formatCommits(project.github_stats.commits)}
             </div>
             <p className="mt-2 text-sm font-light leading-relaxed text-[var(--text-muted)]">
-              Production commits across the underlying system.
+              Commit history across the shipped product.
             </p>
           </div>
 
@@ -394,7 +398,7 @@ const ProductPreview = ({
 
           <div className="squircle-panel surface-card p-4 md:p-5">
             <p className="mb-2 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-ghost)]">
-              Fit signals
+              What teams need
             </p>
             <div className="space-y-2">
               {meta.signals.map((signal) => (
@@ -443,7 +447,7 @@ const ProjectSurface = ({
           <div className="mb-6 flex items-start justify-between gap-4">
             <div className="space-y-2">
               <p className="text-[11px] font-mono uppercase tracking-[0.18em]" style={{ color: meta.accent }}>
-                Featured Example
+                Featured Case Study
               </p>
               <h3 className="max-w-2xl text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
                 {project.title}
@@ -458,7 +462,7 @@ const ProjectSurface = ({
               rel="noopener noreferrer"
               className="hidden items-center gap-2 squircle-pill surface-chip px-4 py-2 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)] lg:inline-flex"
             >
-              Live Site
+              Open Live Site
               <ExternalLink size={13} />
             </a>
           </div>
@@ -479,7 +483,7 @@ const ProjectSurface = ({
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 squircle-pill bg-[var(--cta-secondary-bg)] px-6 py-3.5 text-sm font-medium text-[var(--cta-secondary-text)] transition-colors duration-200 hover:bg-[var(--cta-secondary-hover)] hover:text-[var(--text)]"
             >
-              Visit Product
+              Open Live Site
               <Globe size={16} />
             </a>
           </div>
@@ -489,7 +493,7 @@ const ProjectSurface = ({
       <div className="grid gap-4">
         <div className="squircle-panel surface-card p-6">
           <p className="mb-3 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--cat-ux)]">
-            What it is
+            What it solves
           </p>
           <p className="text-base font-light leading-relaxed text-[var(--text-muted)]">
             {story.label}. {story.summary}
@@ -498,7 +502,7 @@ const ProjectSurface = ({
 
         <div className="squircle-panel surface-card p-6">
           <p className="mb-3 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--cat-ux)]">
-            Best when
+            Best fit
           </p>
           <p className="text-base font-light leading-relaxed text-[var(--text-muted)]">
             {story.clientNeed}
@@ -507,7 +511,7 @@ const ProjectSurface = ({
 
         <div className="squircle-panel surface-card p-6">
           <p className="mb-4 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--cat-ux)]">
-            Why it feels credible
+            Proof
           </p>
           <div className="mb-4 flex flex-wrap gap-2">
             {project.github_stats.languages.map((language) => (
@@ -594,7 +598,7 @@ const ArchiveCard = ({
           onClick={() => onProjectSelect(project)}
           className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)]"
         >
-          Details
+          Case Study
           <ArrowUpRight size={15} />
         </button>
       </div>
@@ -605,12 +609,12 @@ const ArchiveCard = ({
 export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
   return (
     <section>
-      <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:px-6 md:pb-24 md:pt-12">
-        <div className="space-y-24 md:space-y-28">
+      <div className="mx-auto max-w-7xl px-4 pb-16 pt-8 md:px-6 md:pb-20 md:pt-10">
+        <div className="space-y-20 md:space-y-24">
           {categoryOrder.map((category) => {
             const meta = categoryMeta[category];
             const categoryProjects = projects.filter(
-              (project) => project.category === category && !project.showcase?.length
+              (project) => project.category === category
             );
             const featuredProject = categoryProjects.find(
               (project) => project.title === meta.featuredTitle
@@ -628,9 +632,9 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
               <section
                 key={category}
                 id={meta.id}
-                className="scroll-mt-28 pt-10 md:pt-12"
+                className="scroll-mt-28 pt-8 md:pt-10"
               >
-                <div className="mb-10 max-w-3xl space-y-3">
+                <div className="mb-8 max-w-3xl space-y-3">
                   <p className="text-[11px] font-mono uppercase tracking-[0.18em]" style={{ color: meta.accent }}>
                     {meta.eyebrow}
                   </p>
@@ -659,13 +663,13 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
                 />
 
                 {archiveProjects.length > 0 ? (
-                  <div className="mt-8">
+                  <div className="mt-6">
                     <div className="mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--text-ghost)]">
-                        More Examples
+                        More Work
                       </p>
                       <p className="text-sm text-[var(--text-muted)]">
-                        Extra work in the same lane, for faster scanning.
+                        More examples in the same category.
                       </p>
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

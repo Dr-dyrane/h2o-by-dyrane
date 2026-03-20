@@ -13,7 +13,7 @@ import {
     ChevronRight,
     Loader2,
 } from "@/components/icons/lucide";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cleanCopy, getFirstSentence, formatList } from "@/utils/content";
 
@@ -41,40 +41,140 @@ const categoryColor: Record<string, { text: string; accentBg: string; accent: st
     },
 };
 
-const categoryNarratives: Record<Project["category"], { works: string; fallbackNeed: string }> = {
-    "Logistics Engine": {
-        works: "Built as an operations product with live system states, clear routing, and a decision surface teams can trust when timing matters.",
-        fallbackNeed: "Best for teams that need clearer dispatch, routing, coordination, or visibility across moving parts.",
-    },
-    "Intelligence Bridge": {
-        works: "Built to turn complex logic into a product people can actually use, trust, and act on without needing to understand the underlying model behavior.",
-        fallbackNeed: "Best for teams that want AI or automation to support real decisions without making the experience feel vague or risky.",
-    },
-    "Modernized UX": {
-        works: "Built to make the product easier to trust, easier to understand, and more persuasive at the moment a client decides whether to move forward.",
-        fallbackNeed: "Best for products that already exist but need stronger clarity, premium positioning, or a smoother path to conversion.",
-    },
-};
-
 const getTopLanguages = (project: Project, count = 3) =>
     project.github_stats.languages.slice(0, count).map(cleanCopy);
 
-const getDeliverySummary = (project: Project) => {
-    const stack = formatList(getTopLanguages(project));
-    return stack
-        ? `${categoryNarratives[project.category].works} Core systems include ${stack}.`
-        : categoryNarratives[project.category].works;
+const getProblemSummary = (project: Project) => {
+    const summary = cleanCopy(project.challenge);
+    return summary || getFirstSentence(project.description);
 };
 
-const getNeedSummary = (project: Project) => {
-    const summary = getFirstSentence(project.challenge);
-    return summary.length <= 170
-        ? summary
-        : categoryNarratives[project.category].fallbackNeed;
+const getSolutionSummary = (project: Project) => cleanCopy(project.architecture);
+
+const getValueSummary = (project: Project) => cleanCopy(project.proposal);
+
+const getProofSummary = (project: Project) => {
+    const stack = formatList(getTopLanguages(project));
+    const baseProof = project.github_stats.stars
+        ? `${project.github_stats.commits.toLocaleString()} commits, ${project.github_stats.stars} public stars, and a live deployment`
+        : `${project.github_stats.commits.toLocaleString()} commits and a live deployment`;
+
+    return stack ? `${baseProof}. Built with ${stack}.` : `${baseProof}.`;
+};
+
+type CaseStudyDetails = NonNullable<Project["caseStudy"]>;
+
+const fallbackCaseStudyByCategory: Record<Project["category"], Pick<CaseStudyDetails, "users" | "surfaces">> = {
+    "Logistics Engine": {
+        users: "Operations teams coordinating work across moving parts",
+        surfaces: "Operational dashboard and task-driven web workflows",
+    },
+    "Intelligence Bridge": {
+        users: "Teams packaging AI or automation into real decisions",
+        surfaces: "Structured intake, output, and decision-support workflows",
+    },
+    "Modernized UX": {
+        users: "Buyers or users deciding whether to trust the product",
+        surfaces: "Marketing, product presentation, and conversion flows",
+    },
+};
+
+const getCaseStudy = (project: Project): CaseStudyDetails => {
+    if (project.caseStudy) {
+        return project.caseStudy;
+    }
+
+    const fallback = fallbackCaseStudyByCategory[project.category];
+
+    return {
+        role: "Product strategy, design, and implementation",
+        users: fallback.users,
+        surfaces: fallback.surfaces,
+        constraints: [
+            getFirstSentence(project.challenge),
+            "The product had to stay understandable while handling technical complexity.",
+            "The final output needed to ship as a real product, not a concept."
+        ],
+        decisions: [
+            {
+                title: "Clarify the main user decision",
+                detail: getProblemSummary(project),
+            },
+            {
+                title: "Structure the workflow around that decision",
+                detail: getSolutionSummary(project),
+            },
+            {
+                title: "Tie the product back to business value",
+                detail: getValueSummary(project),
+            },
+        ],
+        proofPoints: [getProofSummary(project)],
+        outcomes: [
+            {
+                label: "Status",
+                value: "Live",
+                detail: "Presented as a working product, not just design exploration.",
+            },
+            {
+                label: "Build depth",
+                value: formatCommitCount(project.github_stats.commits),
+                detail: "Commit history shows real iteration across the product.",
+            },
+            {
+                label: "Outcome",
+                value: "Clearer delivery",
+                detail: "The product was shaped to make the value easier to understand and act on.",
+            },
+        ],
+    };
 };
 
 const formatCommitCount = (commits: number) =>
     commits >= 1000 ? `${(commits / 1000).toFixed(commits >= 10000 ? 0 : 1)}k` : `${commits}`;
+
+const OverlayCard = ({
+    eyebrow,
+    children,
+    accent,
+}: {
+    eyebrow: string;
+    children: ReactNode;
+    accent?: string;
+}) => (
+    <div
+        className="squircle-nav p-5 surface-card"
+        style={accent ? { boxShadow: `inset 0 1px 0 0 ${accent}22` } : undefined}
+    >
+        <div
+            className="mb-3 text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--text-ghost)]"
+            style={accent ? { color: accent } : undefined}
+        >
+            {eyebrow}
+        </div>
+        {children}
+    </div>
+);
+
+const MetricCard = ({
+    label,
+    value,
+    detail,
+    accentClass,
+}: {
+    label: string;
+    value: string;
+    detail: string;
+    accentClass: string;
+}) => (
+    <div className="squircle-nav p-5 surface-card">
+        <div className="mb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--text-ghost)]">
+            {label}
+        </div>
+        <div className={`text-2xl font-light tracking-tight ${accentClass}`}>{value}</div>
+        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--text-muted)]">{detail}</p>
+    </div>
+);
 
 export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps) => {
     const [activeStep, setActiveStep] = useState(1);
@@ -107,9 +207,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
         accent: "var(--cat-ux)"
     };
     const cleanedDescription = cleanCopy(project.description);
-    const deliverySummary = getDeliverySummary(project);
-    const needSummary = getNeedSummary(project);
-    const directionSummary = cleanCopy(project.proposal);
+    const problemSummary = getProblemSummary(project);
+    const solutionSummary = getSolutionSummary(project);
+    const valueSummary = getValueSummary(project);
+    const proofSummary = getProofSummary(project);
+    const caseStudy = getCaseStudy(project);
     const topLanguages = getTopLanguages(project);
     const secondarySignal = project.github_stats.stars
         ? { label: "Stars", value: `${project.github_stats.stars}`, icon: Star }
@@ -118,9 +220,9 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
     const mailSubject = `Project Inquiry: ${project.title}`;
 
     const steps = [
-        { id: 1, label: "Product Overview" },
-        { id: 2, label: "How It Works" },
-        { id: 3, label: "Business Fit" }
+        { id: 1, label: "Problem" },
+        { id: 2, label: "Solution" },
+        { id: 3, label: "Proof" }
     ];
 
     const handleNext = () => { if (activeStep < 3) setActiveStep(p => p + 1); };
@@ -199,13 +301,21 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 target="_blank" rel="noopener noreferrer"
                                                 className={`flex items-center gap-2 px-5 py-2.5 squircle-pill surface-chip ${catText} text-[10px] font-mono uppercase tracking-widest`}
                                             >
-                                                View Live Site <ExternalLink size={12} />
+                                                Open Live Site <ExternalLink size={12} />
                                             </a>
                                         </div>
 
                                         <div className="absolute bottom-8 left-6 right-6">
+                                            <p className="mb-2 text-[10px] font-mono uppercase tracking-[0.2em] text-white/50">
+                                                The problem
+                                            </p>
                                             <h4 className="text-3xl font-semibold text-white tracking-tighter mb-2">{project.title}</h4>
-                                            <p className="text-white/70 text-base font-light leading-relaxed">{cleanedDescription}</p>
+                                            <p className="text-white/70 text-base font-light leading-relaxed">{problemSummary}</p>
+                                            <p className="mt-3 text-sm font-light leading-relaxed text-white/55">{cleanedDescription}</p>
+                                            <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-white/45">
+                                                Role
+                                            </p>
+                                            <p className="text-sm font-light leading-relaxed text-white/60">{caseStudy.role}</p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -217,17 +327,41 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     key="m-step2"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                                    className="absolute inset-0 px-5 flex flex-col justify-center space-y-7"
+                                    className="absolute inset-0 overflow-y-auto px-5 py-2 pb-8"
                                 >
-                                    <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{deliverySummary}</p>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-7 squircle-nav surface-card">
-                                            <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{formatCommitCount(project.github_stats.commits)}</div>
-                                            <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Build Depth</div>
+                                    <div className="space-y-6">
+                                        <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{solutionSummary}</p>
+                                        <div className="grid grid-cols-1 gap-3">
+                                            <div className="p-5 squircle-nav surface-card">
+                                                <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">Role</div>
+                                                <div className="text-sm font-light leading-relaxed text-[var(--text-muted)]">{caseStudy.role}</div>
+                                            </div>
+                                            <div className="p-5 squircle-nav surface-card">
+                                                <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">Users</div>
+                                                <div className="text-sm font-light leading-relaxed text-[var(--text-muted)]">{caseStudy.users}</div>
+                                            </div>
                                         </div>
-                                        <div className="p-7 squircle-nav surface-card">
-                                            <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.languages.length}</div>
-                                            <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Core Systems</div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="p-7 squircle-nav surface-card">
+                                                <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{formatCommitCount(project.github_stats.commits)}</div>
+                                                <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Build History</div>
+                                            </div>
+                                            <div className="p-7 squircle-nav surface-card">
+                                                <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.languages.length}</div>
+                                                <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Core Tools</div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {caseStudy.decisions.map((decision) => (
+                                                <div key={decision.title} className="p-5 squircle-nav surface-card">
+                                                    <div className="mb-2 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">
+                                                        {decision.title}
+                                                    </div>
+                                                    <div className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
+                                                        {decision.detail}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </motion.div>
@@ -239,23 +373,40 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     key="m-step3"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                                    className="absolute inset-0 px-5 flex flex-col justify-center space-y-7"
+                                    className="absolute inset-0 overflow-y-auto px-5 py-2 pb-8"
                                 >
-                                    <div className="squircle p-7 surface-card">
-                                        <h4 className="text-[10px] font-mono uppercase tracking-widest mb-3 text-[var(--text-ghost)]">Best When</h4>
-                                        <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{needSummary}</p>
+                                    <div className="space-y-6">
+                                        <div className="squircle p-7 surface-card">
+                                            <h4 className="text-[10px] font-mono uppercase tracking-widest mb-3 text-[var(--text-ghost)]">Proof summary</h4>
+                                            <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{proofSummary}</p>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-3">
+                                            {caseStudy.outcomes.map((outcome) => (
+                                                <div key={outcome.label} className="p-5 squircle-nav surface-card">
+                                                    <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">{outcome.label}</div>
+                                                    <div className={`text-xl font-light tracking-tight ${catText}`}>{outcome.value}</div>
+                                                    <div className="mt-2 text-sm font-light leading-relaxed text-[var(--text-muted)]">{outcome.detail}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className={`squircle p-7 surface-card`}>
+                                            <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Evidence</h4>
+                                            <div className="space-y-3">
+                                                {caseStudy.proofPoints.map((point) => (
+                                                    <p key={point} className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
+                                                        {point}
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className={`squircle p-7 surface-card`}>
+                                            <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Business value</h4>
+                                            <p className="text-[var(--text-muted)] text-lg font-light leading-relaxed">
+                                                {valueSummary}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className={`squircle p-7 surface-card`}>
-                                        <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Recommended Direction</h4>
-                                        <p className="text-[var(--text-muted)] text-xl font-light tracking-tight italic">
-                                            "{directionSummary}"
-                                        </p>
-                                        <div className="mt-4 h-px w-full" style={{ background: `${catAccent}22` }} />
-                                        <p className="mt-4 text-[11px] font-mono text-[var(--text-ghost)] leading-relaxed uppercase tracking-wider">
-                                            Strategically built to solve the core business friction.
-                                        </p>
-                                    </div>
-                                    <div className="flex flex-col gap-3">
+                                    <div className="mt-6 flex flex-col gap-3">
                                         <a href={`https://${project.link}`} target="_blank"
                                             className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
                                             <div>
@@ -268,7 +419,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
                                             <div>
                                                 <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block text-[var(--text-ghost)]">Next Step</span>
-                                                <span className="text-[var(--text-dim)] text-base font-medium">Start a Conversation</span>
+                                                <span className="text-[var(--text-dim)] text-base font-medium">Start a Project</span>
                                             </div>
                                             <Globe size={20} className="text-[var(--text-ghost)] group-hover:rotate-12 transition-transform" />
                                         </a>
@@ -373,7 +524,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     <div className="mt-auto">
                         <div className="squircle-nav p-4 surface-card space-y-3">
                             <div className={`flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider ${catText} opacity-70`}>
-                                <Github size={11} /> Delivery Signals
+                                <Github size={11} /> Proof
                             </div>
                             <div className="flex items-center justify-between text-[var(--text-dim)] text-xs font-mono">
                                 <span className="flex items-center gap-1.5">
@@ -418,7 +569,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {activeStep === 1 && (
                                     <div className="flex flex-col h-full">
                                         <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">Product Overview</h3>
+                                            <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">Problem</h3>
                                         </div>
                                         <div className="flex-1 relative squircle overflow-hidden bg-black shrink-0 min-h-[360px] shadow-[0_32px_64px_rgba(0,0,0,0.4)]">
                                             <img
@@ -440,19 +591,29 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                     target="_blank" rel="noopener noreferrer"
                                                     className={`flex items-center gap-2 px-5 py-2.5 squircle-pill surface-chip ${catText} text-[10px] font-mono uppercase tracking-widest transition-colors duration-200`}
                                                 >
-                                                    View Live Site <ExternalLink size={11} />
+                                                    Open Live Site <ExternalLink size={11} />
                                                 </a>
                                             </div>
 
                                             <div className="absolute bottom-6 left-6 right-6">
-                                                <p className="text-white/80 text-lg leading-relaxed font-light">{cleanedDescription}</p>
+                                                <p className="mb-3 text-[10px] font-mono uppercase tracking-[0.2em] text-white/50">The problem</p>
+                                                <p className="text-white/80 text-lg leading-relaxed font-light">{problemSummary}</p>
+                                                <p className="mt-3 text-sm leading-relaxed font-light text-white/55">{cleanedDescription}</p>
+                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                    <span className="squircle-chip bg-white/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.14em] text-white/70">
+                                                        {caseStudy.role}
+                                                    </span>
+                                                    <span className="squircle-chip bg-white/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.14em] text-white/70">
+                                                        {caseStudy.surfaces}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => setActiveStep(2)}
                                             className="mt-4 self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-colors duration-200 text-[10px] font-mono tracking-[0.2em] uppercase"
                                         >
-                                            See How It Works <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                                            See The Solution <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
                                 )}
@@ -460,21 +621,42 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {/* Step 2 — Architecture */}
                                 {activeStep === 2 && (
                                     <div className="flex flex-col justify-center h-full space-y-6">
-                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">How It Works</h3>
+                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">Solution</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-center">
                                             <div className="space-y-5">
-                                                <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">{deliverySummary}</p>
+                                                <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">{solutionSummary}</p>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="squircle-nav p-5 surface-card">
                                                         <div className={`text-3xl font-light mb-1 tracking-tighter tabular-nums ${catText}`}>
                                                             {formatCommitCount(project.github_stats.commits)}
                                                         </div>
-                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Build Depth</div>
+                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Build History</div>
                                                     </div>
                                                     <div className="squircle-nav p-5 surface-card">
                                                         <div className={`text-3xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.languages.length}</div>
-                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Core Systems</div>
+                                                        <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Core Tools</div>
                                                     </div>
+                                                </div>
+                                                <div className="grid gap-4">
+                                                    <OverlayCard eyebrow="Role">
+                                                        <p className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
+                                                            {caseStudy.role}
+                                                        </p>
+                                                    </OverlayCard>
+                                                    <OverlayCard eyebrow="Users">
+                                                        <p className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
+                                                            {caseStudy.users}
+                                                        </p>
+                                                    </OverlayCard>
+                                                    <OverlayCard eyebrow="Constraints" accent={catAccent}>
+                                                        <div className="space-y-3">
+                                                            {caseStudy.constraints.map((constraint) => (
+                                                                <p key={constraint} className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
+                                                                    {constraint}
+                                                                </p>
+                                                            ))}
+                                                        </div>
+                                                    </OverlayCard>
                                                 </div>
                                             </div>
 
@@ -491,7 +673,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             onClick={() => setActiveStep(3)}
                                             className="self-start group flex items-center gap-2 text-[var(--text-ghost)] hover:text-[var(--text)] transition-colors duration-200 text-[10px] font-mono tracking-[0.2em] uppercase"
                                         >
-                                            See Business Fit <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                                            See The Proof <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
                                 )}
@@ -499,20 +681,37 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {/* Step 3 — Impact */}
                                 {activeStep === 3 && (
                                     <div className="max-w-2xl flex flex-col pt-4 pb-8">
-                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight mb-6">Business Fit</h3>
+                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight mb-6">Proof</h3>
                                         <div className="space-y-4 mb-10">
                                             <div className="squircle p-7 surface-card">
-                                                <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">Best When</h4>
-                                                <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{needSummary}</p>
+                                                <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">Proof summary</h4>
+                                                <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{proofSummary}</p>
+                                            </div>
+                                            <div className="grid gap-4 md:grid-cols-3">
+                                                {caseStudy.outcomes.map((outcome) => (
+                                                    <MetricCard
+                                                        key={outcome.label}
+                                                        label={outcome.label}
+                                                        value={outcome.value}
+                                                        detail={outcome.detail}
+                                                        accentClass={catText}
+                                                    />
+                                                ))}
                                             </div>
                                             <div className="squircle p-8 surface-card" style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}>
-                                                <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>Recommended Direction</h4>
-                                                <p className="text-[var(--text-muted)] text-xl leading-relaxed font-light italic">
-                                                    "{directionSummary}"
-                                                </p>
-                                                <div className="mt-6 h-px w-full" style={{ background: `${catAccent}11` }} />
-                                                <p className="mt-4 text-[12px] font-mono text-[var(--text-ghost)] uppercase tracking-widest">
-                                                    Engineering rationale: This architecture specifically addresses the {project.category.toLowerCase()} performance bottlenecks.
+                                                <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>Evidence</h4>
+                                                <div className="space-y-3">
+                                                    {caseStudy.proofPoints.map((point) => (
+                                                        <p key={point} className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
+                                                            {point}
+                                                        </p>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="squircle p-8 surface-card" style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}>
+                                                <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>Business value</h4>
+                                                <p className="text-[var(--text-muted)] text-xl leading-relaxed font-light">
+                                                    {valueSummary}
                                                 </p>
                                             </div>
                                         </div>
@@ -524,9 +723,9 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             >
                                                 <div>
                                                     <span className={`text-[10px] font-mono uppercase tracking-widest mb-0.5 block opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-y-0 ${catText}`}>
-                                                        Start a Conversation
+                                                        Next Step
                                                     </span>
-                                                    <span className="text-xl font-semibold tracking-tight">Discuss This Kind of Project</span>
+                                                    <span className="text-xl font-semibold tracking-tight">Start a Project</span>
                                                 </div>
                                                 <div className="p-4 squircle-icon surface-chip transition-colors duration-200">
                                                     <ArrowUpRight size={22} className="transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -543,9 +742,9 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             >
                                                 <div>
                                                     <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-y-0 text-[var(--text-ghost)]">
-                                                        Visit Live Site
+                                                        Live Product
                                                     </span>
-                                                    <span className="text-xl font-semibold tracking-tight">Open Live Product</span>
+                                                    <span className="text-xl font-semibold tracking-tight">Open Live Site</span>
                                                 </div>
                                                 <div className="p-4 squircle-icon surface-chip transition-colors duration-200">
                                                     <Globe size={22} className="group-hover:rotate-12 transition-transform duration-400" />

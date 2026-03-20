@@ -72,18 +72,7 @@
 					},
 					{ once: true }
 				);
-				return;
 			}
-
-			window.addEventListener(
-				"load",
-				() => {
-					navigator.serviceWorker
-						.register("/sw.js", { scope: "/" })
-						.catch(() => undefined);
-				},
-				{ once: true }
-			);
 		})();
 	</script>
 

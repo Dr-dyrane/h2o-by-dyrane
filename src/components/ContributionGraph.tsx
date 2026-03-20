@@ -117,13 +117,13 @@ export const ContributionGraph = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="mx-auto w-full max-w-7xl px-4 py-16 md:px-6 md:py-20">
-        <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 md:px-6 md:py-16">
+        <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
             <div className="mb-2 flex items-center gap-2">
               <div className="h-1.5 w-1.5 squircle-pill bg-[var(--cat-ux)]" />
               <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[var(--cat-ux)]">
-                {loading ? "Syncing GitHub" : "Shipping rhythm"}
+                {loading ? "Syncing GitHub" : "Shipping"}
               </span>
             </div>
             <h2 className="text-3xl font-light tracking-tight text-[var(--text)]">
@@ -174,7 +174,7 @@ export const ContributionGraph = () => {
           </div>
         </div>
 
-        <div className="mt-8 grid max-w-3xl grid-cols-2 gap-6 md:grid-cols-2">
+        <div className="mt-6 grid max-w-3xl grid-cols-2 gap-6 md:grid-cols-2">
           {stats.map((stat) => (
             <div key={stat.label} className="squircle-nav surface-card p-4">
               <div className="mb-1 flex items-start justify-between">

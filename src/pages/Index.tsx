@@ -21,23 +21,23 @@ const ProjectOverlay = lazy(() =>
 
 const heroShowcase = [
   {
-    label: "For operators",
-    title: "A platform that keeps live operations clear.",
-    description: "Dispatch, routing, and real-time visibility without the usual workflow friction.",
+    label: "For operations teams",
+    title: "Software that keeps live work clear.",
+    description: "Dispatch, routing, and live visibility designed to reduce handoff friction.",
     accent: "var(--cat-logistics)",
     accentBg: "var(--cat-logistics-bg)",
   },
   {
-    label: "For teams using AI",
-    title: "A tool that makes intelligence feel usable.",
-    description: "Structured workflows that turn complex reasoning into something people can trust and act on.",
+    label: "For AI products",
+    title: "AI that feels structured and trustworthy.",
+    description: "Complex reasoning turned into workflows people can understand and act on.",
     accent: "var(--cat-intelligence)",
     accentBg: "var(--cat-intelligence-bg)",
   },
   {
-    label: "For premium brands",
-    title: "An experience that builds trust faster.",
-    description: "Clear product presentation, stronger visual positioning, and a cleaner path to conversion.",
+    label: "For product-led brands",
+    title: "Interfaces that help buyers trust faster.",
+    description: "Clear positioning, stronger product presentation, and a cleaner path to action.",
     accent: "var(--cat-ux)",
     accentBg: "var(--cat-ux-bg)",
   },
@@ -50,19 +50,15 @@ const totalProjects = projects.length;
 const proofStrip = [
   {
     value: `${(totalCommits / 1000).toFixed(1).replace(".0", "")}k+`,
-    label: "production commits across live deployments",
+    label: "commits across shipped portfolio work",
   },
   {
-    value: `${totalProjects}`,
-    label: "shipped products across 3 domains",
+    value: "3 lanes",
+    label: "operations, AI workflows, and product UX",
   },
   {
-    value: "< 90ms",
-    label: "LCP target on every project build",
-  },
-  {
-    value: "1 team",
-    label: "strategy, design, and implementation — one workflow",
+    value: "1 workflow",
+    label: "strategy, design, and implementation stay aligned",
   },
 ];
 
@@ -70,28 +66,28 @@ const services = [
   {
     title: "Custom Websites and Product Surfaces",
     description:
-      "Design and engineering handled together — so what ships looks exactly like what was decided, not a degraded version of it.",
+      "Marketing sites, landing pages, and product surfaces built so the message, interaction, and implementation stay aligned.",
     accent: "var(--cat-ux)",
     accentBg: "var(--cat-ux-bg)",
   },
   {
     title: "Internal Tools and Dashboards",
     description:
-      "Rebuilt around how decisions actually get made — not around how the data happened to be stored.",
+      "Operational software shaped around decisions, handoffs, and visibility instead of raw database structure.",
     accent: "var(--cat-logistics)",
     accentBg: "var(--cat-logistics-bg)",
   },
   {
     title: "AI Workflow Systems",
     description:
-      "AI packaged into a structure your team can follow. The model does the reasoning. Users see the output, not the complexity.",
+      "AI packaged into a workflow your team can follow, with the model doing the reasoning and the interface carrying the clarity.",
     accent: "var(--cat-intelligence)",
     accentBg: "var(--cat-intelligence-bg)",
   },
   {
     title: "UX Redesigns",
     description:
-      "Start where the product is losing the user — then work backward. The goal is fewer hesitations, not a new color palette.",
+      "Focused redesigns for products that already work but are losing trust, clarity, or momentum in the interface.",
     accent: "var(--cat-ux)",
     accentBg: "var(--cat-ux-bg)",
   },
@@ -100,27 +96,21 @@ const services = [
 const processSteps = [
   {
     step: "01",
-    title: "Understand what your product needs to communicate.",
+    title: "Find where trust or clarity breaks.",
     description:
-      "Start with the business goal, what users are unsure about, and what needs to be clear within the first few seconds.",
+      "Start with the business goal, what users are unsure about, and what needs to become obvious within the first few seconds.",
   },
   {
     step: "02",
-    title: "Design the experience around your customer.",
+    title: "Reshape the workflow and message around that moment.",
     description:
-      "Shape the hierarchy, motion, and presentation so the product feels premium without becoming harder to understand.",
+      "Adjust hierarchy, interaction, and copy so the product becomes easier to scan, easier to use, and easier to believe.",
   },
   {
     step: "03",
-    title: "Build it to ship cleanly.",
+    title: "Build the final version and sharpen the proof.",
     description:
-      "The design becomes a working product — fast, stable, and ready for real users. No handoff friction, no translation loss.",
-  },
-  {
-    step: "04",
-    title: "Polish the details people actually notice.",
-    description:
-      "Refine load behavior, copy, motion, and trust signals so the experience starts selling before the conversation does.",
+      "The same pass that shapes the structure also ships the product, tightens performance, and strengthens the signals people use to decide.",
   },
 ];
 
@@ -173,43 +163,39 @@ const Index = () => {
           <div className="grid gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
             <div>
               <p className="mb-3 text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--cat-ux)]">
-                Alexander Dyrane · Engineering premium systems with design discipline
-              </p>
-              {/* Identity line — author voice before value proposition */}
-              <p className="mb-5 max-w-xl text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg">
-                I've built for emergency dispatch, financial rails, and clinical AI.
-                The constant: it has to make sense in the first 3 seconds.
+                Alexander Dyrane | Solo product engineer for complex products
               </p>
               <h1 className="mb-6 max-w-4xl text-4xl font-light tracking-tighter text-[var(--text)] sm:text-5xl md:text-6xl xl:text-7xl">
-                I build premium websites, AI tools, and custom platforms that
-                make your business easier to understand and easier to trust.
+                I design and build product websites, internal tools, and AI
+                workflows that make complex businesses easier to understand and easier to trust.
               </h1>
-              <p className="mb-10 max-w-2xl text-lg font-light leading-relaxed text-[var(--text-muted)] sm:text-xl md:text-[1.4rem] xl:text-2xl">
-                Most clients arrive with the same problem: the product is real,
-                but it doesn't feel real yet to the people who need to trust it.
+              <p className="mb-10 max-w-2xl text-lg font-light leading-relaxed text-[var(--text-muted)] sm:text-xl md:text-[1.35rem] xl:text-[1.55rem]">
+                I design and build for operations, clinical AI, fintech, and commerce,
+                turning products that are harder to explain, sell, or use than they should be
+                into something clearer and easier to trust.
               </p>
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
+                  href="#featured-work"
+                  className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 md:px-8 md:py-4 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium transition-colors duration-200 hover:bg-[var(--cta-hover)]"
+                >
+                  View Case Studies
+                  <ChevronDown
+                    size={18}
+                    className="transition-transform duration-200 group-hover:translate-y-0.5"
+                  />
+                </a>
+                <a
                   href="mailto:hello@dyrane.tech?subject=Project%20Inquiry"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 md:px-8 md:py-4 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium transition-colors duration-200 hover:bg-[var(--cta-hover)]"
+                  className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 md:px-8 md:py-4 squircle-pill bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium transition-colors duration-200 hover:bg-[var(--cta-secondary-hover)] hover:text-[var(--text)]"
                 >
                   Start a Project
                   <ArrowUpRight
                     size={18}
                     className="transition-transform duration-200 group-hover:translate-x-0.5"
-                  />
-                </a>
-                <a
-                  href="#featured-work"
-                  className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 md:px-8 md:py-4 squircle-pill bg-[var(--cta-secondary-bg)] text-[var(--cta-secondary-text)] font-medium transition-colors duration-200 hover:bg-[var(--cta-secondary-hover)] hover:text-[var(--text)]"
-                >
-                  See Selected Work
-                  <ChevronDown
-                    size={18}
-                    className="transition-transform duration-200 group-hover:translate-y-0.5"
                   />
                 </a>
               </div>
@@ -230,7 +216,7 @@ const Index = () => {
 
               <div className="relative">
                 <p className="mb-6 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--cat-ux)]">
-                  What clients usually come for
+                  Where the work usually starts
                 </p>
 
                 {/* Kinetic showcase — all 3 cards present, inactive ones dim */}
@@ -286,10 +272,8 @@ const Index = () => {
           </div>
         </section>
         
-        <ShowcaseSection onProjectSelect={handleProjectSelect} />
-
         <section className="mx-auto mb-16 max-w-7xl px-4 md:mb-20 md:px-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
             {proofStrip.map((item) => (
               <div
                 key={item.value}
@@ -309,6 +293,27 @@ const Index = () => {
         </section>
 
         <section
+          id="featured-work"
+          className="mx-auto mb-8 max-w-7xl scroll-mt-28 px-4 md:mb-10 md:px-6"
+        >
+          <div className="mb-10 max-w-3xl space-y-4">
+            <p className="text-[11px] font-mono uppercase tracking-[0.18em] bg-gradient-to-r from-[var(--cat-logistics)] via-[var(--cat-intelligence)] to-[var(--cat-ux)] bg-clip-text text-transparent">
+              Case Studies
+            </p>
+            <h2 className="text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
+              Work that shows how I solve clarity problems.
+            </h2>
+            <p className="text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg">
+              Three lanes, three kinds of products, and a faster read on what I build.
+            </p>
+          </div>
+        </section>
+
+        <ProjectGrid onProjectSelect={handleProjectSelect} />
+
+        <ShowcaseSection onProjectSelect={handleProjectSelect} />
+
+        <section
           id="services"
           className="mx-auto mb-16 max-w-7xl scroll-mt-28 px-4 md:mb-20 md:px-6"
         >
@@ -317,11 +322,10 @@ const Index = () => {
               Services
             </p>
             <h2 className="text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
-              What you can hire me to do.
+              What I build most often.
             </h2>
-            <p className="text-lg font-light leading-relaxed text-[var(--text-muted)]">
-              If you are paying for this kind of work, these are the outcomes
-              the portfolio is built to make obvious.
+            <p className="text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg">
+              The main categories of work people usually hire me for.
             </p>
           </div>
 
@@ -362,15 +366,14 @@ const Index = () => {
               Process
             </p>
             <h2 className="text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
-              What working together should feel like.
+              How the work gets clearer.
             </h2>
-            <p className="text-lg font-light leading-relaxed text-[var(--text-muted)]">
-              The point is not to hand you a pretty interface. The point is to
-              give you something clearer, stronger, and more useful to your business.
+            <p className="text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg">
+              The goal is to make the product easier to understand, easier to use, and easier to trust.
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {processSteps.map((item, idx) => {
               const colors = ["var(--cat-logistics)", "var(--cat-intelligence)", "var(--cat-ux)"];
               const accent = colors[idx % colors.length];
@@ -398,27 +401,6 @@ const Index = () => {
           </div>
         </section>
 
-        <section
-          id="featured-work"
-          className="mx-auto max-w-7xl scroll-mt-28 px-4 md:px-6"
-        >
-          <div className="max-w-3xl space-y-4">
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] bg-gradient-to-r from-[var(--cat-logistics)] via-[var(--cat-intelligence)] to-[var(--cat-ux)] bg-clip-text text-transparent">
-              Selected Work
-            </p>
-            <h2 className="text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
-              Work that shows the kinds of problems I solve.
-            </h2>
-            <p className="text-lg font-light leading-relaxed text-[var(--text-muted)]">
-              You should not have to guess what I do. These examples map
-              directly to common client needs: operational clarity, usable AI,
-              and premium product presentation.
-            </p>
-          </div>
-        </section>
-
-        <ProjectGrid onProjectSelect={handleProjectSelect} />
-
         <section id="engineering-dna" className="scroll-mt-28">
           <ContributionGraph />
         </section>
@@ -436,14 +418,10 @@ const Index = () => {
                   Ready when you are
                 </p>
                 <h2 className="mb-4 text-3xl font-light tracking-tight text-[var(--text)] md:text-4xl xl:text-5xl">
-                  Good work starts with a clear conversation.
+                  Tell me what the product is, where people get stuck, and what needs to ship next.
                 </h2>
                 <p className="text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg">
-                  If you know what you need, or just have a problem worth solving,
-                  that's enough to start.
-                </p>
-                <p className="mt-3 text-sm font-light text-[var(--text-ghost)]">
-                  Usually responds within 24 hours.
+                  That is enough context to start.
                 </p>
               </div>
 
@@ -481,3 +459,4 @@ const Index = () => {
 };
 
 export default Index;
+

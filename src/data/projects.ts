@@ -19,6 +19,27 @@ export interface ProjectShowcase {
 	}[];
 }
 
+export interface ProjectCaseStudyMetric {
+	label: string;
+	value: string;
+	detail: string;
+}
+
+export interface ProjectCaseStudyDecision {
+	title: string;
+	detail: string;
+}
+
+export interface ProjectCaseStudy {
+	role: string;
+	users: string;
+	surfaces: string;
+	constraints: string[];
+	decisions: ProjectCaseStudyDecision[];
+	proofPoints: string[];
+	outcomes: ProjectCaseStudyMetric[];
+}
+
 export interface Project {
 	title: string;
 	description: string;
@@ -32,6 +53,7 @@ export interface Project {
 		languages: string[];
 		stars?: number;
 	};
+	caseStudy?: ProjectCaseStudy;
 	showcase?: ProjectShowcase[];
 }
 
@@ -39,22 +61,68 @@ export const projects: Project[] = [
 	// --- Logistics Engines ---
 	{
 		title: "iVisit Ecosystem",
-		description: "A 'Unity Architecture' for emergency response. Real-time intelligence, dispatch logistics, and life-saving infrastructure.",
+		description: "Emergency dispatch software for ambulance coordination, routing, and hospital visibility.",
 		link: "ivisit.ng",
 		category: "Logistics Engine",
-		challenge: "Emergency response in high-density urban areas suffers from 40%+ latency due to fragmented communication between dispatch, ambulances, and hospitals.",
-		architecture: "Built on the 'Unity Architecture': A distributed event-driven system using Supabase Realtime for sub-100ms dispatch syncing and geospatial indexing for optimal routing.",
-		proposal: "Deploy a private instance of the Unity Architecture for your logistics fleet. Reduce idle time by 30% and improve response variance by 50%.",
+		challenge: "Emergency response teams lose time when dispatch, ambulance crews, and hospitals are working from different information.",
+		architecture: "Built as a real-time operations product with live dispatch updates, route visibility, and synchronized views for both control-room staff and field teams.",
+		proposal: "Best for response or logistics teams that need faster coordination, cleaner handoffs, and reliable live visibility.",
 		github_stats: {
 			commits: 1240,
 			languages: ["TypeScript", "Python", "PostgreSQL"],
 			stars: 45,
 		},
+		caseStudy: {
+			role: "Product design, realtime workflow design, and frontend architecture",
+			users: "Dispatch operators, ambulance crews, and hospital intake teams",
+			surfaces: "Desktop control-room surface and mobile field workflows",
+			constraints: [
+				"High-pressure decisions where context switching costs time",
+				"Realtime status changes across control room and field teams",
+				"Operational visibility that has to stay readable while data updates"
+			],
+			decisions: [
+				{
+					title: "Shared operational state",
+					detail: "The same dispatch state stays visible across desktop and mobile so teams are not reconciling different versions of the case."
+				},
+				{
+					title: "Map-first coordination",
+					detail: "Routing, vehicle position, and case status stay in the main workflow instead of being split across disconnected views."
+				},
+				{
+					title: "Fast handoff patterns",
+					detail: "Actions are built for speed so responders can update status quickly without losing context."
+				}
+			],
+			proofPoints: [
+				"Live product with both console and mobile responder views",
+				"1,240 commits showing sustained iteration across the core workflow",
+				"Public interest visible through 45 stars on the underlying work"
+			],
+			outcomes: [
+				{
+					label: "Status",
+					value: "Live",
+					detail: "Shipped as a working operations product, not a static concept."
+				},
+				{
+					label: "Workflow",
+					value: "Shared dispatch state",
+					detail: "Control-room and field teams work from the same source of truth."
+				},
+				{
+					label: "Trust",
+					value: "Clearer coordination",
+					detail: "The interface is built to reduce ambiguity at the moment a decision is made."
+				}
+			]
+		},
 		showcase: [
 			{
 				id: "ivisit-console",
-				title: "Mission Control Ensemble",
-				description: "A synchronized data-dense surface for real-time dispatch and mobile response coordination.",
+				title: "Dispatch Control Surface",
+				description: "A shared dispatch view for real-time coordination between the control room and the field.",
 				desktopImage: {
 					light: "/showcase/ivisit-console-light.png",
 					dark: "/showcase/ivisit-console-dark.png"
@@ -65,21 +133,21 @@ export const projects: Project[] = [
 				},
 				layout: "single",
 				features: [
-					{ icon: "Navigation", label: "Geospatial Bus", detail: "Real-time 'God-Mode' map synchronization." },
-					{ icon: "Activity", label: "Response Link", detail: "Direct mobile-to-console dispatch orchestration." },
-					{ icon: "Zap", label: "Island Navigation", detail: "Frictionless context-aware command surfaces." }
+					{ icon: "Navigation", label: "Live map", detail: "Shared location and route visibility for the whole team." },
+					{ icon: "Activity", label: "Field handoff", detail: "Cleaner coordination between dispatch and responders." },
+					{ icon: "Zap", label: "Fast actions", detail: "Quick command paths for high-pressure workflows." }
 				]
 			}
 		],
 	},
 	{
 		title: "Slatechain",
-		description: "Supply chain intelligence: inventory management, order tracking, and logistics optimization.",
+		description: "Supply chain platform for inventory visibility, order tracking, and replenishment planning.",
 		link: "slatechain.vercel.app",
 		category: "Logistics Engine",
-		challenge: "SME supply chains lack visibility, leading to 15-20% dead stock and untraceable loss during transit.",
-		architecture: "Blockchain-inspired immutable ledger for inventory states combined with predictive analytics for demand forecasting.",
-		proposal: "Integrate Slatechain's tracking module to gain granular visibility into your inventory flow and reduce shrinkage by 15%.",
+		challenge: "Small and mid-sized supply chains often run on partial visibility, which creates dead stock and hard-to-trace losses.",
+		architecture: "Combines inventory history, order tracking, and forecast signals so teams can see movement clearly and plan replenishment earlier.",
+		proposal: "Best for businesses that need clearer inventory flow, traceability, and demand planning.",
 		github_stats: {
 			commits: 320,
 			languages: ["TypeScript", "Solidity", "React"],
@@ -87,12 +155,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "DDDC",
-		description: "Medical platform for healthcare management and patient logistics.",
+		description: "Healthcare operations platform for patient flow, scheduling, and resource coordination.",
 		link: "dddc.vercel.app",
 		category: "Logistics Engine",
-		challenge: "Healthcare facilities struggle with patient throughput and resource allocation, creating bottlenecks in care delivery.",
-		architecture: "Resource-aware scheduling engine that dynamically allocates staff and beds based on real-time patient acuity data.",
-		proposal: "Optimize your clinical operations with DDDC's logic core. Improve patient throughput by 25% without adding headcount.",
+		challenge: "Care teams lose time when beds, staff, and patient flow are managed across disconnected systems.",
+		architecture: "Uses real-time scheduling and resource-aware workflows to match patients, staff, and available capacity more clearly.",
+		proposal: "Best for clinical teams that need cleaner throughput and less operational friction.",
 		github_stats: {
 			commits: 215,
 			languages: ["TypeScript", "React"],
@@ -103,28 +171,74 @@ export const projects: Project[] = [
 
 	{
 		title: "Dr. Dyrane",
-		description: "A Digital Clinical Registrar powered by Claude 3.5 Sonnet. Not a chatbot — a rigorous AI engine that maps symptoms to pathophysiology through recursive SOAP logic and progressive disclosure.",
+		description: "Clinical AI triage product that turns symptom intake into structured decision support.",
 		link: "dr.dyrane.tech",
 		category: "Intelligence Bridge",
-		challenge: "Symptom checkers are dangerously shallow. Patients need structured clinical reasoning — not keyword matching — that can rule out life-threatening pathology before suggesting a prescription.",
-		architecture: "4-step algorithmic loop: Recursive SOAP intake → Bayesian DDx narrowing (P>95% threshold) → Guardian Agent red-flag interceptor (triggers Neon Red emergency state + geospatial ER handoff) → 4-Pillar resolution output (Diagnosis, Management, Prognosis, Prevention). Claude 3.5 Sonnet returns strict JSON. State managed via useReducer state machine. PWA with local-first session storage.",
-		proposal: "Deploy the Dr. Dyrane clinical engine as a triage layer for your healthcare platform. Reduce ER misuse by pre-qualifying patients with mathematically rigorous intake before escalation.",
+		challenge: "Most symptom checkers stop at surface-level suggestions, which makes them hard to trust for real clinical decisions.",
+		architecture: "Uses staged intake, differential narrowing, red-flag interception, and structured outputs so the reasoning stays visible and auditable.",
+		proposal: "Best for healthcare products that need safer triage, clearer escalation, and more trustworthy AI guidance.",
 		github_stats: {
 			commits: 380,
 			languages: ["TypeScript", "React", "Claude AI", "Playwright"],
 			stars: 38,
+		},
+		caseStudy: {
+			role: "Product design, AI interaction design, and frontend implementation",
+			users: "Patients, clinicians evaluating outputs, and health product teams",
+			surfaces: "Progressive intake flow, reasoning output, and escalation layer",
+			constraints: [
+				"Trust drops fast when AI feels vague or overconfident",
+				"Clinical reasoning has to feel structured, not conversational for its own sake",
+				"High-risk symptoms need visible escalation rather than soft suggestions"
+			],
+			decisions: [
+				{
+					title: "Staged intake",
+					detail: "The interface collects symptoms step by step so users stay oriented and the system gets cleaner inputs."
+				},
+				{
+					title: "Visible reasoning structure",
+					detail: "Outputs follow a structured clinical pattern so the product feels like decision support instead of an opaque chatbot."
+				},
+				{
+					title: "Guardrail escalation",
+					detail: "Red-flag conditions interrupt the normal flow and push the product toward safer escalation behavior."
+				}
+			],
+			proofPoints: [
+				"Live triage product with structured intake and output flows",
+				"380 commits across the product surface and underlying logic",
+				"38 public stars showing external interest in the work"
+			],
+			outcomes: [
+				{
+					label: "Status",
+					value: "Live",
+					detail: "Publicly deployed product with real interaction flow."
+				},
+				{
+					label: "Reasoning",
+					value: "Structured",
+					detail: "The product makes the clinical path feel more legible and auditable."
+				},
+				{
+					label: "Safety",
+					value: "Escalation-aware",
+					detail: "High-risk patterns are treated as part of the product flow, not a hidden model concern."
+				}
+			]
 		},
 	},
 
 	{
 		title: "SaySwitch",
 
-		description: "A comprehensive, feature-rich payment solution for seamless offline and online transactions.",
+		description: "Payments platform for online and offline transactions in low-connectivity environments.",
 		link: "sayswitchgroup.com",
 		category: "Intelligence Bridge",
-		challenge: "Payment failures in low-bandwidth environments cause 12% revenue loss for merchants in emerging markets.",
-		architecture: "Offline-first transaction queueing system that syncs cryptographically signed ledgers once connectivity is restored.",
-		proposal: "License the SaySwitch offline core to ensure 99.9% reliable transactions regardless of network status.",
+		challenge: "Merchants lose revenue when payments fail in weak-network conditions.",
+		architecture: "Queues transactions offline and syncs signed records when connectivity returns, so payment flow stays reliable.",
+		proposal: "Best for payment products that need reliability across unstable network conditions.",
 		github_stats: {
 			commits: 650,
 			languages: ["TypeScript", "Go"],
@@ -132,12 +246,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "Aquawallet",
-		description: "Specialized fintech solution providing digital wallets for the aquaculture industry.",
+		description: "Vertical fintech product providing wallets and cash flow support for aquaculture businesses.",
 		link: "aquawallet-coral.vercel.app",
 		category: "Intelligence Bridge",
-		challenge: "Niche industries like aquaculture face liquidity gaps due to generic banking tools failing to understand their harvest cycles.",
-		architecture: "Vertical-specific wallet architecture with embedded credit scoring models based on supply chain data.",
-		proposal: "Deploy specialized financial infrastructure that understands your users' specific business cycles.",
+		challenge: "Niche industries like aquaculture face liquidity gaps because generic banking tools do not reflect their operating cycles.",
+		architecture: "Uses vertical-specific wallet flows and credit signals based on supply chain behavior instead of generic consumer assumptions.",
+		proposal: "Best for financial products serving industries with unusual cash cycles or operating constraints.",
 		github_stats: {
 			commits: 190,
 			languages: ["TypeScript", "React", "Node.js"],
@@ -145,12 +259,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "Algorise",
-		description: "Elevate your coding skills with daily algorithm challenges and technical intelligence.",
+		description: "Learning product for daily algorithm practice and technical skill retention.",
 		link: "algorise-dyrane.vercel.app",
 		category: "Intelligence Bridge",
-		challenge: "Technical skill decay is a real problem for engineering teams. Constant reinforcement is needed but rarely prioritized.",
-		architecture: "Gamified learning engine that adapts problem difficulty based on user performance using an Elo rating system.",
-		proposal: "Implement Algorise as your internal training ground. Keep your engineering team sharp with daily micro-challenges.",
+		challenge: "Engineering teams lose sharpness when practice is inconsistent and reinforcement is left to chance.",
+		architecture: "Uses adaptive challenge difficulty and lightweight daily loops to keep practice consistent without adding heavy overhead.",
+		proposal: "Best for teams that want a structured, repeatable way to maintain technical sharpness.",
 		github_stats: {
 			commits: 440,
 			languages: ["TypeScript", "Python"],
@@ -158,12 +272,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "iVisit Music (DyraneTop40)",
-		description: "A curated auditory experience platform integrated into the iVisit Intelligence Collective ecosystem.",
+		description: "Curated music platform combining editorial selection with recommendation logic.",
 		link: "music.ivisit.ng",
 		category: "Intelligence Bridge",
-		challenge: "Algorithmic recommendations often feel sterile. Users wanted a 'human-curated' feel with the scale of a platform.",
-		architecture: "Hybrid recommendation engine combining collaborative filtering with editorial weighting to surface high-quality, non-mainstream tracks.",
-		proposal: "Build a bespoke media content layer for your brand that feels personal, not programmatic.",
+		challenge: "Recommendation products often feel generic when algorithmic ranking overwhelms editorial taste.",
+		architecture: "Blends recommendation logic with editorial weighting so discovery feels personal instead of purely automated.",
+		proposal: "Best for brands that want a content experience with more voice and less algorithmic sameness.",
 		github_stats: {
 			commits: 210,
 			languages: ["TypeScript", "Next.js"],
@@ -173,12 +287,12 @@ export const projects: Project[] = [
 	// --- Modernized UX ---
 	{
 		title: "Scholarix",
-		description: "An advanced educational intelligence ecosystem featuring 'Liquid Glass' UI and frictionless magic-link access.",
+		description: "Learning platform focused on faster access, clearer navigation, and better student focus.",
 		link: "scholarix.fun",
 		category: "Modernized UX",
-		challenge: "Educational tools are notoriously clunky, causing high churn rates and low engagement among digital-native students.",
-		architecture: "Implements the 'Liquid Glass' design system: a performance-optimized frosted glass UI engine that maintains 60fps even on mobile devices.",
-		proposal: "Revamp your user interface with the Liquid Glass design language. Increase user session time by 40% through superior aesthetics.",
+		challenge: "Students drop off when learning tools are slow, cluttered, or built more for administration than use.",
+		architecture: "Uses lightweight access, clearer learning flow, and a fast interface so students get to content with less friction.",
+		proposal: "Best for education products that need stronger retention and a clearer product experience.",
 		github_stats: {
 			commits: 890,
 			languages: ["TypeScript", "React", "Tailwind"],
@@ -187,12 +301,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "smartEdu",
-		description: "A modern platform for online learning and course management.",
+		description: "Learning platform for courses, discussion, and community participation.",
 		link: "smartedu-v1.vercel.app",
 		category: "Modernized UX",
-		challenge: "LMS platforms are often rigid and administrative, failing to foster actual learning communities.",
-		architecture: "Social-first learning architecture that integrates real-time discussion and peer-review directly into the course consumption flow.",
-		proposal: "Transform your static content into a living community. Increase course completion rates by leveraging social accountability.",
+		challenge: "Many LMS products feel rigid and administrative, which weakens engagement and peer interaction.",
+		architecture: "Combines course flow, discussion, and peer feedback so learning feels more active and less isolated.",
+		proposal: "Best for learning products that need stronger community participation and course completion support.",
 		github_stats: {
 			commits: 310,
 			languages: ["TypeScript", "React"],
@@ -200,12 +314,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "Plated.",
-		description: "Exquisite culinary experiences for California's premier corporate and private events.",
+		description: "Catering booking experience that lets clients configure menus and pricing online.",
 		link: "platedca.vercel.app",
 		category: "Modernized UX",
-		challenge: "High-end catering booking is often a manual back-and-forth process. Clients wanted a 'Tesla configuration' experience for food.",
-		architecture: "Visual configurator engine allowing real-time menu customization with dynamic pricing and dietary constraint solving.",
-		proposal: "Digitize your high-touch service booking process. Give clients control while automating the complex logic of availability and pricing.",
+		challenge: "High-touch event booking usually depends on back-and-forth emails, which slows down conversion.",
+		architecture: "Turns menu selection, pricing, and dietary constraints into a guided configuration flow.",
+		proposal: "Best for service businesses that want to reduce manual quoting and speed up buying decisions.",
 		github_stats: {
 			commits: 150,
 			languages: ["TypeScript", "React"],
@@ -213,12 +327,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "MedChart",
-		description: "Streamlined patient care focusing on simplicity. Real-time tracking of vitals and medications.",
+		description: "Clinical dashboard for vitals, medication, and patient status.",
 		link: "medchartv1.vercel.app",
 		category: "Modernized UX",
-		challenge: "Complex EHR interfaces contribute to physician burnout and data entry errors.",
-		architecture: "Minimalist 'Chart-First' UI that prioritizes critical vitals and hides administrative bloat until needed (Progressive Disclosure).",
-		proposal: "Redesign your internal dashboards to focus on data clarity. Reduce cognitive load for your operators.",
+		challenge: "Dense EHR interfaces create cognitive load and slow down care decisions.",
+		architecture: "Prioritizes critical patient information first and moves secondary detail behind progressive disclosure.",
+		proposal: "Best for healthcare tools that need cleaner monitoring and lower cognitive load.",
 		github_stats: {
 			commits: 410,
 			languages: ["TypeScript", "React"],
@@ -226,12 +340,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "Kindbody",
-		description: "A conceptual redesign of Kindbody's landing page, showcasing modern UI/UX.",
+		description: "Concept redesign for a healthcare landing page built around trust and reassurance.",
 		link: "kindbody.vercel.app",
 		category: "Modernized UX",
-		challenge: "Trust is hard to convey in digital healthcare. Standard corporate designs often feel cold and impersonal.",
-		architecture: "Empathy-driven design system using soft typography, warm color palettes, and reassuring micro-interactions to build user confidence.",
-		proposal: "Reimagine your digital front door. Convert more visitors by establishing emotional resonance through design.",
+		challenge: "Healthcare landing pages often look generic or overly corporate, which weakens trust.",
+		architecture: "Uses warmer visuals, softer typography, and calmer interaction patterns to make the experience feel more human.",
+		proposal: "Best for health brands that need a more credible and approachable first impression.",
 		github_stats: {
 			commits: 55,
 			languages: ["TypeScript", "React", "Framer Motion"],
@@ -239,12 +353,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "Reflectify",
-		description: "A minimal, focused journaling application designed for clarity and progressive disclosure.",
+		description: "Journaling app designed for focus and fast capture.",
 		link: "myreflectify.vercel.app",
 		category: "Modernized UX",
-		challenge: "Journaling apps often distract with features. The goal was to reach 'zero friction' between thought and text.",
-		architecture: "Local-first architecture using IndexedDB for instant load times and optimistic UI updates for zero-latency typing.",
-		proposal: "Create a focus-driven tool for your users. Eliminate load times and UI clutter.",
+		challenge: "Too many journaling apps interrupt the writing moment with features and chrome.",
+		architecture: "Local-first storage and simple writing surfaces keep typing fast and distractions low.",
+		proposal: "Best for products that win by reducing friction and getting out of the user's way.",
 		github_stats: {
 			commits: 180,
 			languages: ["TypeScript", "React"],
@@ -252,12 +366,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "ableGod.",
-		description: "A faith-based community platform focused on creativity, prosperity, and young adults.",
+		description: "Community platform for faith-based content, events, and group interaction.",
 		link: "chistanwrites.blog",
 		category: "Modernized UX",
-		challenge: "Digital faith communities often lack the tools for meaningful, sustained engagement beyond video streaming.",
-		architecture: "Community-first platform integrating content publishing, event management, and small-group discussions in a unified interface.",
-		proposal: "Build a digital home for your community that fosters connection, not just consumption.",
+		challenge: "Many faith communities have broadcast tools but weak support for ongoing participation and connection.",
+		architecture: "Brings publishing, events, and discussion into one product so community activity is easier to sustain.",
+		proposal: "Best for organizations that need a stronger digital home for ongoing participation.",
 		github_stats: {
 			commits: 105,
 			languages: ["WordPress", "PHP", "React"],
@@ -265,8 +379,8 @@ export const projects: Project[] = [
 		showcase: [
 			{
 				id: "ablegod-stream",
-				title: "Intelligent Stream Surface",
-				description: "A community content shell designed for zero-friction immersion and infinite logic.",
+				title: "Community Content Flow",
+				description: "A browsing and reading experience designed to keep content, events, and community actions easy to reach.",
 				desktopImage: {
 					light: "/showcase/ablegod-desktop-light.png",
 					dark: "/showcase/ablegod-desktop-dark.png"
@@ -277,21 +391,21 @@ export const projects: Project[] = [
 				},
 				layout: "single",
 				features: [
-					{ icon: "Navigation", label: "Responsive Shell", detail: "Breakpoint-orchestrated content delivery." },
-					{ icon: "Activity", label: "Infinite Logic", detail: "Streamlined community interactions." },
-					{ icon: "Zap", label: "PWA Runtime", detail: "Local-first offline-capable architecture." }
+					{ icon: "Navigation", label: "Responsive navigation", detail: "Content stays easy to reach across screen sizes." },
+					{ icon: "Activity", label: "Continuous browsing", detail: "Reading, events, and participation stay connected." },
+					{ icon: "Zap", label: "Offline-ready shell", detail: "PWA foundation keeps the experience lightweight and resilient." }
 				]
 			}
 		],
 	},
 	{
 		title: "Adeleke Immigration",
-		description: "Trusted digital gateway for professional immigration expertise and guidance.",
+		description: "Immigration services website that turns complex legal paths into clear next steps.",
 		link: "adelekeimmigration.com",
 		category: "Modernized UX",
-		challenge: "Immigration services are complex and high-stakes. Users need immediate clarity and trust signals.",
-		architecture: "Trust-centric information architecture that guides users through complex legal pathways with clear, jargon-free steps.",
-		proposal: "Digitize your professional services firm. Automate client intake while building trust through a premium digital presence.",
+		challenge: "Immigration services are complex and high-stakes, so users need immediate clarity and trust signals.",
+		architecture: "Uses trust-led information architecture, plain-language pathways, and guided intake to reduce confusion.",
+		proposal: "Best for professional services firms that need more trust and a smoother intake path.",
 		github_stats: {
 			commits: 45,
 			languages: ["React", "TypeScript"],
@@ -299,12 +413,12 @@ export const projects: Project[] = [
 	},
 	{
 		title: "Aero",
-		description: "Digital therapeutic that rebrands addiction as bio-investment through medical credit scoring and biometric verification.",
+		description: "Behavior-change product combining health tracking, incentives, and daily verification.",
 		link: "aero.dyrane.tech",
 		category: "Intelligence Bridge",
-		challenge: "Traditional smoking cessation apps feel medical and moralizing, failing to create sustained behavior change in normalized smoking cultures.",
-		architecture: "Bio-engineering platform using smartphone sensors (voice, PPG, face) for daily verification. Features Aero Score calculation, Bio-Vault financial endowment system, and merit-based rewards. Built with Supabase for HIPAA-compliant data storage.",
-		proposal: "Implement Aero's bio-investment model for your wellness program. Achieve 3x higher retention than traditional cessation apps through financial incentives and status progression.",
+		challenge: "Smoking cessation products often feel generic or punitive, which hurts sustained engagement.",
+		architecture: "Combines sensor-based verification, progress scoring, and rewards so daily behavior change feels measurable and motivating.",
+		proposal: "Best for wellness products that need stronger daily adherence and clearer progress loops.",
 		github_stats: {
 			commits: 17,
 			languages: ["TypeScript", "Next.js", "Supabase", "Framer Motion"],
@@ -312,8 +426,8 @@ export const projects: Project[] = [
 		showcase: [
 			{
 				id: "aero-app",
-				title: "Bio-Investment Surface",
-				description: "A precision behavior-loop platform engineered for bio-metrics and financial status.",
+				title: "Behavior and Reward Dashboard",
+				description: "A mobile experience built around verification, progress, and financial incentives.",
 				mobileImage: {
 					light: "/showcase/aero-score-light.png",
 					dark: "/showcase/aero-score-dark.png"
@@ -324,21 +438,21 @@ export const projects: Project[] = [
 				},
 				layout: "dual-mobile",
 				features: [
-					{ icon: "Activity", label: "Aero Score", detail: "Dynamic bio-metric health monitoring." },
-					{ icon: "Shield", label: "Bio-Vault", detail: "Endowment-based reward architecture." },
-					{ icon: "Zap", label: "Dual Interface", detail: "Lined two-page mobile choreography." }
+					{ icon: "Activity", label: "Health scoring", detail: "Daily progress is visible and easy to read." },
+					{ icon: "Shield", label: "Reward balance", detail: "Incentives stay visible instead of hidden in the system." },
+					{ icon: "Zap", label: "Dual-screen flow", detail: "Two connected views support verification and progress tracking." }
 				]
 			}
 		],
 	},
 	{
 		title: "BoxDrop",
-		description: "A premium logistics marketplace PWA with real-time courier tracking and glass-depth design philosophy.",
+		description: "Logistics marketplace with live courier tracking for customers, vendors, and dispatchers.",
 		link: "boxdrop.dyrane.tech",
 		category: "Logistics Engine",
-		challenge: "Standard delivery apps lack visual sophistication and real-time logistics simulation, resulting in low user engagement.",
-		architecture: "Three-sided marketplace (Users, Vendors, Couriers) with Supabase Realtime for live tracking, Mapbox for geospatial visualization, and Zustand for state management. Implements the 'Alexander Canon' design system with frosted glass UI.",
-		proposal: "Deploy BoxDrop's logistics engine to transform your delivery operations. Real-time tracking reduces customer support queries by 40% and increases order completion rates.",
+		challenge: "Delivery marketplaces often feel opaque, which drives support tickets and low trust.",
+		architecture: "Combines live location tracking, multi-sided workflows, and marketplace state management in one delivery platform.",
+		proposal: "Best for delivery products that need clearer fulfillment status and less support friction.",
 		github_stats: {
 			commits: 42,
 			languages: ["TypeScript", "Next.js", "Supabase", "Mapbox"],
@@ -346,21 +460,67 @@ export const projects: Project[] = [
 	},
 	{
 		title: "House of Prax",
-		description: "Advanced plant-based nutrition engineered for elite human performance. A premium e-commerce storefront with zero compromise on design or product integrity.",
+		description: "E-commerce storefront for plant-based performance nutrition.",
 		link: "houseofprax.shop",
 		category: "Modernized UX",
-		challenge: "The plant-based supplement market is saturated with generic branding that fails to command premium positioning or convert serious athletes.",
-		architecture: "Next.js App Router storefront with a high-fidelity design system — SF Pro typography, AOS scroll choreography, and theme-adaptive visuals. Built for performance with structured SEO metadata, Open Graph, and Vercel Analytics.",
-		proposal: "Elevate your health brand's digital presence with a premium storefront built to convert high-intent buyers. Zero fillers in design, just like the product.",
+		challenge: "Supplement brands struggle to feel differentiated and trustworthy in a crowded market.",
+		architecture: "Pairs strong product storytelling with a fast storefront, clear merchandising, and performance-aware build decisions.",
+		proposal: "Best for consumer brands that need stronger positioning and a cleaner path to purchase.",
 		github_stats: {
 			commits: 95,
 			languages: ["TypeScript", "Next.js", "Tailwind", "Framer Motion"],
 		},
+		caseStudy: {
+			role: "Brand positioning, storefront UX, and frontend implementation",
+			users: "High-intent wellness buyers comparing products in a crowded category",
+			surfaces: "Landing page storytelling, merchandising flow, and mobile storefront",
+			constraints: [
+				"A crowded supplement market makes trust and differentiation harder to earn",
+				"Premium positioning breaks quickly if the storefront feels generic",
+				"Mobile shoppers need product clarity without a long learning curve"
+			],
+			decisions: [
+				{
+					title: "Product-first storytelling",
+					detail: "The page leads with what the product is, why it matters, and what makes it credible before pushing hard on conversion."
+				},
+				{
+					title: "Merchandising with restraint",
+					detail: "The interface uses contrast, spacing, and pacing to create confidence without turning the storefront into visual noise."
+				},
+				{
+					title: "Performance-aware polish",
+					detail: "Motion and presentation are used to support the brand while keeping the buying flow responsive."
+				}
+			],
+			proofPoints: [
+				"Live storefront with responsive product and landing flows",
+				"95 commits across the presentation and commerce experience",
+				"Desktop and mobile surfaces kept consistent throughout the brand story"
+			],
+			outcomes: [
+				{
+					label: "Status",
+					value: "Live",
+					detail: "Shipped as a working storefront rather than a visual mockup."
+				},
+				{
+					label: "Positioning",
+					value: "Clearer product story",
+					detail: "The site makes quality and intent visible earlier in the journey."
+				},
+				{
+					label: "Buying flow",
+					value: "Cleaner",
+					detail: "The path from brand impression to product decision is more direct."
+				}
+			]
+		},
 		showcase: [
 			{
 				id: "hop-storefront",
-				title: "High-Fidelity Storefront",
-				description: "A premium marketing surface optimized for visual storytelling and conversion.",
+				title: "Storefront Conversion System",
+				description: "A commerce experience built to sell product quality, trust, and intent without extra noise.",
 				desktopImage: {
 					light: "/showcase/hop-desktop-light.png",
 					dark: "/showcase/hop-desktop-dark.png"
@@ -371,21 +531,21 @@ export const projects: Project[] = [
 				},
 				layout: "single",
 				features: [
-					{ icon: "Activity", label: "3D Choreography", detail: "Centralized scroll-aware animation engine." },
-					{ icon: "Layers", label: "Dynamic Surface", detail: "Content-driven marketing architecture." },
-					{ icon: "Zap", label: "Liquid Glass", detail: "Precision depth-based design system." }
+					{ icon: "Activity", label: "Merchandising flow", detail: "Key product information stays visible through the buying journey." },
+					{ icon: "Layers", label: "Product storytelling", detail: "The page explains why the product matters before it asks for the sale." },
+					{ icon: "Zap", label: "Responsive storefront", detail: "Performance and presentation stay intact across devices." }
 				]
 			}
 		],
 	},
 	{
 		title: "Fytbite",
-		description: "Premium healthy meal plans tailored to high-performance fitness goals.",
+		description: "Nutrition product that helps users match meals to performance goals.",
 		link: "fytbite.ng",
 		category: "Modernized UX",
-		challenge: "Fitness nutrition is data-heavy. Users struggle to visualize how their meals align with their macro goals.",
-		architecture: "Visual macro-tracking dashboard that turns complex nutritional data into simple, actionable daily progress rings.",
-		proposal: "Give your users clarity on their fitness journey. Turn data entry into a rewarding visual experience.",
+		challenge: "Users struggle to translate nutrition data into simple daily decisions.",
+		architecture: "Turns meal data and macro targets into a clearer progress-driven interface.",
+		proposal: "Best for wellness products that need to make heavy data easier to act on.",
 		github_stats: {
 			commits: 130,
 			languages: ["TypeScript", "React"],

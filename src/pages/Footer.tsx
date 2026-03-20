@@ -28,7 +28,7 @@ const Footer = () => {
       <div className="surface-panel">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 py-8 md:flex-row md:px-6">
           <p className="text-[13px] font-mono text-[var(--text-muted)]">
-            © {new Date().getFullYear()} Alexander Dyrane.{" "}
+            (c) {new Date().getFullYear()} Alexander Dyrane.{" "}
             <span className="text-[var(--cat-ux)]">Built with product discipline.</span>
           </p>
 
