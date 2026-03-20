@@ -9,6 +9,7 @@ import { projects } from "@/data/projects";
 import { Navbar } from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
 import { ProjectGrid } from "@/components/ProjectGrid";
+import { ShowcaseSection } from "@/components/ShowcaseSection";
 import { ContributionGraph } from "@/components/ContributionGraph";
 import { ArrowUpRight, ChevronDown } from "@/components/icons/lucide";
 
@@ -284,6 +285,8 @@ const Index = () => {
             </div>
           </div>
         </section>
+        
+        <ShowcaseSection onProjectSelect={handleProjectSelect} />
 
         <section className="mx-auto mb-16 max-w-7xl px-4 md:mb-20 md:px-6">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

@@ -1,3 +1,5 @@
+export { default as Activity } from "lucide-react/dist/esm/icons/activity.js";
+export { default as AlertTriangle } from "lucide-react/dist/esm/icons/alert-triangle.js";
 export { default as ArrowRight } from "lucide-react/dist/esm/icons/arrow-right.js";
 export { default as ArrowUpRight } from "lucide-react/dist/esm/icons/arrow-up-right.js";
 export { default as ChevronDown } from "lucide-react/dist/esm/icons/chevron-down.js";
@@ -10,11 +12,15 @@ export { default as GitBranch } from "lucide-react/dist/esm/icons/git-branch.js"
 export { default as GitCommit } from "lucide-react/dist/esm/icons/git-commit.js";
 export { default as Github } from "lucide-react/dist/esm/icons/github.js";
 export { default as Globe } from "lucide-react/dist/esm/icons/globe.js";
+export { default as Layers } from "lucide-react/dist/esm/icons/layers.js";
 export { default as Loader2 } from "lucide-react/dist/esm/icons/loader-2.js";
 export { default as Linkedin } from "lucide-react/dist/esm/icons/linkedin.js";
 export { default as Mail } from "lucide-react/dist/esm/icons/mail.js";
 export { default as MessageCircle } from "lucide-react/dist/esm/icons/message-circle.js";
 export { default as Moon } from "lucide-react/dist/esm/icons/moon.js";
+export { default as Navigation } from "lucide-react/dist/esm/icons/navigation.js";
+export { default as Shield } from "lucide-react/dist/esm/icons/shield.js";
 export { default as Star } from "lucide-react/dist/esm/icons/star.js";
 export { default as Sun } from "lucide-react/dist/esm/icons/sun.js";
 export { default as X } from "lucide-react/dist/esm/icons/x.js";
+export { default as Zap } from "lucide-react/dist/esm/icons/zap.js";

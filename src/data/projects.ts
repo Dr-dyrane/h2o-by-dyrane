@@ -1,4 +1,24 @@
 
+export interface ThemeVariant {
+	light: string;
+	dark: string;
+}
+
+export interface ProjectShowcase {
+	id: string;
+	title: string;
+	description: string;
+	desktopImage?: ThemeVariant; // 16:9 
+	mobileImage: ThemeVariant;  // 9:16
+	secondaryMobileImage?: ThemeVariant; // For Aero dual layout
+	layout?: "single" | "dual-mobile";
+	features: {
+		icon: string;
+		label: string;
+		detail: string;
+	}[];
+}
+
 export interface Project {
 	title: string;
 	description: string;
@@ -12,6 +32,7 @@ export interface Project {
 		languages: string[];
 		stars?: number;
 	};
+	showcase?: ProjectShowcase[];
 }
 
 export const projects: Project[] = [
@@ -29,6 +50,27 @@ export const projects: Project[] = [
 			languages: ["TypeScript", "Python", "PostgreSQL"],
 			stars: 45,
 		},
+		showcase: [
+			{
+				id: "ivisit-console",
+				title: "Mission Control Ensemble",
+				description: "A synchronized data-dense surface for real-time dispatch and mobile response coordination.",
+				desktopImage: {
+					light: "/showcase/ivisit-console-light.png",
+					dark: "/showcase/ivisit-console-dark.png"
+				},
+				mobileImage: {
+					light: "/showcase/ivisit-mobile-light.png",
+					dark: "/showcase/ivisit-mobile-dark.png"
+				},
+				layout: "single",
+				features: [
+					{ icon: "Navigation", label: "Geospatial Bus", detail: "Real-time 'God-Mode' map synchronization." },
+					{ icon: "Activity", label: "Response Link", detail: "Direct mobile-to-console dispatch orchestration." },
+					{ icon: "Zap", label: "Island Navigation", detail: "Frictionless context-aware command surfaces." }
+				]
+			}
+		],
 	},
 	{
 		title: "Slatechain",
@@ -70,6 +112,7 @@ export const projects: Project[] = [
 		github_stats: {
 			commits: 380,
 			languages: ["TypeScript", "React", "Claude AI", "Playwright"],
+			stars: 38,
 		},
 	},
 
@@ -218,7 +261,28 @@ export const projects: Project[] = [
 		github_stats: {
 			commits: 105,
 			languages: ["WordPress", "PHP", "React"],
-		}
+		},
+		showcase: [
+			{
+				id: "ablegod-stream",
+				title: "Intelligent Stream Surface",
+				description: "A community content shell designed for zero-friction immersion and infinite logic.",
+				desktopImage: {
+					light: "/showcase/ablegod-desktop-light.png",
+					dark: "/showcase/ablegod-desktop-dark.png"
+				},
+				mobileImage: {
+					light: "/showcase/ablegod-mobile-light.png",
+					dark: "/showcase/ablegod-mobile-dark.png"
+				},
+				layout: "single",
+				features: [
+					{ icon: "Navigation", label: "Responsive Shell", detail: "Breakpoint-orchestrated content delivery." },
+					{ icon: "Activity", label: "Infinite Logic", detail: "Streamlined community interactions." },
+					{ icon: "Zap", label: "PWA Runtime", detail: "Local-first offline-capable architecture." }
+				]
+			}
+		],
 	},
 	{
 		title: "Adeleke Immigration",
@@ -245,6 +309,27 @@ export const projects: Project[] = [
 			commits: 17,
 			languages: ["TypeScript", "Next.js", "Supabase", "Framer Motion"],
 		},
+		showcase: [
+			{
+				id: "aero-app",
+				title: "Bio-Investment Surface",
+				description: "A precision behavior-loop platform engineered for bio-metrics and financial status.",
+				mobileImage: {
+					light: "/showcase/aero-score-light.png",
+					dark: "/showcase/aero-score-dark.png"
+				},
+				secondaryMobileImage: {
+					light: "/showcase/aero-balance-light.png",
+					dark: "/showcase/aero-balance-dark.png"
+				},
+				layout: "dual-mobile",
+				features: [
+					{ icon: "Activity", label: "Aero Score", detail: "Dynamic bio-metric health monitoring." },
+					{ icon: "Shield", label: "Bio-Vault", detail: "Endowment-based reward architecture." },
+					{ icon: "Zap", label: "Dual Interface", detail: "Lined two-page mobile choreography." }
+				]
+			}
+		],
 	},
 	{
 		title: "BoxDrop",
@@ -271,6 +356,27 @@ export const projects: Project[] = [
 			commits: 95,
 			languages: ["TypeScript", "Next.js", "Tailwind", "Framer Motion"],
 		},
+		showcase: [
+			{
+				id: "hop-storefront",
+				title: "High-Fidelity Storefront",
+				description: "A premium marketing surface optimized for visual storytelling and conversion.",
+				desktopImage: {
+					light: "/showcase/hop-desktop-light.png",
+					dark: "/showcase/hop-desktop-dark.png"
+				},
+				mobileImage: {
+					light: "/showcase/hop-mobile-light.png",
+					dark: "/showcase/hop-mobile-dark.png"
+				},
+				layout: "single",
+				features: [
+					{ icon: "Activity", label: "3D Choreography", detail: "Centralized scroll-aware animation engine." },
+					{ icon: "Layers", label: "Dynamic Surface", detail: "Content-driven marketing architecture." },
+					{ icon: "Zap", label: "Liquid Glass", detail: "Precision depth-based design system." }
+				]
+			}
+		],
 	},
 	{
 		title: "Fytbite",

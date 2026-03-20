@@ -43,7 +43,7 @@ const categoryMeta: Record<Project["category"], CategoryMeta> = {
       "These projects are for teams that need dispatch, routing, tracking, or real-time visibility without operational confusion.",
     proof: "Best fit when delays, handoffs, and blind spots are costing you money or trust.",
     signals: ["Real-time visibility", "Dispatch clarity", "Operational confidence"],
-    featuredTitle: "iVisit Ecosystem",
+    featuredTitle: "Slatechain",
     accent: "var(--cat-logistics)",
     accentBg: "var(--cat-logistics-bg)",
   },
@@ -67,7 +67,7 @@ const categoryMeta: Record<Project["category"], CategoryMeta> = {
       "These projects focus on positioning, conversion, and interface polish so the product feels credible before the sales call.",
     proof: "Best fit when the product exists, but the presentation is not yet doing the business any favors.",
     signals: ["Premium trust", "Clear conversion", "Stronger positioning"],
-    featuredTitle: "House of Prax",
+    featuredTitle: "Scholarix",
     accent: "var(--cat-ux)",
     accentBg: "var(--cat-ux-bg)",
   },
@@ -80,15 +80,15 @@ const categoryOrder: Project["category"][] = [
 ];
 
 const featuredStories: Record<string, FeaturedStory> = {
-  "iVisit Ecosystem": {
-    label: "Emergency response platform",
-    audience: "Emergency and mobility teams",
+  "Slatechain": {
+    label: "Supply chain intelligence",
+    audience: "SME logistics managers",
     summary:
-      "Built for dispatch, routing, and hospital coordination when operational latency has real cost.",
+      "Predictive inventory management and tracking for small-to-medium supply chains.",
     clientNeed:
-      "Best when your team needs one operational surface instead of fragmented calls, handoffs, and blind spots.",
-    previewLines: ["Dispatch clarity", "Route control", "Live response"],
-    outcomes: ["Real-time dispatch", "Routing visibility", "Faster coordination"],
+      "Best when inventory leads to dead stock or traceability falls apart in transit.",
+    previewLines: ["Stock clarity", "Traceable flow", "Predictive replenishment"],
+    outcomes: ["Reduced shrinkage", "Inventory visibility", "Demand forecasting"],
   },
   "Dr. Dyrane": {
     label: "Clinical AI triage engine",
@@ -100,15 +100,15 @@ const featuredStories: Record<string, FeaturedStory> = {
     previewLines: ["Structured intake", "Clinical logic", "Safer triage"],
     outcomes: ["Usable intelligence", "Safer escalation", "Decision support"],
   },
-  "House of Prax": {
-    label: "Premium commerce storefront",
-    audience: "Premium health brands",
+  "Scholarix": {
+    label: "Premium education platform",
+    audience: "EdTech and learning teams",
     summary:
-      "A high-intent storefront designed to make a health brand feel credible, elevated, and conversion-ready.",
+      "An advanced learning ecosystem featuring Liquid Glass UI for maximum student focus.",
     clientNeed:
-      "Best when the product is strong but the digital surface is not doing enough to justify premium positioning.",
-    previewLines: ["Stronger trust", "Premium feel", "Cleaner conversion"],
-    outcomes: ["Premium positioning", "Brand clarity", "Conversion-ready UX"],
+      "Best when retention is falling due to clunky, administrative-heavy learning tools.",
+    previewLines: ["Higher focus", "Frictionless access", "Premium aesthetics"],
+    outcomes: ["Increased session time", "Lower churn", "Superior UX positioning"],
   },
 };
 
@@ -234,6 +234,7 @@ const OGScreenshot = ({
   const Fallback = CATEGORY_FALLBACK[project.category];
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "loaded" | "error">("loading");
+  const [aspectRatio, setAspectRatio] = useState<string>("16/9");
   const siteUrl = getProjectUrl(project);
 
   useEffect(() => {
@@ -247,9 +248,15 @@ const OGScreenshot = ({
         if (cancelled) return;
         const url: string | undefined = data?.data?.image?.url ?? data?.data?.screenshot?.url;
         if (url) {
-          // Pre-load to avoid layout shift
           const img = new Image();
-          img.onload = () => { if (!cancelled) { setImgSrc(url); setState("loaded"); } };
+          img.onload = () => { 
+            if (!cancelled) { 
+              const ratio = img.width / img.height;
+              setAspectRatio(ratio > 0.8 && ratio < 1.2 ? "1/1" : "16/9");
+              setImgSrc(url); 
+              setState("loaded"); 
+            } 
+          };
           img.onerror = () => { if (!cancelled) setState("error"); };
           img.src = url;
         } else {
@@ -265,8 +272,8 @@ const OGScreenshot = ({
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-xl bg-[var(--surface-elevated)]"
-      style={{ aspectRatio: "16/9" }}
+      className="relative w-full overflow-hidden rounded-xl bg-[var(--surface-elevated)] transition-all duration-500"
+      style={{ aspectRatio }}
     >
       {/* Skeleton shimmer while loading */}
       {state === "loading" && (
@@ -278,7 +285,7 @@ const OGScreenshot = ({
         <img
           src={imgSrc}
           alt={`${project.title} — live product`}
-          className="h-full w-full object-cover object-top transition-opacity duration-500"
+          className="h-full w-full object-contain object-top transition-opacity duration-500"
           style={{ opacity: state === "loaded" ? 1 : 0 }}
           loading="lazy"
           decoding="async"
@@ -334,7 +341,7 @@ const ProductPreview = ({
 
       <div className="grid flex-1 gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         {/* ── Live screenshot + CSS fallback ── */}
-        <div className="flex min-h-[19rem] flex-col gap-4 squircle-panel surface-card p-4 md:min-h-[22rem] md:p-5">
+        <div className="flex h-full flex-col gap-4 squircle-panel surface-card p-4 md:p-5">
           <OGScreenshot project={project} />
           <div className="mt-auto space-y-3">
             <p className="max-w-lg text-sm font-light leading-relaxed text-[var(--text-muted)] md:text-base">
@@ -603,11 +610,11 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
           {categoryOrder.map((category) => {
             const meta = categoryMeta[category];
             const categoryProjects = projects.filter(
-              (project) => project.category === category
+              (project) => project.category === category && !project.showcase?.length
             );
             const featuredProject = categoryProjects.find(
               (project) => project.title === meta.featuredTitle
-            );
+            ) || categoryProjects[0];
 
             if (!featuredProject) {
               return null;
