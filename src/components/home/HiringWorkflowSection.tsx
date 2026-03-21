@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Code, Globe, Layers, Zap } from "@/components/icons/lucide";
 import { hiringFlow, type HiringStageId, type HiringTool } from "@/content/homepage";
 
+/**
+ * Converts a six-digit hex string into an rgba() color string.
+ */
 const hexToRgba = (hex: string, alpha: number) => {
   const normalized = hex.replace("#", "");
   const red = parseInt(normalized.slice(0, 2), 16);
@@ -18,6 +21,9 @@ const stageIcons: Record<HiringStageId, typeof Layers> = {
   ship: Globe,
 };
 
+/**
+ * Compact color utility for turning simple-icon hex values into translucent badge backgrounds.
+ */
 const HiringToolBadge = ({ tool }: { tool: HiringTool }) => (
   <div className="flex items-center gap-2 squircle-chip surface-chip px-3 py-2.5">
     <div
@@ -47,6 +53,9 @@ const HiringToolBadge = ({ tool }: { tool: HiringTool }) => (
   </div>
 );
 
+/**
+ * Interactive workflow section that explains end-to-end ownership for hiring teams.
+ */
 export const HiringWorkflowSection = () => {
   const [activeHiringStage, setActiveHiringStage] = useState(0);
   const currentHiringStage = hiringFlow[activeHiringStage];

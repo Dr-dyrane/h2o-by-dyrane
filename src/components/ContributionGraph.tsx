@@ -6,12 +6,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+/**
+ * One day cell in the contribution heatmap.
+ */
 interface ContributionDay {
   date: string;
   count: number;
   level: 0 | 1 | 2 | 3 | 4;
 }
 
+/**
+ * Response shape returned by the external GitHub contribution proxy.
+ */
 interface GitHubContributionsResponse {
   total: Record<string, number>;
   contributions: ContributionDay[];
@@ -33,6 +39,12 @@ const LEGEND_CLASSES = [
   "bg-[var(--activity-4)] shadow-[0_0_4px_var(--activity-glow)]",
 ] as const;
 
+/**
+ * Small deterministic random helper used to generate a stable fallback grid.
+ *
+ * @param seed Numeric seed for repeatable output.
+ * @returns Pseudo-random value between 0 and 1.
+ */
 const seededRandom = (seed: number) => {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
@@ -50,6 +62,9 @@ const FALLBACK_DAYS: ContributionDay[] = Array.from({ length: 364 }, (_, i) => {
   };
 });
 
+/**
+ * Displays live GitHub contribution activity with resilient fallback data.
+ */
 export const ContributionGraph = () => {
   const [days, setDays] = useState<ContributionDay[]>(FALLBACK_DAYS);
   const [totalContributions, setTotalContributions] = useState<number | null>(null);

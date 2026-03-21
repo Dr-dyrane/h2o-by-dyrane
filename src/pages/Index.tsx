@@ -30,6 +30,9 @@ const ProjectOverlay = lazy(() =>
 const totalCommits = projects.reduce((sum, p) => sum + p.github_stats.commits, 0);
 const totalProjects = projects.length;
 
+/**
+ * Homepage route composing the portfolio narrative, proof, and project exploration flows.
+ */
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
@@ -43,11 +46,17 @@ const Index = () => {
     return () => clearInterval(timer);
   }, []);
 
+  /**
+   * Opens the project overlay for the selected project card.
+   */
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
     setIsOverlayOpen(true);
   };
 
+  /**
+   * Closes the project overlay and clears the selected project after the exit animation.
+   */
   const handleCloseOverlay = () => {
     setIsOverlayOpen(false);
     window.setTimeout(() => setSelectedProject(null), 500);

@@ -1,9 +1,15 @@
 
+/**
+ * Theme-specific asset paths for screenshots that differ between light and dark mode.
+ */
 export interface ThemeVariant {
 	light: string;
 	dark: string;
 }
 
+/**
+ * Showcase-ready media and supporting feature points for a project.
+ */
 export interface ProjectShowcase {
 	id: string;
 	title: string;
@@ -19,17 +25,26 @@ export interface ProjectShowcase {
 	}[];
 }
 
+/**
+ * Proof point used in the structured case-study overlay.
+ */
 export interface ProjectCaseStudyMetric {
 	label: string;
 	value: string;
 	detail: string;
 }
 
+/**
+ * Key product or implementation decision highlighted in a case study.
+ */
 export interface ProjectCaseStudyDecision {
 	title: string;
 	detail: string;
 }
 
+/**
+ * Rich case-study metadata used by the project overlay.
+ */
 export interface ProjectCaseStudy {
 	role: string;
 	users: string;
@@ -40,6 +55,9 @@ export interface ProjectCaseStudy {
 	outcomes: ProjectCaseStudyMetric[];
 }
 
+/**
+ * Canonical project record used across the homepage, overlays, and previews.
+ */
 export interface Project {
 	title: string;
 	description: string;
@@ -57,6 +75,9 @@ export interface Project {
 	showcase?: ProjectShowcase[];
 }
 
+/**
+ * Portfolio project dataset that drives the homepage, case studies, and proof strips.
+ */
 export const projects: Project[] = [
 	// --- Logistics Engines ---
 	{

@@ -1,7 +1,13 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
+/**
+ * Supported UI themes for the portfolio.
+ */
 type Theme = "light" | "dark";
 
+/**
+ * Theme context contract exposed to the app tree.
+ */
 interface ThemeContextType {
     theme: Theme;
     toggleTheme: () => void;
@@ -9,12 +15,22 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * Applies the selected theme class to the document root.
+ *
+ * @param theme Theme value to apply.
+ */
 const applyTheme = (theme: Theme) => {
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
 };
 
+/**
+ * Reads the initial theme from the current document classes.
+ *
+ * @returns Active theme inferred from the server-rendered document.
+ */
 const getInitialTheme = (): Theme => {
     if (typeof document === "undefined") {
         return "dark";
@@ -28,6 +44,9 @@ const getInitialTheme = (): Theme => {
     return "dark";
 };
 
+/**
+ * Provides theme state and toggling to the application tree.
+ */
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
@@ -47,6 +66,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     );
 }
 
+/**
+ * Accessor hook for the shared theme context.
+ *
+ * @returns Current theme state and toggle action.
+ */
 export function useTheme() {
     const context = useContext(ThemeContext);
     if (!context) throw new Error("useTheme must be used within a ThemeProvider");

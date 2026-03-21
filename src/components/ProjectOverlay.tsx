@@ -29,14 +29,26 @@ import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cleanCopy, getFirstSentence } from "@/utils/content";
 
+/**
+ * Props required to render and control the project case-study overlay.
+ */
 interface ProjectOverlayProps {
     project: Project | null;
     isOpen: boolean;
     onClose: () => void;
 }
 
+/**
+ * Normalized case-study object guaranteed to exist for the overlay.
+ */
 type CaseStudyDetails = NonNullable<Project["caseStudy"]>;
 
+/**
+ * Resolves a fully-populated case study, falling back to category defaults when needed.
+ *
+ * @param project Active project selected from the portfolio.
+ * @returns Overlay-ready case-study details.
+ */
 const getCaseStudy = (project: Project): CaseStudyDetails => {
     if (project.caseStudy) {
         return project.caseStudy;
@@ -88,6 +100,9 @@ const getCaseStudy = (project: Project): CaseStudyDetails => {
     };
 };
 
+/**
+ * Shared card primitive for grouped overlay sections.
+ */
 const OverlayCard = ({
     eyebrow,
     children,
@@ -111,6 +126,9 @@ const OverlayCard = ({
     </div>
 );
 
+/**
+ * Small proof card used in the overlay metrics grid.
+ */
 const MetricCard = ({
     label,
     value,
@@ -131,6 +149,9 @@ const MetricCard = ({
     </div>
 );
 
+/**
+ * Full-screen project case-study overlay used on both desktop and mobile.
+ */
 export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps) => {
     const [activeStep, setActiveStep] = useState(1);
     const [imageLoaded, setImageLoaded] = useState(false);

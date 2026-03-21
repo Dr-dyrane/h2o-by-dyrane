@@ -22,6 +22,9 @@ const socialLinks = [
   { name: "Email", icon: Mail, url: "mailto:hello@dyrane.tech" },
 ];
 
+/**
+ * Footer with contact links and a short portfolio signature.
+ */
 const Footer = () => {
   return (
     <footer className="relative z-10">

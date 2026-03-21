@@ -4,6 +4,9 @@ import { ShowcaseFeatures } from "@/components/ShowcaseFeatures";
 import { ArrowUpRight } from "@/components/icons/lucide";
 import { useTheme } from "@/components/ThemeProvider";
 
+/**
+ * Renders the device-framed screenshots used in the showcase section.
+ */
 const StaticSnapshot = ({ 
   desktop, 
   mobile, 
@@ -30,10 +33,16 @@ const StaticSnapshot = ({
   const mImg = isHydrated ? (resolvedTheme === "dark" ? mobile.dark : mobile.light) : null;
   const sImg = isHydrated && secondaryMobile ? (resolvedTheme === "dark" ? secondaryMobile.dark : secondaryMobile.light) : null;
 
+  /**
+   * Neutral placeholder shown until themed assets can be resolved on the client.
+   */
   const ScreenFallback = () => (
     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]" />
   );
 
+  /**
+   * Desktop presentation frame for showcase screenshots.
+   */
   const MacBookFrame = ({ src, alt, theme: frameTheme }: { src?: string | null; alt: string; theme: "light" | "dark" }) => {
     const isDark = frameTheme === "dark";
     // In dark mode, we use a Silver/Light-Gray frame for visibility (Canon Rule 21: Depth over Color)
@@ -72,6 +81,9 @@ const StaticSnapshot = ({
     );
   };
 
+  /**
+   * Mobile presentation frame for showcase screenshots.
+   */
   const IPhoneFrame = ({ src, alt, theme: frameTheme, className = "" }: { src?: string | null; alt: string; theme: "light" | "dark"; className?: string }) => {
     const isDark = frameTheme === "dark";
     // Silver/White Titanium for dark mode, Space Black for light mode
@@ -142,6 +154,9 @@ const StaticSnapshot = ({
   );
 };
 
+/**
+ * Image-forward section that expands the featured case studies with real product surfaces.
+ */
 export const ShowcaseSection: React.FC<{ onProjectSelect: (p: Project) => void }> = ({ onProjectSelect }) => {
   const { theme } = useTheme();
   
@@ -154,6 +169,9 @@ export const ShowcaseSection: React.FC<{ onProjectSelect: (p: Project) => void }
         category: p.category
     }));
 
+  /**
+   * Maps showcase categories to the correct semantic accent token.
+   */
   const getAccentColor = (cat: string) => {
     if (cat === "Logistics Engine") return "var(--cat-logistics)";
     if (cat === "Intelligence Bridge") return "var(--cat-intelligence)";

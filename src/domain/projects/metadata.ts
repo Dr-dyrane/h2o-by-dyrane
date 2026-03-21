@@ -1,7 +1,13 @@
 import type { Project, ProjectCaseStudy } from "@/data/projects";
 
+/**
+ * Supported project categories derived from the project dataset.
+ */
 export type ProjectCategory = Project["category"];
 
+/**
+ * Section-level metadata used to present each project category on the homepage.
+ */
 export type CategoryMeta = {
   id: string;
   eyebrow: string;
@@ -14,6 +20,9 @@ export type CategoryMeta = {
   accentBg: string;
 };
 
+/**
+ * Copy and proof framing for flagship projects.
+ */
 export type FeaturedStory = {
   label: string;
   audience: string;
@@ -23,12 +32,18 @@ export type FeaturedStory = {
   outcomes: string[];
 };
 
+/**
+ * Convenience mapping for category-driven color tokens.
+ */
 export type CategoryColor = {
   text: string;
   accentBg: string;
   accent: string;
 };
 
+/**
+ * Homepage category framing, labels, and accents.
+ */
 export const categoryMeta: Record<ProjectCategory, CategoryMeta> = {
   "Logistics Engine": {
     id: "logistics-engine",
@@ -71,12 +86,18 @@ export const categoryMeta: Record<ProjectCategory, CategoryMeta> = {
   },
 };
 
+/**
+ * Display order for the three homepage project categories.
+ */
 export const categoryOrder: ProjectCategory[] = [
   "Logistics Engine",
   "Intelligence Bridge",
   "Modernized UX",
 ];
 
+/**
+ * Hand-authored story framing for flagship projects.
+ */
 export const featuredStories: Record<string, FeaturedStory> = {
   "iVisit Ecosystem": {
     label: "Emergency dispatch platform",
@@ -110,6 +131,9 @@ export const featuredStories: Record<string, FeaturedStory> = {
   },
 };
 
+/**
+ * Color token helpers keyed by project category.
+ */
 export const categoryColor: Record<ProjectCategory, CategoryColor> = {
   "Logistics Engine": {
     text: "text-[var(--cat-logistics)]",
@@ -128,6 +152,9 @@ export const categoryColor: Record<ProjectCategory, CategoryColor> = {
   },
 };
 
+/**
+ * Fallback case-study metadata used when a project does not define a full case study.
+ */
 export const fallbackCaseStudyByCategory: Record<
   ProjectCategory,
   Pick<ProjectCaseStudy, "users" | "surfaces">

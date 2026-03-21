@@ -10,6 +10,9 @@ const navItems = [
   { name: "Shipping", href: "#engineering-dna" },
 ]
 
+/**
+ * Hydration-safe theme icon that avoids mismatches between server and client render.
+ */
 const ThemeGlyph = ({ theme }: { theme: "light" | "dark" }) => {
   const [mounted, setMounted] = React.useState(false)
 
@@ -27,6 +30,9 @@ const ThemeGlyph = ({ theme }: { theme: "light" | "dark" }) => {
 const utilityButtonClass =
   "flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)]"
 
+/**
+ * Primary site navigation with theme controls, social links, and mobile sheet.
+ */
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false)
   const { theme, toggleTheme } = useTheme()

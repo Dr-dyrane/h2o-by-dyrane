@@ -21,6 +21,9 @@ import {
   siVite,
 } from "simple-icons";
 
+/**
+ * Rotating hero card content shown in the homepage introduction.
+ */
 export type HeroShowcaseItem = {
   label: string;
   title: string;
@@ -29,6 +32,9 @@ export type HeroShowcaseItem = {
   accentBg: string;
 };
 
+/**
+ * Service categories promoted on the homepage.
+ */
 export type ServiceItem = {
   title: string;
   description: string;
@@ -36,12 +42,18 @@ export type ServiceItem = {
   accentBg: string;
 };
 
+/**
+ * High-level workflow step used in the "How I work" section.
+ */
 export type ProcessStep = {
   step: string;
   title: string;
   description: string;
 };
 
+/**
+ * Individual tool badge used in the hiring workflow section.
+ */
 export type HiringTool = {
   label: string;
   logo: {
@@ -53,8 +65,14 @@ export type HiringTool = {
   };
 };
 
+/**
+ * Stable identifiers for each hiring workflow stage.
+ */
 export type HiringStageId = "direction" | "design" | "build" | "ship";
 
+/**
+ * Structured content for the interactive hiring workflow section.
+ */
 export type HiringStage = {
   id: HiringStageId;
   title: string;
@@ -64,6 +82,9 @@ export type HiringStage = {
   accent: string;
 };
 
+/**
+ * Hero showcase entries cycled through in the landing panel.
+ */
 export const heroShowcase: HeroShowcaseItem[] = [
   {
     label: "For operations teams",
@@ -88,6 +109,12 @@ export const heroShowcase: HeroShowcaseItem[] = [
   },
 ];
 
+/**
+ * Builds the compact proof strip shown beneath the hero using the latest commit total.
+ *
+ * @param totalCommits Aggregate commit count across the portfolio dataset.
+ * @returns Display-ready proof cards for the homepage.
+ */
 export const buildProofStrip = (totalCommits: number) => [
   {
     value: `${(totalCommits / 1000).toFixed(1).replace(".0", "")}k+`,
@@ -103,6 +130,9 @@ export const buildProofStrip = (totalCommits: number) => [
   },
 ];
 
+/**
+ * Primary services offered on the homepage.
+ */
 export const services: ServiceItem[] = [
   {
     title: "Custom Websites and Product Surfaces",
@@ -134,6 +164,9 @@ export const services: ServiceItem[] = [
   },
 ];
 
+/**
+ * Three-step summary of the delivery process.
+ */
 export const processSteps: ProcessStep[] = [
   {
     step: "01",
@@ -155,6 +188,9 @@ export const processSteps: ProcessStep[] = [
   },
 ];
 
+/**
+ * Detailed workflow stages used to explain end-to-end ownership for hiring teams.
+ */
 export const hiringFlow: HiringStage[] = [
   {
     id: "direction",

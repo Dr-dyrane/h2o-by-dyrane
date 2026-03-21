@@ -21,6 +21,9 @@ import {
   Star,
 } from "@/components/icons/lucide";
 
+/**
+ * Interaction contract for opening a selected project in the overlay.
+ */
 interface ProjectGridProps {
   onProjectSelect: (project: Project) => void;
 }
@@ -29,6 +32,9 @@ interface ProjectGridProps {
 // Uses thum.io (free, no key) to fetch a real screenshot of the live project.
 // Falls back to the CSS composition if the image fails to load.
 
+/**
+ * Stylized fallback visual for logistics and operations projects.
+ */
 const LogisticsVisual = () => (
   <div className="relative flex h-full min-h-[14rem] flex-col gap-2 overflow-hidden rounded-2xl bg-[var(--surface-elevated)] p-4">
     <div className="mb-1 flex items-center justify-between">
@@ -57,6 +63,9 @@ const LogisticsVisual = () => (
   </div>
 );
 
+/**
+ * Stylized fallback visual for AI and clinical workflow projects.
+ */
 const IntelligenceVisual = () => (
   <div className="relative flex h-full min-h-[14rem] flex-col gap-2 overflow-hidden rounded-2xl bg-[var(--surface-elevated)] p-4">
     <span className="mb-1 text-[9px] font-mono uppercase tracking-[0.16em] text-[var(--cat-intelligence)]">Clinical Reasoning</span>
@@ -85,6 +94,9 @@ const IntelligenceVisual = () => (
   </div>
 );
 
+/**
+ * Stylized fallback visual for product marketing and UX projects.
+ */
 const UXVisual = () => (
   <div className="relative flex h-full min-h-[14rem] flex-col gap-3 overflow-hidden rounded-2xl bg-[var(--surface-elevated)] p-4">
     <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-[var(--cat-ux)]">Product Surface</span>
@@ -124,6 +136,9 @@ const CATEGORY_FALLBACK: Record<Project["category"], React.FC> = {
 
 // Screenshot URL via thum.io — free, no API key, caches at edge
 // Fetch real og:image via microlink JSON API (respects the site's own OG image)
+/**
+ * Attempts to load a live OG preview from Microlink and falls back to a local visual.
+ */
 const OGScreenshot = ({
   project,
 }: {
@@ -205,6 +220,9 @@ const OGScreenshot = ({
   );
 };
 
+/**
+ * Split preview surface combining the live screenshot with summary and proof cards.
+ */
 const ProductPreview = ({
   project,
   meta,
@@ -313,6 +331,9 @@ const ProductPreview = ({
 };
 
 
+/**
+ * Flagship project surface used for the featured story in each category lane.
+ */
 const ProjectSurface = ({
   project,
   meta,
@@ -443,6 +464,9 @@ const ProjectSurface = ({
   );
 };
 
+/**
+ * Compact archive card for secondary projects within a category.
+ */
 const ArchiveCard = ({
   project,
   onProjectSelect,
@@ -500,6 +524,9 @@ const ArchiveCard = ({
   </article>
 );
 
+/**
+ * Main case-study grid grouping projects into the three portfolio lanes.
+ */
 export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
   return (
     <section>
