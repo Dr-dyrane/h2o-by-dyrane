@@ -1,5 +1,17 @@
 import type { Project } from "@/data/projects";
 import {
+    categoryColor,
+    fallbackCaseStudyByCategory,
+} from "@/domain/projects/metadata";
+import {
+    formatCommitCountMetric,
+    getProblemSummary,
+    getProofSummary,
+    getSolutionSummary,
+    getTopLanguages,
+    getValueSummary,
+} from "@/domain/projects/helpers";
+import {
     X,
     ArrowRight,
     ArrowUpRight,
@@ -15,7 +27,7 @@ import {
 } from "@/components/icons/lucide";
 import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cleanCopy, getFirstSentence, formatList } from "@/utils/content";
+import { cleanCopy, getFirstSentence } from "@/utils/content";
 
 interface ProjectOverlayProps {
     project: Project | null;
@@ -23,61 +35,7 @@ interface ProjectOverlayProps {
     onClose: () => void;
 }
 
-const categoryColor: Record<string, { text: string; accentBg: string; accent: string }> = {
-    "Logistics Engine": { 
-        text: "text-[var(--cat-logistics)]", 
-        accentBg: "bg-[var(--cat-logistics-bg)]",
-        accent: "var(--cat-logistics)"
-    },
-    "Intelligence Bridge": { 
-        text: "text-[var(--cat-intelligence)]", 
-        accentBg: "bg-[var(--cat-intelligence-bg)]",
-        accent: "var(--cat-intelligence)"
-    },
-    "Modernized UX": { 
-        text: "text-[var(--cat-ux)]", 
-        accentBg: "bg-[var(--cat-ux-bg)]",
-        accent: "var(--cat-ux)"
-    },
-};
-
-const getTopLanguages = (project: Project, count = 3) =>
-    project.github_stats.languages.slice(0, count).map(cleanCopy);
-
-const getProblemSummary = (project: Project) => {
-    const summary = cleanCopy(project.challenge);
-    return summary || getFirstSentence(project.description);
-};
-
-const getSolutionSummary = (project: Project) => cleanCopy(project.architecture);
-
-const getValueSummary = (project: Project) => cleanCopy(project.proposal);
-
-const getProofSummary = (project: Project) => {
-    const stack = formatList(getTopLanguages(project));
-    const baseProof = project.github_stats.stars
-        ? `${project.github_stats.commits.toLocaleString()} commits, ${project.github_stats.stars} public stars, and a live deployment`
-        : `${project.github_stats.commits.toLocaleString()} commits and a live deployment`;
-
-    return stack ? `${baseProof}. Built with ${stack}.` : `${baseProof}.`;
-};
-
 type CaseStudyDetails = NonNullable<Project["caseStudy"]>;
-
-const fallbackCaseStudyByCategory: Record<Project["category"], Pick<CaseStudyDetails, "users" | "surfaces">> = {
-    "Logistics Engine": {
-        users: "Operations teams coordinating work across moving parts",
-        surfaces: "Operational dashboard and task-driven web workflows",
-    },
-    "Intelligence Bridge": {
-        users: "Teams packaging AI or automation into real decisions",
-        surfaces: "Structured intake, output, and decision-support workflows",
-    },
-    "Modernized UX": {
-        users: "Buyers or users deciding whether to trust the product",
-        surfaces: "Marketing, product presentation, and conversion flows",
-    },
-};
 
 const getCaseStudy = (project: Project): CaseStudyDetails => {
     if (project.caseStudy) {
@@ -118,7 +76,7 @@ const getCaseStudy = (project: Project): CaseStudyDetails => {
             },
             {
                 label: "Build depth",
-                value: formatCommitCount(project.github_stats.commits),
+                value: formatCommitCountMetric(project.github_stats.commits),
                 detail: "Commit history shows real iteration across the product.",
             },
             {
@@ -129,9 +87,6 @@ const getCaseStudy = (project: Project): CaseStudyDetails => {
         ],
     };
 };
-
-const formatCommitCount = (commits: number) =>
-    commits >= 1000 ? `${(commits / 1000).toFixed(commits >= 10000 ? 0 : 1)}k` : `${commits}`;
 
 const OverlayCard = ({
     eyebrow,
@@ -343,7 +298,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="p-7 squircle-nav surface-card">
-                                                <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{formatCommitCount(project.github_stats.commits)}</div>
+                                                <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{formatCommitCountMetric(project.github_stats.commits)}</div>
                                                 <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Build History</div>
                                             </div>
                                             <div className="p-7 squircle-nav surface-card">
@@ -528,7 +483,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                             </div>
                             <div className="flex items-center justify-between text-[var(--text-dim)] text-xs font-mono">
                                 <span className="flex items-center gap-1.5">
-                                    <GitCommit size={13} className={catText} /> {formatCommitCount(project.github_stats.commits)}
+                                    <GitCommit size={13} className={catText} /> {formatCommitCountMetric(project.github_stats.commits)}
                                 </span>
                                 <span className="flex items-center gap-1.5">
                                     <SecondarySignalIcon size={13} className={catText} /> {secondarySignal.value}
@@ -628,7 +583,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="squircle-nav p-5 surface-card">
                                                         <div className={`text-3xl font-light mb-1 tracking-tighter tabular-nums ${catText}`}>
-                                                            {formatCommitCount(project.github_stats.commits)}
+                                                            {formatCommitCountMetric(project.github_stats.commits)}
                                                         </div>
                                                         <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Build History</div>
                                                     </div>

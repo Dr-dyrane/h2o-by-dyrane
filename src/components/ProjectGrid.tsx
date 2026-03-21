@@ -2,6 +2,18 @@ import { useState, useEffect } from "react";
 import type { Project } from "@/data/projects";
 import { projects } from "@/data/projects";
 import {
+  categoryMeta,
+  categoryOrder,
+  featuredStories,
+  type CategoryMeta,
+  type FeaturedStory,
+} from "@/domain/projects/metadata";
+import {
+  formatCommitCountBadge,
+  getArchiveBlurb,
+  getProjectUrl,
+} from "@/domain/projects/helpers";
+import {
   ArrowUpRight,
   ExternalLink,
   GitCommit,
@@ -12,124 +24,6 @@ import {
 interface ProjectGridProps {
   onProjectSelect: (project: Project) => void;
 }
-
-type CategoryMeta = {
-  id: string;
-  eyebrow: string;
-  title: string;
-  description: string;
-  proof: string;
-  signals: string[];
-  featuredTitle: string;
-  accent: string;
-  accentBg: string;
-};
-
-type FeaturedStory = {
-  label: string;
-  audience: string;
-  summary: string;
-  clientNeed: string;
-  previewLines: [string, string, string];
-  outcomes: string[];
-};
-
-const categoryMeta: Record<Project["category"], CategoryMeta> = {
-  "Logistics Engine": {
-    id: "logistics-engine",
-    eyebrow: "When timing and coordination matter",
-    title: "Use software that keeps live operations clear and coordinated.",
-    description:
-      "These projects are for teams that need dispatch, routing, tracking, or real-time visibility without operational confusion.",
-    proof: "Best fit when delays, handoffs, and blind spots are costing the team time, confidence, or customer trust.",
-    signals: ["Real-time visibility", "Dispatch clarity", "Operational confidence"],
-    featuredTitle: "iVisit Ecosystem",
-    accent: "var(--cat-logistics)",
-    accentBg: "var(--cat-logistics-bg)",
-  },
-  "Intelligence Bridge": {
-    id: "intelligence-bridge",
-    eyebrow: "When AI needs to do real work",
-    title: "Turn complex reasoning into tools your team can actually use.",
-    description:
-      "These products package AI and automation into clear workflows instead of making users deal with model complexity.",
-    proof: "Best fit when you need smarter workflows, triage, or decision support that still feels human and trustworthy.",
-    signals: ["Usable AI", "Clear workflows", "Decision support"],
-    featuredTitle: "Dr. Dyrane",
-    accent: "var(--cat-intelligence)",
-    accentBg: "var(--cat-intelligence-bg)",
-  },
-  "Modernized UX": {
-    id: "modernized-ux",
-    eyebrow: "When the product is good but the presentation is weak",
-    title: "Make the experience clearer, stronger, and easier to trust.",
-    description:
-      "These projects focus on positioning, conversion, and interface polish so the product feels credible before the sales call.",
-    proof: "Best fit when the product exists, but the presentation is not yet helping the business sell, convert, or reassure.",
-    signals: ["Trust signals", "Clear positioning", "Stronger conversion path"],
-    featuredTitle: "House of Prax",
-    accent: "var(--cat-ux)",
-    accentBg: "var(--cat-ux-bg)",
-  },
-};
-
-const categoryOrder: Project["category"][] = [
-  "Logistics Engine",
-  "Intelligence Bridge",
-  "Modernized UX",
-];
-
-const featuredStories: Record<string, FeaturedStory> = {
-  "iVisit Ecosystem": {
-    label: "Emergency dispatch platform",
-    audience: "Operations and response teams",
-    summary:
-      "A real-time dispatch product that keeps ambulance teams, routing, and hospital visibility in sync.",
-    clientNeed:
-      "Best when coordination is breaking down across the control room, field team, and receiving location.",
-    previewLines: ["Live dispatch", "Route visibility", "Cleaner handoffs"],
-    outcomes: ["Operational clarity", "Faster coordination", "Live system visibility"],
-  },
-  "Dr. Dyrane": {
-    label: "Clinical AI triage engine",
-    audience: "Health products using AI",
-    summary:
-      "Structured symptom intake and clinical reasoning packaged into a product people can actually use and trust.",
-    clientNeed:
-      "Best when AI needs to support real decisions without feeling vague, unsafe, or hard to trust.",
-    previewLines: ["Structured intake", "Clinical logic", "Safer triage"],
-    outcomes: ["Usable intelligence", "Safer escalation", "Decision support"],
-  },
-  "House of Prax": {
-    label: "E-commerce storefront",
-    audience: "Consumer and wellness brands",
-    summary:
-      "A commerce experience designed to make product quality, trust, and buying intent feel obvious.",
-    clientNeed:
-      "Best when the product is strong but the storefront is not doing enough to position or convert it.",
-    previewLines: ["Product clarity", "Brand trust", "Cleaner buying flow"],
-    outcomes: ["Stronger positioning", "Clearer product story", "Conversion support"],
-  },
-};
-
-const formatCommits = (count: number) => {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1).replace(".0", "")}k+`;
-  }
-
-  return count.toString();
-};
-
-const getProjectUrl = (project: Project) => `https://${project.link}`;
-
-const getArchiveBlurb = (project: Project) => {
-  const firstSentence = project.description.split(". ")[0]?.trim() ?? project.description;
-  const normalized = firstSentence.endsWith(".")
-    ? firstSentence
-    : `${firstSentence}.`;
-
-  return normalized.length > 112 ? `${normalized.slice(0, 109).trimEnd()}...` : normalized;
-};
 
 // ─── Live screenshot component ────────────────────────────────────────────────
 // Uses thum.io (free, no key) to fetch a real screenshot of the live project.
@@ -370,7 +264,7 @@ const ProductPreview = ({
               Build history
             </p>
             <div className="text-3xl font-light tracking-tight text-[var(--text)]">
-              {formatCommits(project.github_stats.commits)}
+              {formatCommitCountBadge(project.github_stats.commits)}
             </div>
             <p className="mt-2 text-sm font-light leading-relaxed text-[var(--text-muted)]">
               Commit history across the shipped product.
@@ -560,7 +454,7 @@ const ArchiveCard = ({
     <div>
       <div className="mb-2 flex items-center justify-between gap-3">
         <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-ghost)]">
-          {formatCommits(project.github_stats.commits)} commits
+          {formatCommitCountBadge(project.github_stats.commits)} commits
         </span>
         <a
           href={getProjectUrl(project)}
