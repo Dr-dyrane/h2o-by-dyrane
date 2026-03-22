@@ -197,8 +197,8 @@
 
 	.dark {
 		/* Semantic theme tokens — dark mode */
-		--surface: #1c1917;
-		--surface-alt: #231e1c;
+		--surface: #0D0D0D;
+		--surface-alt: #121110;
 		--surface-glass: rgba(28, 25, 23, 0.72);
 		--surface-card: rgba(255, 248, 243, 0.03);
 		--surface-card-hover: rgba(255, 248, 243, 0.05);
@@ -261,10 +261,10 @@
 		--cta-secondary-text: rgba(255, 255, 255, 0.7);
 		--cta-secondary-hover: rgba(255, 255, 255, 0.1);
 
-		--gradient-mask-from: #1c1917;
-		--gradient-mask-via: rgba(28, 25, 23, 0.8);
+		--gradient-mask-from: #0D0D0D;
+		--gradient-mask-via: rgba(13, 13, 13, 0.8);
 
-		--scrollbar-track: #1c1917;
+		--scrollbar-track: #0D0D0D;
 
 		/* shadcn tokens */
 		--background: 222.2 84% 4.9%;
@@ -557,31 +557,4 @@
 	}
 }
 
-/* ─── Ambient Blob Drift ───────────────────────────────────────────────────── */
-@keyframes drift-a {
-0%,  100% { transform: translate(0, 0) scale(1); }
-33%        { transform: translate(3%, 5%) scale(1.06); }
-66%        { transform: translate(-2%, 3%) scale(0.97); }
-}
 
-@keyframes drift-b {
-0%,  100% { transform: translate(0, 0) scale(1); }
-40%        { transform: translate(-4%, -3%) scale(1.04); }
-72%        { transform: translate(2%, -5%) scale(0.98); }
-}
-
-.ambient-blob-a {
-animation: drift-a 18s ease-in-out infinite;
-will-change: transform;
-}
-
-.ambient-blob-b {
-animation: drift-b 22s ease-in-out infinite;
-will-change: transform;
-}
-
-/* Senior Audit: Theme-Sensitive Glow Utility */
-.ambient-glow {
-	background: color-mix(in srgb, var(--active-accent, var(--cat-ux)), transparent calc(100% - (var(--ambient-opacity) * 100%)));
-	mix-blend-mode: var(--ambient-mix-blend);
-}

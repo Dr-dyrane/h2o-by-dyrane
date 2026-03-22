@@ -67,23 +67,6 @@ const Index = () => {
     <div className="min-h-screen overflow-x-hidden bg-[var(--surface)] font-sans text-[var(--text)] selection:bg-[var(--cat-ux-bg)] selection:text-[var(--text)] transition-colors duration-300">
       <Navbar />
 
-      <>
-        <div className="fixed inset-0 z-0 pointer-events-none contain-strict" aria-hidden="true">
-        <div 
-          className="ambient-blob-a absolute left-[-10%] top-[-20%] h-[50%] w-[50%] rounded-full blur-[100px] transition-all duration-1000 opacity-100 ambient-glow" 
-          style={{ 
-            '--active-accent': heroShowcase[activeShowcase].accent 
-          } as React.CSSProperties}
-        />
-        <div 
-          className="ambient-blob-b absolute bottom-[-20%] right-[-10%] h-[50%] w-[50%] rounded-full blur-[100px] transition-all duration-1000 opacity-100 ambient-glow" 
-          style={{ 
-            '--active-accent': heroShowcase[activeShowcase].accent,
-            animationDelay: "1s"
-          } as React.CSSProperties}
-        />
-      </div>
-
       <main id="main-content" className="relative z-10 pt-[calc(4.75rem+env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pt-32 md:pb-20">
         <section className="mx-auto mb-16 max-w-7xl px-4 md:mb-20 md:px-6">
           <div className="grid gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
@@ -386,9 +369,8 @@ const Index = () => {
           />
         </Suspense>
       ) : null}
-    </>
-  </div>
-);
+    </div>
+  );
 };
 
 export default Index;
