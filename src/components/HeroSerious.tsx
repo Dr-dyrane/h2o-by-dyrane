@@ -1,75 +1,12 @@
-import React, { Suspense, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import {
-  MeshTransmissionMaterial,
-  Float,
-  Environment,
-  ContactShadows,
-  PerspectiveCamera,
-} from "@react-three/drei";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import * as THREE from "three";
 import { ArrowUpRight } from "@/components/icons/lucide";
 
-const GlassSphere = () => {
-  const mesh = useRef<THREE.Mesh>(null!);
-
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    mesh.current.rotation.x = Math.cos(t / 4) * 0.15;
-    mesh.current.rotation.y = Math.sin(t / 4) * 0.15;
-    mesh.current.position.y = Math.sin(t / 2) * 0.1;
-  });
-
-  return (
-    <Float speed={1.5} rotationIntensity={0.4} floatIntensity={0.4}>
-      <mesh ref={mesh} position={[1.8, 0.2, -1.5]} scale={1.3}>
-        <sphereGeometry args={[1, 64, 64]} />
-        <MeshTransmissionMaterial
-          backside
-          backsideThickness={0.5}
-          samples={16}
-          thickness={1.0}
-          chromaticAberration={0.06}
-          anisotropy={0.2}
-          distortion={0.4}
-          distortionScale={0.4}
-          temporalDistortion={0.1}
-          clearcoat={1}
-          attenuationDistance={1.2}
-          attenuationColor="#ffffff"
-          color="#ffffff"
-          ior={1.15}
-        />
-      </mesh>
-    </Float>
-  );
-};
-
-const Scene = () => {
-  return (
-    <>
-      <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={45} />
-      <Environment preset="city" />
-      <ambientLight intensity={0.4} />
-      <spotLight
-        position={[10, 10, 10]}
-        angle={0.15}
-        penumbra={1}
-        intensity={1.5}
-        castShadow
-      />
-      <GlassSphere />
-      <ContactShadows
-        position={[0, -2, 0]}
-        opacity={0.3}
-        scale={12}
-        blur={2.5}
-        far={4.5}
-      />
-    </>
-  );
-};
+const HeroThreeScene = lazy(() =>
+  import("@/components/hero/HeroThreeScene").then((module) => ({
+    default: module.HeroThreeScene,
+  }))
+);
 
 interface HeadlineWord {
   text: string;
@@ -95,8 +32,8 @@ const WordReveal = ({
           <span className="word-clip mr-[0.22em] last:mr-0">
             <motion.span
               className={`inline-block ${word.className ?? ""}`}
-              initial={{ y: 80, opacity: 0, clipPath: "inset(100% 0% 0% 0%)" }}
-              animate={{ y: 0, opacity: 1, clipPath: "inset(0% 0% 0% 0%)" }}
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{
                 duration: 0.6,
                 delay: baseDelay + i * stagger,
@@ -122,6 +59,28 @@ export const HeroSerious = () => {
   const { scrollY } = useScroll();
   const yParallax = useTransform(scrollY, [0, 600], [0, 250]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const [enableScene, setEnableScene] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isSmallScreen = window.innerWidth < 1024;
+
+    if (prefersReducedMotion || isSmallScreen) {
+      return;
+    }
+
+    const sceneTimerId = window.setTimeout(() => {
+      setEnableScene(true);
+    }, 650);
+
+    return () => {
+      window.clearTimeout(sceneTimerId);
+    };
+  }, []);
 
   const fadeUp = (delay: number) => ({
     initial: { y: 24, opacity: 0 },
@@ -137,11 +96,13 @@ export const HeroSerious = () => {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,var(--cat-ux-bg),transparent_50%)] opacity-20" />
         <div className="h-full w-full opacity-60 md:opacity-100">
-          <Canvas shadows dpr={[1, 2]}>
+          {enableScene ? (
             <Suspense fallback={null}>
-              <Scene />
+              <HeroThreeScene />
             </Suspense>
-          </Canvas>
+          ) : (
+            <div className="h-full w-full bg-[radial-gradient(circle_at_70%_45%,rgba(255,255,255,0.1),transparent_40%)]" />
+          )}
         </div>
       </div>
 

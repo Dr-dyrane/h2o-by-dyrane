@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { LottieThemeToggle } from "@/components/LottieThemeToggle";
 
@@ -18,74 +18,100 @@ const entryTransition = {
 
 export const FloatingNav = () => {
   const { theme, toggleTheme } = useTheme();
-  const { scrollY } = useScroll();
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [activeSection, setActiveSection] = useState<(typeof navLinks)[number]["sectionId"]>("showcase");
-
-  const updateActiveSection = () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const probeY = window.innerHeight * 0.35;
-    let nextActive: (typeof navLinks)[number]["sectionId"] | null = null;
-    let fallbackActive: (typeof navLinks)[number]["sectionId"] = navLinks[0].sectionId;
-    let fallbackDistance = Number.POSITIVE_INFINITY;
-
-    for (const link of navLinks) {
-      const section = window.document.getElementById(link.sectionId);
-
-      if (!section) {
-        continue;
-      }
-
-      const rect = section.getBoundingClientRect();
-      const distanceFromProbe = Math.abs(rect.top - probeY);
-
-      if (distanceFromProbe < fallbackDistance) {
-        fallbackDistance = distanceFromProbe;
-        fallbackActive = link.sectionId;
-      }
-
-      if (rect.top <= probeY && rect.bottom >= probeY) {
-        nextActive = link.sectionId;
-        break;
-      }
-    }
-
-    const resolved = nextActive ?? fallbackActive;
-    setActiveSection((current) => (current === resolved ? current : resolved));
-  };
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const nextVisible = latest > window.innerHeight * 0.8;
-    setIsVisible((current) => (current === nextVisible ? current : nextVisible));
-    updateActiveSection();
-  });
+  const scrollRafId = useRef<number | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    const evaluate = () => {
-      setIsVisible(scrollY.get() > window.innerHeight * 0.8);
-      updateActiveSection();
+    const sectionNodes = navLinks
+      .map((link) => {
+        const section = window.document.getElementById(link.sectionId);
+        return section ? [link.sectionId, section] : null;
+      })
+      .filter((entry): entry is [(typeof navLinks)[number]["sectionId"], HTMLElement] => entry !== null);
+
+    if (sectionNodes.length === 0) {
+      return;
+    }
+
+    const ratios = new Map<(typeof navLinks)[number]["sectionId"], number>();
+    const computeMostVisibleSection = () => {
+      let bestSection: (typeof navLinks)[number]["sectionId"] | null = null;
+      let bestRatio = -1;
+
+      for (const [sectionId, ratio] of ratios) {
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          bestSection = sectionId;
+        }
+      }
+
+      if (bestSection) {
+        setActiveSection((current) => (current === bestSection ? current : bestSection));
+      }
     };
 
-    evaluate();
-    window.addEventListener("resize", evaluate);
-    window.addEventListener("hashchange", evaluate);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const sectionId = entry.target.id as (typeof navLinks)[number]["sectionId"];
+          ratios.set(sectionId, entry.intersectionRatio);
+        }
+        computeMostVisibleSection();
+      },
+      {
+        threshold: [0, 0.15, 0.3, 0.5, 0.75, 1],
+        rootMargin: "-35% 0px -40% 0px",
+      }
+    );
+
+    for (const [sectionId, node] of sectionNodes) {
+      ratios.set(sectionId, 0);
+      observer.observe(node);
+    }
 
     return () => {
-      window.removeEventListener("resize", evaluate);
-      window.removeEventListener("hashchange", evaluate);
+      observer.disconnect();
     };
-  }, [scrollY]);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const evaluateVisibility = () => {
+      scrollRafId.current = null;
+      const nextVisible = window.scrollY > window.innerHeight * 0.8;
+      setIsVisible((current) => (current === nextVisible ? current : nextVisible));
+    };
+
+    const scheduleVisibilityUpdate = () => {
+      if (scrollRafId.current !== null) {
+        return;
+      }
+      scrollRafId.current = window.requestAnimationFrame(evaluateVisibility);
+    };
+
+    evaluateVisibility();
+    window.addEventListener("scroll", scheduleVisibilityUpdate, { passive: true });
+    window.addEventListener("resize", scheduleVisibilityUpdate);
+    window.addEventListener("hashchange", scheduleVisibilityUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", scheduleVisibilityUpdate);
+      window.removeEventListener("resize", scheduleVisibilityUpdate);
+      window.removeEventListener("hashchange", scheduleVisibilityUpdate);
+      if (scrollRafId.current !== null) {
+        window.cancelAnimationFrame(scrollRafId.current);
+      }
+    };
+  }, []);
 
   return (
     <AnimatePresence>
@@ -101,9 +127,9 @@ export const FloatingNav = () => {
           <div className="flex max-w-full items-center gap-1 rounded-full bg-[var(--surface-glass)] px-2 py-1.5 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.18)] md:gap-2 md:px-3 md:py-2">
             <a
               href="#hero"
-              className="px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--text)]/80 transition-colors duration-300 hover:text-[var(--text)] md:px-3 md:text-[11px] md:tracking-[0.35em]"
-              aria-label="Back to top"
+              className="px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--text)]/80 md:px-3 md:text-[11px] md:tracking-[0.35em]"
             >
+              <span className="md:hidden">Top</span>
               <span className="hidden md:inline">Dyrane</span>
             </a>
 
@@ -115,10 +141,10 @@ export const FloatingNav = () => {
                   key={link.label}
                   href={link.href}
                   aria-current={activeSection === link.sectionId ? "page" : undefined}
-                  className={`group relative whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-light transition-colors duration-300 md:px-3 md:py-1.5 md:text-[13px] ${
+                  className={`group relative whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-light md:px-3 md:py-1.5 md:text-[13px] ${
                     activeSection === link.sectionId
                       ? "text-[var(--text)]"
-                      : "text-[var(--text-muted)] hover:text-[var(--text)]"
+                      : "text-[var(--text-muted)]"
                   }`}
                 >
                   {link.label}

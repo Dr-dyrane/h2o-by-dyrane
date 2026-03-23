@@ -10,6 +10,7 @@ import {
   useVelocity,
   useAnimationFrame,
   useInView,
+  useReducedMotion,
 } from "framer-motion";
 
 const wrap = (min: number, max: number, v: number) => {
@@ -20,9 +21,12 @@ const wrap = (min: number, max: number, v: number) => {
 interface ParallaxProps {
   children: string;
   baseVelocity: number;
+  reduceMotion: boolean;
 }
 
-function ParallaxText({ children, baseVelocity = 100 }: ParallaxProps) {
+function ParallaxText({ children, baseVelocity = 100, reduceMotion }: ParallaxProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { amount: 0.2, margin: "160px 0px" });
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
@@ -39,6 +43,10 @@ function ParallaxText({ children, baseVelocity = 100 }: ParallaxProps) {
   const directionFactor = useRef<number>(1);
 
   useAnimationFrame((_, delta) => {
+    if (reduceMotion || !inView) {
+      return;
+    }
+
     let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
 
     if (velocityFactor.get() < 0) {
@@ -54,10 +62,13 @@ function ParallaxText({ children, baseVelocity = 100 }: ParallaxProps) {
   const skewX = useTransform(smoothVelocity, [-2000, 2000], [8, -8]);
 
   return (
-    <div className="relative m-0 flex overflow-hidden whitespace-nowrap leading-none tracking-[-0.06em]">
+    <div
+      ref={containerRef}
+      className="relative m-0 flex overflow-hidden whitespace-nowrap leading-none tracking-[-0.06em]"
+    >
       <motion.div
         className="flex items-center whitespace-nowrap text-[10rem] font-light uppercase text-[var(--text)] mix-blend-plus-lighter md:text-[15rem] lg:text-[20rem]"
-        style={{ x, skewX }}
+        style={{ x: reduceMotion ? "0%" : x, skewX: reduceMotion ? 0 : skewX }}
       >
         <span className="block pr-12 md:pr-24">{children}</span>
         <span className="block pr-12 md:pr-24">{children}</span>
@@ -104,6 +115,8 @@ const MarqueeHeader = () => {
 };
 
 const ServicesMarquee = () => {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section className="relative w-full overflow-hidden bg-[var(--surface)] pt-20 pb-8 md:pt-32">
       <div className="sticky top-20 z-20 mb-8 md:mb-12">
@@ -111,9 +124,15 @@ const ServicesMarquee = () => {
       </div>
 
       <div className="relative z-10 mt-8 flex flex-col gap-0 md:-space-y-16 md:mt-16">
-        <ParallaxText baseVelocity={-2}>Logistics Engine</ParallaxText>
-        <ParallaxText baseVelocity={2}>Intelligence Bridge</ParallaxText>
-        <ParallaxText baseVelocity={-2}>Modernized UX</ParallaxText>
+        <ParallaxText baseVelocity={-2} reduceMotion={Boolean(reduceMotion)}>
+          Logistics Engine
+        </ParallaxText>
+        <ParallaxText baseVelocity={2} reduceMotion={Boolean(reduceMotion)}>
+          Intelligence Bridge
+        </ParallaxText>
+        <ParallaxText baseVelocity={-2} reduceMotion={Boolean(reduceMotion)}>
+          Modernized UX
+        </ParallaxText>
       </div>
 
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-[var(--surface)] to-transparent" />

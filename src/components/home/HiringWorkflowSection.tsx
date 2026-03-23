@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Code, Globe, Layers, Zap } from "@/components/icons/lucide";
-import { hiringFlow, type HiringStageId, type HiringTool } from "@/content/homepage";
+import { hiringFlow, type HiringStageId, type HiringTool } from "@/content/hiringFlow";
 
 /**
  * Converts a six-digit hex string into an rgba() color string.
