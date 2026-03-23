@@ -62,26 +62,19 @@ export const HiringWorkflowSection = () => {
   const CurrentHiringIcon = stageIcons[currentHiringStage.id];
 
   return (
-    <section className="mx-auto mb-16 max-w-7xl px-4 md:mb-20 md:px-6">
-      <div className="relative overflow-hidden squircle-panel surface-panel p-6 md:p-8">
+    <section className="w-full px-6 md:mb-20 md:px-6">
+      <div className="relative overflow-hidden squircle-panel glass-regular p-8 md:p-8">
         <div className="pointer-events-none absolute -right-12 top-0 h-44 w-44 rounded-full bg-[var(--cat-ux-bg)] blur-[56px]" />
         <div className="pointer-events-none absolute -left-10 bottom-0 h-36 w-36 rounded-full bg-[var(--cat-logistics-bg)] blur-[48px]" />
 
         <div className="relative">
-          <div className="mb-10 max-w-3xl space-y-4">
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--cat-ux)]">
-              For Hiring Teams
+          <div className="mb-14 space-y-6">
+            <p className="text-[11px] font-mono uppercase tracking-[0.4em] text-[var(--cat-ux)] opacity-80">
+              Workflow
             </p>
-            <h2 className="text-4xl font-light tracking-tight text-[var(--text)] md:text-5xl">
-              A clear view of how products move from concept to production.
+            <h2 className="text-5xl font-light tracking-tight text-[var(--text)] sm:text-6xl md:text-7xl lg:text-8xl">
+              From concept to production.
             </h2>
-            <p className="text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg">
-              One workflow across product direction, interface systems, frontend implementation,
-              and launch quality, with the stack choices that support it.
-            </p>
-            <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--text-dim)]">
-              Tap a stage to reveal the stack and handoff.
-            </p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

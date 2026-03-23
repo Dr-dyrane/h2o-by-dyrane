@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import type { Project } from "@/data/projects";
 import { projects } from "@/data/projects";
 import {
@@ -137,13 +138,10 @@ const CATEGORY_FALLBACK: Record<Project["category"], React.FC> = {
 // Screenshot URL via thum.io — free, no API key, caches at edge
 // Fetch real og:image via microlink JSON API (respects the site's own OG image)
 /**
- * Attempts to load a live OG preview from Microlink and falls back to a local visual.
+ * Supercharged 3D Immersive Screenshot Display
+ * Treats the 2D image as a volumetric object floating in space.
  */
-const OGScreenshot = ({
-  project,
-}: {
-  project: Project;
-}) => {
+const OGScreenshot = ({ project }: { project: Project }) => {
   const Fallback = CATEGORY_FALLBACK[project.category];
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "loaded" | "error">("loading");
@@ -181,41 +179,128 @@ const OGScreenshot = ({
     return () => { cancelled = true; };
   }, [siteUrl]);
 
+  // Framer Motion 3D values based on mouse position
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // When hovered, the image tracks the mouse strongly
+    setRotateX((y - centerY) / 6);
+    setRotateY((centerX - x) / 6);
+  };
+
+  const handleMouseEnter = () => setIsHovered(true);
+  
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setRotateX(0);
+    setRotateY(0);
+  };
+
   if (state === "error") return <Fallback />;
 
   return (
-    <div
-      className="relative w-full overflow-hidden rounded-xl bg-[var(--surface-elevated)] transition-all duration-500"
-      style={{ aspectRatio }}
+    <div 
+      className="group relative w-full h-full flex items-center justify-center p-4 md:p-12"
+      style={{ perspective: "2000px" }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Skeleton shimmer while loading */}
-      {state === "loading" && (
-        <div className="absolute inset-0 animate-pulse bg-[var(--surface-elevated-strong)]" />
-      )}
-
-      {/* Real OG image */}
-      {imgSrc && (
-        <img
-          src={imgSrc}
-          alt={`${project.title} — live product`}
-          className="h-full w-full object-contain object-top transition-opacity duration-500"
-          style={{ opacity: state === "loaded" ? 1 : 0 }}
-          loading="lazy"
-          decoding="async"
+      <motion.div
+        className="relative w-full max-w-4xl mx-auto rounded-xl"
+        style={{ 
+          aspectRatio, 
+          transformStyle: "preserve-3d" 
+        }}
+        // Resting state: floating back in space, slightly tilted
+        // Hover state: floating up towards camera, tracking mouse
+        initial={{ rotateX: 10, rotateY: -10, translateZ: -100, scale: 0.95 }}
+        whileInView={{ rotateX: 10, rotateY: -10, translateZ: -100, scale: 0.95 }}
+        viewport={{ once: false, margin: "-100px" }}
+        animate={{ 
+          rotateX: isHovered ? rotateX : 5, 
+          rotateY: isHovered ? rotateY : -8, 
+          translateZ: isHovered ? 50 : 0,
+          scale: isHovered ? 1.05 : 0.98
+        }}
+        transition={{ type: "spring", stiffness: 200, damping: 20, mass: 1.5 }}
+      >
+        {/* Deep 3D Shadow Plate behind the image */}
+        <div 
+          className="absolute inset-0 bg-black/40 blur-3xl rounded-xl transition-all duration-700 pointer-events-none"
+          style={{ transform: "translateZ(-80px)", opacity: isHovered ? 0.8 : 0.3 }}
         />
-      )}
 
-      {/* Bottom scrim */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-16"
-        style={{ background: "var(--scrim-card)" }}
-      />
+        {/* The actual "glass slab" containing the image */}
+        <div 
+          className="relative w-full h-full rounded-xl overflow-hidden bg-[var(--surface-elevated)] ring-1 ring-white/10"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          {/* Skeleton shimmer while loading */}
+          {state === "loading" && (
+            <div className="absolute inset-0 animate-pulse bg-[var(--surface-elevated-strong)]" />
+          )}
 
-      {/* Live URL badge */}
-      <div className="absolute bottom-3 left-3 flex items-center gap-1.5 squircle-chip bg-[var(--surface-glass)] px-2.5 py-1 backdrop-blur-sm">
-        <Globe size={9} style={{ color: categoryMeta[project.category].accent }} />
-        <span className="text-[9px] font-mono text-[var(--text-muted)]">{project.link}</span>
-      </div>
+          {/* Real OG image */}
+          {imgSrc && (
+            <img
+              src={imgSrc}
+              alt={`${project.title} — live product`}
+              className="h-full w-full object-contain object-top transition-all duration-700 pointer-events-none"
+              style={{ 
+                opacity: state === "loaded" ? 1 : 0,
+                filter: isHovered ? "brightness(1.05) contrast(1.05)" : "brightness(0.9) contrast(1.0)"
+              }}
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+
+          {/* Intense sweeping specular highlight across the glass */}
+          <motion.div 
+            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-0"
+            animate={{ 
+              opacity: isHovered ? 0.8 : 0,
+              background: `radial-gradient(circle at ${50 + rotateY * 2}% ${50 + rotateX * 2}%, rgba(255,255,255,0.6) 0%, transparent 60%)`
+            }}
+          />
+
+          {/* Bottom scrim to ground URL badge */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-24 pointer-events-none bg-gradient-to-t from-[var(--surface-elevated-strong)] to-transparent opacity-80"
+          />
+        </div>
+
+        {/* 3D Floating Elements (Rendered OUTSIDE the hidden-overflow glass slab, but INSIDE the 3D rotating parent) */}
+        
+        {/* Floating URL badge popping violently out of the screen */}
+        <motion.div 
+          className="absolute bottom-6 left-6 flex items-center gap-2 squircle-chip surface-chip px-3 py-1.5 backdrop-blur-md shadow-2xl pointer-events-none"
+          animate={{ z: isHovered ? 120 : 40 }}
+          transition={{ type: "spring", stiffness: 150, damping: 15 }}
+        >
+          <Globe size={10} style={{ color: categoryMeta[project.category].accent }} />
+          <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--text)]">{project.title.split(' ')[0]} URL</span>
+        </motion.div>
+
+        {/* Decorative structural frame lines mapping depth */}
+        <motion.div 
+          className="absolute -top-4 -right-4 w-12 h-12 border-t border-r border-[var(--text-dim)] pointer-events-none opacity-30"
+          animate={{ z: isHovered ? -50 : -20 }}
+        />
+        <motion.div 
+          className="absolute -bottom-4 -left-4 w-12 h-12 border-b border-l border-[var(--text-dim)] pointer-events-none opacity-30"
+          animate={{ z: isHovered ? -50 : -20 }}
+        />
+      </motion.div>
     </div>
   );
 };
@@ -233,13 +318,13 @@ const ProductPreview = ({
   story: FeaturedStory;
 }) => {
   return (
-  <div className="relative overflow-hidden squircle-panel bg-[var(--surface-elevated-strong)] p-4 md:p-5">
-    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent dark:from-white/5" />
-    <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full blur-3xl" style={{ background: meta.accentBg }} />
-    <div className="absolute -bottom-12 left-10 h-32 w-32 rounded-full blur-3xl" style={{ background: meta.accentBg }} />
+    <div className="relative overflow-hidden squircle-panel bg-[var(--surface-elevated-strong)] p-4 md:p-5">
+      <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent dark:from-white/5 pointer-events-none" />
+      <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full blur-3xl pointer-events-none" style={{ background: meta.accentBg }} />
+      <div className="absolute -bottom-12 left-10 h-32 w-32 rounded-full blur-3xl pointer-events-none" style={{ background: meta.accentBg }} />
 
-    <div className="relative flex h-full flex-col gap-4">
-      <div className="flex items-center justify-between gap-3 squircle-chip surface-chip px-3.5 py-3">
+      <div className="relative flex h-full flex-col gap-4">
+        <div className="flex items-center justify-between gap-3 squircle-chip surface-chip px-3.5 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full opacity-80" style={{ background: meta.accent }} />
@@ -326,7 +411,7 @@ const ProductPreview = ({
         </div>
       </div>
     </div>
-  </div>
+    </div>
   );
 };
 
@@ -525,89 +610,129 @@ const ArchiveCard = ({
 );
 
 /**
- * Main case-study grid grouping projects into the three portfolio lanes.
+ * Main case-study grid with massive typographic navigation and 3D skewing.
  */
 export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
+  const [activeCategory, setActiveCategory] = useState<Project["category"]>(categoryOrder[0]);
+
+  // Derive the currently active content
+  const meta = categoryMeta[activeCategory];
+  const categoryProjects = projects.filter((p) => p.category === activeCategory);
+  const featuredProject = categoryProjects.find((p) => p.title === meta.featuredTitle) || categoryProjects[0];
+  const archiveProjects = categoryProjects.filter((p) => p.title !== featuredProject?.title);
+
   return (
     <section>
-      <div className="mx-auto max-w-7xl px-4 pb-16 pt-8 md:px-6 md:pb-20 md:pt-10">
-        <div className="space-y-20 md:space-y-24">
+      {/* ── Massive Typographic Navigation (Category Hero) ── */}
+      <div className="flex min-h-[70vh] flex-col justify-center px-6 py-20 md:px-12 md:py-24 lg:px-24">
+        <div className="max-w-7xl">
           {categoryOrder.map((category) => {
-            const meta = categoryMeta[category];
-            const categoryProjects = projects.filter(
-              (project) => project.category === category
-            );
-            const featuredProject = categoryProjects.find(
-              (project) => project.title === meta.featuredTitle
-            ) || categoryProjects[0];
-
-            if (!featuredProject) {
-              return null;
-            }
-
-            const archiveProjects = categoryProjects.filter(
-              (project) => project.title !== featuredProject.title
-            );
-
+            const catMeta = categoryMeta[category];
+            const isActive = activeCategory === category;
+            
             return (
-              <section
+              <motion.div
                 key={category}
-                id={meta.id}
-                className="scroll-mt-28 pt-8 md:pt-10"
+                onClick={() => setActiveCategory(category)}
+                className="group relative cursor-pointer select-none py-2"
+                style={{ perspective: "1500px" }}
               >
-                <div className="mb-8 max-w-3xl space-y-3">
-                  <p className="text-[11px] font-mono uppercase tracking-[0.18em]" style={{ color: meta.accent }}>
-                    {meta.eyebrow}
-                  </p>
-                  <h3 className="text-3xl font-light tracking-tight text-[var(--text)] md:text-4xl">
-                    {meta.title}
-                  </h3>
-                  <p className="text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg">
-                    {meta.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {meta.signals.map((signal) => (
-                      <span
-                        key={signal}
-                        className="squircle-chip surface-chip px-3 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-dim)]"
-                      >
-                        {signal}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <ProjectSurface
-                  project={featuredProject}
-                  meta={meta}
-                  onProjectSelect={onProjectSelect}
-                />
-
-                {archiveProjects.length > 0 ? (
-                  <div className="mt-6">
-                    <div className="mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--text-ghost)]">
-                        More Work
-                      </p>
-                      <p className="text-sm text-[var(--text-muted)]">
-                        More examples in the same category.
-                      </p>
-                    </div>
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                      {archiveProjects.map((project) => (
-                        <ArchiveCard
-                          key={project.title}
-                          project={project}
-                          onProjectSelect={onProjectSelect}
-                        />
+                {/* 3D Skewing Container */}
+                <motion.div
+                  className="inline-flex flex-col"
+                  initial={false}
+                  animate={{
+                    color: isActive ? "var(--text)" : "var(--text-ghost)",
+                  }}
+                  whileHover={{ 
+                    x: 20,
+                    color: isActive ? "var(--text)" : "var(--text-muted)",
+                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="flex items-baseline gap-4 md:gap-8">
+                    {/* Small number/eyebrow */}
+                    <span 
+                      className="text-xs md:text-sm font-mono tracking-[0.2em] transition-opacity duration-300"
+                      style={{ 
+                        color: catMeta.accent,
+                        opacity: isActive ? 1 : 0, 
+                        transform: "translateZ(30px)" 
+                      }}
+                    >
+                      {catMeta.eyebrow}
+                    </span>
+                    
+                    {/* Massive Display Title */}
+                    <h2 
+                      className="text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] font-light tracking-[-0.04em] leading-[0.9]"
+                      style={{ transform: "translateZ(10px)" }}
+                    >
+                      {category.split(' ').map((word, i) => (
+                        <span key={i} className="block">{word}</span>
                       ))}
-                    </div>
+                    </h2>
                   </div>
-                ) : null}
-              </section>
+                </motion.div>
+              </motion.div>
             );
           })}
         </div>
+      </div>
+
+      {/* ── Active Category Content ── */}
+      <div className="w-full px-6 pb-16 md:px-6 md:pb-20">
+        <motion.div
+          key={activeCategory}
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="space-y-16 md:space-y-20 pt-8"
+        >
+          {/* Active Category Header summary */}
+          <div className="max-w-3xl space-y-6 lg:px-18">
+            <h3 className="text-3xl font-light tracking-tight text-[var(--text)] sm:text-4xl">
+              {meta.title}
+            </h3>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {meta.signals.map((signal) => (
+                <span
+                  key={signal}
+                  className="squircle-chip surface-chip px-3 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-dim)]"
+                >
+                  {signal}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {featuredProject && (
+            <ProjectSurface
+              project={featuredProject}
+              meta={meta}
+              onProjectSelect={onProjectSelect}
+            />
+          )}
+
+          {archiveProjects.length > 0 && (
+            <div className="mt-6">
+               <div className="mb-6 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+                 <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--text-ghost)]">
+                   More from this focus
+                 </p>
+               </div>
+               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                 {archiveProjects.map((project) => (
+                   <ArchiveCard
+                     key={project.title}
+                     project={project}
+                     onProjectSelect={onProjectSelect}
+                   />
+                 ))}
+               </div>
+            </div>
+          )}
+        </motion.div>
       </div>
     </section>
   );

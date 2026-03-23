@@ -113,11 +113,11 @@ const OverlayCard = ({
     accent?: string;
 }) => (
     <div
-        className="squircle-nav p-5 surface-card"
-        style={accent ? { boxShadow: `inset 0 1px 0 0 ${accent}22` } : undefined}
+        className="squircle-nav p-8 glass-regular"
+        style={accent ? { boxShadow: `inset 0 1px 0 0 ${accent}33` } : undefined}
     >
         <div
-            className="mb-3 text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--text-ghost)]"
+            className="mb-4 text-[11px] font-mono uppercase tracking-[0.4em] text-[var(--text-ghost)]"
             style={accent ? { color: accent } : undefined}
         >
             {eyebrow}
@@ -140,12 +140,12 @@ const MetricCard = ({
     detail: string;
     accentClass: string;
 }) => (
-    <div className="squircle-nav p-5 surface-card">
-        <div className="mb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--text-ghost)]">
+    <div className="squircle-nav p-8 glass-regular">
+        <div className="mb-4 text-[11px] font-mono uppercase tracking-[0.4em] text-[var(--text-ghost)]">
             {label}
         </div>
-        <div className={`text-2xl font-light tracking-tight ${accentClass}`}>{value}</div>
-        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--text-muted)]">{detail}</p>
+        <div className={`text-5xl font-light tracking-tighter ${accentClass}`}>{value}</div>
+        <p className="mt-4 text-base font-light leading-relaxed text-[var(--text-muted)]">{detail}</p>
     </div>
 );
 
@@ -232,13 +232,13 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     {/* Drag handle */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 squircle-pill bg-[var(--text-ghost)]/30 z-50" />
 
-                    {/* Sheet Header */}
-                    <div className="px-5 pt-7 pb-4 flex items-center justify-between">
+                    {/* Background accent orbs for depth -->`n                    <div className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-[var(--cat-ux-bg)] blur-[80px] opacity-20" />`n                    <div className="pointer-events-none absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-[var(--cat-ux-bg)] blur-[80px] opacity-15" />`n`n                    <!-- Sheet Header */}
+                    <div className="px-8 pt-10 pb-6 flex items-center justify-between">
                         <div>
-                            <span className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-0.5 block ${catText}`}>
+                            <span className={`text-[11px] font-mono tracking-[0.4em] uppercase mb-1.5 block ${catText}`}>
                                 Step 0{activeStep}
                             </span>
-                            <h3 className="text-lg font-semibold text-[var(--text)] tracking-tight">
+                            <h3 className="text-3xl font-light text-[var(--text)] tracking-tight">
                                 {steps[activeStep - 1].label}
                             </h3>
                         </div>
@@ -281,11 +281,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             </a>
                                         </div>
 
-                                        <div className="absolute bottom-8 left-6 right-6">
+                                        <div className="absolute bottom-10 left-8 right-8">
                                             <p className="mb-2 text-[10px] font-mono uppercase tracking-[0.2em] text-white/50">
-                                                The problem
+                                                Problem
                                             </p>
-                                            <h4 className="text-3xl font-semibold text-white tracking-tighter mb-2">{project.title}</h4>
+                                            <h4 className="text-4xl font-light text-white tracking-tighter mb-4">{project.title}</h4>
                                             <p className="text-white/70 text-base font-light leading-relaxed">{problemSummary}</p>
                                             <p className="mt-3 text-sm font-light leading-relaxed text-white/55">{cleanedDescription}</p>
                                             <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-white/45">
@@ -308,28 +308,28 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     <div className="space-y-6">
                                         <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{solutionSummary}</p>
                                         <div className="grid grid-cols-1 gap-3">
-                                            <div className="p-5 squircle-nav surface-card">
+                                            <div className="p-5 squircle-nav glass-regular">
                                                 <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">Role</div>
                                                 <div className="text-sm font-light leading-relaxed text-[var(--text-muted)]">{caseStudy.role}</div>
                                             </div>
-                                            <div className="p-5 squircle-nav surface-card">
+                                            <div className="p-5 squircle-nav glass-regular">
                                                 <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">Users</div>
                                                 <div className="text-sm font-light leading-relaxed text-[var(--text-muted)]">{caseStudy.users}</div>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="p-7 squircle-nav surface-card">
+                                            <div className="p-7 squircle-nav glass-regular">
                                                 <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{formatCommitCountMetric(project.github_stats.commits)}</div>
                                                 <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Build History</div>
                                             </div>
-                                            <div className="p-7 squircle-nav surface-card">
+                                            <div className="p-7 squircle-nav glass-regular">
                                                 <div className={`text-4xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.languages.length}</div>
                                                 <div className="text-[var(--text-ghost)] text-[10px] font-mono uppercase tracking-widest">Core Tools</div>
                                             </div>
                                         </div>
                                         <div className="space-y-3">
                                             {caseStudy.decisions.map((decision) => (
-                                                <div key={decision.title} className="p-5 squircle-nav surface-card">
+                                                <div key={decision.title} className="p-5 squircle-nav glass-regular">
                                                     <div className="mb-2 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">
                                                         {decision.title}
                                                     </div>
@@ -352,20 +352,20 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     className="absolute inset-0 overflow-y-auto px-5 py-2 pb-8"
                                 >
                                     <div className="space-y-6">
-                                        <div className="squircle p-7 surface-card">
+                                        <div className="squircle p-7 glass-regular">
                                             <h4 className="text-[10px] font-mono uppercase tracking-widest mb-3 text-[var(--text-ghost)]">Proof summary</h4>
                                             <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{proofSummary}</p>
                                         </div>
                                         <div className="grid grid-cols-1 gap-3">
                                             {caseStudy.outcomes.map((outcome) => (
-                                                <div key={outcome.label} className="p-5 squircle-nav surface-card">
+                                                <div key={outcome.label} className="p-5 squircle-nav glass-regular">
                                                     <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-ghost)]">{outcome.label}</div>
                                                     <div className={`text-xl font-light tracking-tight ${catText}`}>{outcome.value}</div>
                                                     <div className="mt-2 text-sm font-light leading-relaxed text-[var(--text-muted)]">{outcome.detail}</div>
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className={`squircle p-7 surface-card`}>
+                                        <div className={`squircle p-7 glass-regular`}>
                                             <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Evidence</h4>
                                             <div className="space-y-3">
                                                 {caseStudy.proofPoints.map((point) => (
@@ -375,7 +375,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 ))}
                                             </div>
                                         </div>
-                                        <div className={`squircle p-7 surface-card`}>
+                                        <div className={`squircle p-7 glass-regular`}>
                                             <h4 className={`text-[10px] font-mono uppercase tracking-widest mb-3 ${catText}`}>Business value</h4>
                                             <p className="text-[var(--text-muted)] text-lg font-light leading-relaxed">
                                                 {valueSummary}
@@ -384,7 +384,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     </div>
                                     <div className="mt-6 flex flex-col gap-3">
                                         <a href={`https://${project.link}`} target="_blank"
-                                            className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
+                                            className="group flex items-center justify-between p-5 squircle-nav glass-regular transition-colors duration-200">
                                             <div>
                                                 <span className={`text-[10px] font-mono uppercase tracking-widest mb-0.5 block ${catText}`}>Live Product</span>
                                                 <span className="text-[var(--text)] text-base font-medium">Open Live Site</span>
@@ -392,7 +392,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             <ArrowUpRight size={20} className={`${catText} group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform`} />
                                         </a>
                                         <a href={`mailto:hello@dyrane.tech?subject=${encodeURIComponent(mailSubject)}`}
-                                            className="group flex items-center justify-between p-5 squircle-nav surface-card transition-colors duration-200">
+                                            className="group flex items-center justify-between p-5 squircle-nav glass-regular transition-colors duration-200">
                                             <div>
                                                 <span className="text-[10px] font-mono uppercase tracking-widest mb-0.5 block text-[var(--text-ghost)]">Next Step</span>
                                                 <span className="text-[var(--text-dim)] text-base font-medium">Start a Project</span>
@@ -453,7 +453,10 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
             />
 
             {/* Panel — vibrancy-powered Liquid Glass */}
-            <div className="relative flex h-full max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden squircle-panel glass-regular md:h-[700px] md:flex-row">
+            <div className="relative flex h-full max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden squircle-panel glass-regular md:h-[760px] md:flex-row">
+                {/* Background accent orbs for depth */}
+                <div className="pointer-events-none absolute -left-20 -top-20 h-96 w-96 rounded-full bg-[var(--cat-ux-bg)] blur-[100px] opacity-20" />
+                <div className="pointer-events-none absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-[var(--cat-ux-bg)] blur-[100px] opacity-15" />
 
                 {/* Sidebar */}
                 <div 
@@ -467,7 +470,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                         <span className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-1.5 block ${catText}`}>
                             {project.category}
                         </span>
-                        <h2 className="text-xl text-[var(--text)] font-semibold tracking-tight leading-tight">
+                        <h2 className="text-2xl lg:text-3xl text-[var(--text)] font-light tracking-tight leading-tight">
                             {project.title}
                         </h2>
                     </div>
@@ -498,7 +501,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
                     {/* Repo stats */}
                     <div className="mt-auto">
-                        <div className="squircle-nav p-4 surface-card space-y-3">
+                        <div className="squircle-nav p-4 glass-regular space-y-3">
                             <div className={`flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider ${catText} opacity-70`}>
                                 <Github size={11} /> Proof
                             </div>
@@ -571,16 +574,13 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 </a>
                                             </div>
 
-                                            <div className="absolute bottom-6 left-6 right-6">
-                                                <p className="mb-3 text-[10px] font-mono uppercase tracking-[0.2em] text-white/50">The problem</p>
-                                                <p className="text-white/80 text-lg leading-relaxed font-light">{problemSummary}</p>
-                                                <p className="mt-3 text-sm leading-relaxed font-light text-white/55">{cleanedDescription}</p>
-                                                <div className="mt-4 flex flex-wrap gap-2">
-                                                    <span className="squircle-chip bg-white/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.14em] text-white/70">
+                                            <div className="absolute bottom-10 left-10 right-10">
+                                                <p className="mb-4 text-[11px] font-mono uppercase tracking-[0.4em] text-white/50">Problem</p>
+                                                <h3 className="text-5xl lg:text-6xl font-light text-white tracking-tighter mb-4">{project.title}</h3>
+                                                <p className="text-white/80 text-xl leading-relaxed font-light max-w-2xl">{problemSummary}</p>
+                                                <div className="mt-8 flex flex-wrap gap-3">
+                                                    <span className="squircle-chip bg-white/10 px-4 py-1.5 text-[11px] font-mono uppercase tracking-[0.2em] text-white/70">
                                                         {caseStudy.role}
-                                                    </span>
-                                                    <span className="squircle-chip bg-white/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.14em] text-white/70">
-                                                        {caseStudy.surfaces}
                                                     </span>
                                                 </div>
                                             </div>
@@ -597,18 +597,18 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {/* Step 2 — Architecture */}
                                 {activeStep === 2 && (
                                     <div className="flex flex-col justify-center h-full space-y-6">
-                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight">Solution</h3>
+                                        <h3 className="text-4xl text-[var(--text)] font-light tracking-tight mb-8">Solution</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-center">
                                             <div className="space-y-5">
                                                 <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">{solutionSummary}</p>
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <div className="squircle-nav p-5 surface-card">
+                                                    <div className="squircle-nav p-5 glass-regular">
                                                         <div className={`text-3xl font-light mb-1 tracking-tighter tabular-nums ${catText}`}>
                                                             {formatCommitCountMetric(project.github_stats.commits)}
                                                         </div>
                                                         <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Build History</div>
                                                     </div>
-                                                    <div className="squircle-nav p-5 surface-card">
+                                                    <div className="squircle-nav p-5 glass-regular">
                                                         <div className={`text-3xl font-light mb-1 tracking-tighter ${catText}`}>{project.github_stats.languages.length}</div>
                                                         <div className="text-[var(--text-ghost)] text-[10px] font-mono tracking-widest uppercase">Core Tools</div>
                                                     </div>
@@ -637,7 +637,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             </div>
 
                                             {/* Ambient orb — no borders */}
-                                            <div className="relative aspect-square squircle surface-card flex items-center justify-center group overflow-hidden">
+                                            <div className="relative aspect-square squircle glass-regular flex items-center justify-center group overflow-hidden">
                                                 <div className={`absolute inset-0 opacity-[0.08] group-hover:opacity-[0.16] transition-opacity duration-700 pointer-events-none blur-3xl ${catAccentBg}`} />
                                                 <Code className="w-16 h-16 md:w-20 md:h-20 text-[var(--text)] opacity-10 relative z-10 transition-opacity duration-500 group-hover:opacity-20" />
                                                 {/* Depth rings — shadow-based, not border */}
@@ -657,9 +657,9 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 {/* Step 3 — Impact */}
                                 {activeStep === 3 && (
                                     <div className="max-w-2xl flex flex-col pt-4 pb-8">
-                                        <h3 className="text-xl text-[var(--text)] font-semibold tracking-tight mb-6">Proof</h3>
+                                        <h3 className="text-4xl text-[var(--text)] font-light tracking-tight mb-10">Proof</h3>
                                         <div className="space-y-4 mb-10">
-                                            <div className="squircle p-7 surface-card">
+                                            <div className="squircle p-7 glass-regular">
                                                 <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">Proof summary</h4>
                                                 <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{proofSummary}</p>
                                             </div>
@@ -674,7 +674,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                     />
                                                 ))}
                                             </div>
-                                            <div className="squircle p-8 surface-card" style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}>
+                                            <div className="squircle p-8 glass-regular" style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}>
                                                 <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>Evidence</h4>
                                                 <div className="space-y-3">
                                                     {caseStudy.proofPoints.map((point) => (
@@ -684,7 +684,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div className="squircle p-8 surface-card" style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}>
+                                            <div className="squircle p-8 glass-regular" style={{ boxShadow: `inset 0 1px 0 0 ${catAccent}22` }}>
                                                 <h4 className={`text-[10px] font-mono tracking-[0.2em] uppercase mb-4 ${catText}`}>Business value</h4>
                                                 <p className="text-[var(--text-muted)] text-xl leading-relaxed font-light">
                                                     {valueSummary}

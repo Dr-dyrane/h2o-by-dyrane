@@ -132,22 +132,18 @@ export const ContributionGraph = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="mx-auto w-full max-w-7xl px-4 py-12 md:px-6 md:py-16">
-        <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+      <div className="w-full px-6 py-12 md:px-6 md:py-16">
+        <div className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <div className="mb-2 flex items-center gap-2">
+            <div className="mb-4 flex items-center gap-2">
               <div className="h-1.5 w-1.5 squircle-pill bg-[var(--cat-ux)]" />
-              <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[var(--cat-ux)]">
-                {loading ? "Syncing GitHub" : "Shipping"}
+              <span className="text-[11px] font-mono uppercase tracking-[0.4em] text-[var(--cat-ux)] opacity-80">
+                {loading ? "Syncing DNA" : "Engineering DNA"}
               </span>
             </div>
-            <h2 className="text-3xl font-light tracking-tight text-[var(--text)]">
-              Built and shipped consistently.
+            <h2 className="text-5xl font-light tracking-tight text-[var(--text)] sm:text-6xl md:text-7xl lg:text-8xl">
+              Shipped consistently.
             </h2>
-            <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-[var(--text-muted)]">
-              A simple signal that the work is real, maintained, and backed by
-              consistent execution.
-            </p>
           </div>
 
           <div className="flex items-center gap-3 text-[11px] font-mono text-[var(--text-muted)]">

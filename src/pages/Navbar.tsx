@@ -28,7 +28,7 @@ const ThemeGlyph = ({ theme }: { theme: "light" | "dark" }) => {
 }
 
 const utilityButtonClass =
-  "flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)]"
+  "flex h-10 w-10 items-center justify-center squircle-icon glass-regular-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)]"
 
 /**
  * Primary site navigation with theme controls, social links, and mobile sheet.
@@ -66,13 +66,10 @@ export function Navbar() {
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <div className="safe-top px-3 md:px-6 relative z-20">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 squircle-nav glass-ultra px-4 shadow-[0_16px_48px_rgba(0,0,0,0.08)] md:h-16 md:px-6">
-        <a href="#" className="min-w-0 text-[15px] font-semibold tracking-tight text-[var(--text)] md:text-base">
-          Alexander Dyrane
-          <span className="ml-1.5 hidden font-light text-[var(--text-muted)] 2xl:inline">
-            Product Engineer
-          </span>
+      <div className="safe-top px-4 md:px-8 relative z-20">
+        <div className="mx-auto flex h-14  items-center justify-between gap-3 squircle-nav glass-regular px-4 shadow-[0_16px_48px_rgba(0,0,0,0.08)] md:h-16 md:px-6">
+        <a href="#" className="min-w-0 text-[18px] font-medium tracking-tighter text-[var(--text)]">
+          Dyrane
         </a>
 
         <div className="hidden items-center gap-1 lg:flex">
@@ -120,7 +117,7 @@ export function Navbar() {
 
         <button
           onClick={() => setIsOpen((value) => !value)}
-          className="flex h-10 w-10 items-center justify-center squircle-icon glass-ultra-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)] lg:hidden"
+          className="flex h-10 w-10 items-center justify-center squircle-icon glass-regular-thin text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text)] lg:hidden"
           aria-expanded={isOpen}
           aria-controls="mobile-nav-sheet"
           aria-label={isOpen ? "Close menu" : "Open menu"}
