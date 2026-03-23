@@ -6,21 +6,27 @@ import {
 import type { Project } from "@/data/projects";
 import { projects } from "@/data/projects";
 import Footer from "@/pages/Footer";
-import { ShowcaseSection } from "@/components/ShowcaseSection";
 import { FloatingNav } from "@/components/FloatingNav";
 import {
   buildProofStrip,
 } from "@/content/homepage";
 import { ArrowUpRight } from "@/components/icons/lucide";
 import { HeroSerious } from "@/components/HeroSerious";
-import ServicesMarquee from "@/components/ServicesMarquee";
-import ProcessSteps from "@/components/ProcessSteps";
 
 const ProjectOverlay = lazy(() =>
   import("@/components/ProjectOverlay").then((m) => ({
     default: m.ProjectOverlay,
   }))
 );
+
+const ShowcaseSection = lazy(() =>
+  import("@/components/ShowcaseSection").then((m) => ({
+    default: m.ShowcaseSection,
+  }))
+);
+
+const ServicesMarquee = lazy(() => import("@/components/ServicesMarquee"));
+const ProcessSteps = lazy(() => import("@/components/ProcessSteps"));
 
 // Real data: summed from projects.ts
 const totalCommits = projects.reduce((sum, p) => sum + p.github_stats.commits, 0);
@@ -83,11 +89,17 @@ const Index = () => {
 
         {/* <ProjectGrid onProjectSelect={handleProjectSelect} /> */}
 
-        <ShowcaseSection onProjectSelect={handleProjectSelect} />
+        <Suspense fallback={<div className="h-[70vh] w-full" aria-hidden="true" />}>
+          <ShowcaseSection onProjectSelect={handleProjectSelect} />
+        </Suspense>
 
-        <ServicesMarquee />
+        <Suspense fallback={<div className="h-56 w-full" aria-hidden="true" />}>
+          <ServicesMarquee />
+        </Suspense>
         
-        <ProcessSteps />
+        <Suspense fallback={<div className="h-[160vh] w-full" aria-hidden="true" />}>
+          <ProcessSteps />
+        </Suspense>
 
         {/* ── MASSIVE FINAL CTA ────────────────── */}
         <section

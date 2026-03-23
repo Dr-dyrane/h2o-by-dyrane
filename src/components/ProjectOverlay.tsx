@@ -26,7 +26,7 @@ import {
     Loader2,
 } from "@/components/icons/lucide";
 import { useEffect, useState, type ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { cleanCopy, getFirstSentence } from "@/utils/content";
 
 /**
@@ -150,12 +150,29 @@ const MetricCard = ({
 );
 
 /**
+ * Compact scan-first metric card for technical proof.
+ */
+const SignalCard = ({
+    label,
+    value,
+}: {
+    label: string;
+    value: string;
+}) => (
+    <div className="squircle-chip surface-chip px-4 py-3">
+        <div className="text-[9px] font-mono uppercase tracking-[0.18em] text-[var(--text-ghost)]">{label}</div>
+        <div className="mt-1 text-base font-medium tracking-tight text-[var(--text)]">{value}</div>
+    </div>
+);
+
+/**
  * Full-screen project case-study overlay used on both desktop and mobile.
  */
 export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps) => {
     const [activeStep, setActiveStep] = useState(1);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const reduceMotion = useReducedMotion();
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -173,6 +190,23 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
             return () => { document.body.style.overflow = originalStyle; };
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                onClose();
+            }
+        };
+
+        window.addEventListener("keydown", handleEscape);
+        return () => {
+            window.removeEventListener("keydown", handleEscape);
+        };
+    }, [isOpen, onClose]);
 
     if (!project || !isOpen) return null;
 
@@ -200,6 +234,14 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
         { id: 2, label: "Solution" },
         { id: 3, label: "Proof" }
     ];
+    const motionTransition = reduceMotion ? { duration: 0 } : { duration: 0.3, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] };
+    const slideTransition = reduceMotion ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] };
+    const technicalSignals = [
+        { label: "Commits", value: formatCommitCountMetric(project.github_stats.commits) },
+        { label: "Languages", value: `${project.github_stats.languages.length}` },
+        { label: "Status", value: secondarySignal.value },
+        { label: "Focus", value: "UX + Systems" },
+    ] as const;
 
     const handleNext = () => { if (activeStep < 3) setActiveStep(p => p + 1); };
     const handlePrev = () => { if (activeStep > 1) setActiveStep(p => p - 1); };
@@ -207,7 +249,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
     // ─── MOBILE — Multiphasic Bottom Sheet ───────────────────────────────────
     if (isMobile) {
         return (
-            <div className="fixed inset-0 z-[60] flex items-end justify-center safe-x safe-bottom">
+            <div className="fixed inset-0 z-[60] flex items-end justify-center safe-x safe-bottom" role="dialog" aria-modal="true" aria-label={`${project.title} case study`}>
                 {/* Scrim — dark enough to signal modal depth in both modes */}
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -220,7 +262,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
-                    transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                    transition={reduceMotion ? { duration: 0 } : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                     className="relative flex w-full max-w-xl flex-col overflow-hidden squircle-panel glass-regular overscroll-contain"
                     style={{
                         borderBottomLeftRadius: 0,
@@ -232,7 +274,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                     {/* Drag handle */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 squircle-pill bg-[var(--text-ghost)]/30 z-50" />
 
-                    {/* Background accent orbs for depth -->`n                    <div className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-[var(--cat-ux-bg)] blur-[80px] opacity-20" />`n                    <div className="pointer-events-none absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-[var(--cat-ux-bg)] blur-[80px] opacity-15" />`n`n                    <!-- Sheet Header */}
+                    {/* Background accent orbs for depth */}
+                    <div className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-[var(--cat-ux-bg)] blur-[80px] opacity-20" />
+                    <div className="pointer-events-none absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-[var(--cat-ux-bg)] blur-[80px] opacity-15" />
+
+                    {/* Sheet Header */}
                     <div className="px-8 pt-10 pb-6 flex items-center justify-between">
                         <div>
                             <span className={`text-[11px] font-mono tracking-[0.4em] uppercase mb-1.5 block ${catText}`}>
@@ -259,7 +305,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 <motion.div
                                     key="m-step1"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-                                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                    transition={slideTransition}
                                     className="absolute inset-0 flex flex-col"
                                 >
                                     <div className="flex-1 relative bg-black overflow-hidden">
@@ -268,6 +314,8 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             className={`w-full h-full object-cover object-top transition-all duration-700 ${imageLoaded ? 'opacity-80' : 'opacity-0'}`}
                                             onLoad={() => setImageLoaded(true)}
                                             alt={project.title}
+                                            loading="lazy"
+                                            decoding="async"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
@@ -302,10 +350,15 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 <motion.div
                                     key="m-step2"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-                                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                    transition={slideTransition}
                                     className="absolute inset-0 overflow-y-auto px-5 py-2 pb-8"
                                 >
                                     <div className="space-y-6">
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {technicalSignals.map((signal) => (
+                                                <SignalCard key={signal.label} label={signal.label} value={signal.value} />
+                                            ))}
+                                        </div>
                                         <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{solutionSummary}</p>
                                         <div className="grid grid-cols-1 gap-3">
                                             <div className="p-5 squircle-nav glass-regular">
@@ -334,7 +387,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                         {decision.title}
                                                     </div>
                                                     <div className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
-                                                        {decision.detail}
+                                                        {getFirstSentence(decision.detail)}
                                                     </div>
                                                 </div>
                                             ))}
@@ -348,10 +401,15 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 <motion.div
                                     key="m-step3"
                                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-                                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                    transition={slideTransition}
                                     className="absolute inset-0 overflow-y-auto px-5 py-2 pb-8"
                                 >
                                     <div className="space-y-6">
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {technicalSignals.map((signal) => (
+                                                <SignalCard key={signal.label} label={signal.label} value={signal.value} />
+                                            ))}
+                                        </div>
                                         <div className="squircle p-7 glass-regular">
                                             <h4 className="text-[10px] font-mono uppercase tracking-widest mb-3 text-[var(--text-ghost)]">Proof summary</h4>
                                             <p className="text-[var(--text-muted)] text-xl font-light leading-relaxed">{proofSummary}</p>
@@ -370,7 +428,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                             <div className="space-y-3">
                                                 {caseStudy.proofPoints.map((point) => (
                                                     <p key={point} className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
-                                                        {point}
+                                                        {getFirstSentence(point)}
                                                     </p>
                                                 ))}
                                             </div>
@@ -445,7 +503,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
 
     // ─── DESKTOP — Full Panel ─────────────────────────────────────────────────
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={`${project.title} case study`}>
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"
@@ -541,7 +599,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -8 }}
-                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                transition={motionTransition}
                                 className="h-full flex flex-col"
                             >
                                 {/* Step 1 — Screenshot */}
@@ -556,6 +614,8 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 alt={project.title}
                                                 className={`w-full h-full object-cover object-top transition-all duration-700 ${imageLoaded ? 'opacity-90' : 'opacity-0'}`}
                                                 onLoad={() => setImageLoaded(true)}
+                                                loading="lazy"
+                                                decoding="async"
                                             />
                                             {!imageLoaded && (
                                                 <div className="absolute inset-0 flex items-center justify-center bg-[var(--surface-elevated)]/75">
@@ -600,6 +660,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                         <h3 className="text-4xl text-[var(--text)] font-light tracking-tight mb-8">Solution</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-center">
                                             <div className="space-y-5">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {technicalSignals.map((signal) => (
+                                                        <SignalCard key={signal.label} label={signal.label} value={signal.value} />
+                                                    ))}
+                                                </div>
                                                 <p className="text-[var(--text-muted)] text-base leading-relaxed font-light">{solutionSummary}</p>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="squircle-nav p-5 glass-regular">
@@ -659,6 +724,11 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                     <div className="max-w-2xl flex flex-col pt-4 pb-8">
                                         <h3 className="text-4xl text-[var(--text)] font-light tracking-tight mb-10">Proof</h3>
                                         <div className="space-y-4 mb-10">
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                                {technicalSignals.map((signal) => (
+                                                    <SignalCard key={signal.label} label={signal.label} value={signal.value} />
+                                                ))}
+                                            </div>
                                             <div className="squircle p-7 glass-regular">
                                                 <h4 className="text-[var(--text-ghost)] text-[10px] font-mono tracking-[0.2em] uppercase mb-4">Proof summary</h4>
                                                 <p className="text-[var(--text-muted)] text-2xl leading-snug font-light tracking-tight">{proofSummary}</p>
@@ -679,7 +749,7 @@ export const ProjectOverlay = ({ project, isOpen, onClose }: ProjectOverlayProps
                                                 <div className="space-y-3">
                                                     {caseStudy.proofPoints.map((point) => (
                                                         <p key={point} className="text-sm font-light leading-relaxed text-[var(--text-muted)]">
-                                                            {point}
+                                                            {getFirstSentence(point)}
                                                         </p>
                                                     ))}
                                                 </div>

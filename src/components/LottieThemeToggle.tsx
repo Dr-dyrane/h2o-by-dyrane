@@ -224,11 +224,15 @@ export const LottieThemeToggle = ({ theme, onToggle, isHovered, isActive }: Lott
   }
 
   return (
-    <div className="relative group perspective-1000">
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+      className="relative group border-0 bg-transparent p-0 perspective-1000"
+    >
       {/* Lottie Animation Container */}
       <div 
         className="relative w-14 h-14 cursor-pointer"
-        onClick={onToggle}
         onMouseEnter={() => lottieRef.current?.play()}
         onMouseLeave={() => lottieRef.current?.stop()}
       >
@@ -280,6 +284,6 @@ export const LottieThemeToggle = ({ theme, onToggle, isHovered, isActive }: Lott
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 };

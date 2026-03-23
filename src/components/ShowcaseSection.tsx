@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { projects, Project } from "@/data/projects";
 import { ShowcaseFeatures } from "@/components/ShowcaseFeatures";
 import { ArrowUpRight } from "@/components/icons/lucide";
@@ -13,13 +13,15 @@ const StaticSnapshot = ({
   mobile, 
   secondaryMobile,
   layout,
-  theme 
+  theme,
+  reduceMotion = false,
 }: { 
   desktop?: { light: string; dark: string };
   mobile: { light: string; dark: string };
   secondaryMobile?: { light: string; dark: string };
   layout?: "single" | "dual-mobile";
   theme: "light" | "dark";
+  reduceMotion?: boolean;
 }) => {
   const [isHydrated, setIsHydrated] = React.useState(false);
   const isDual = layout === "dual-mobile";
@@ -48,12 +50,14 @@ const StaticSnapshot = ({
     src, 
     alt, 
     theme: frameTheme,
-    tiltDirection = "left"
+    tiltDirection = "left",
+    reduceMotion = false,
   }: { 
     src?: string | null; 
     alt: string; 
     theme: "light" | "dark";
-    tiltDirection?: "left" | "right" 
+    tiltDirection?: "left" | "right";
+    reduceMotion?: boolean;
   }) => {
     const isDark = frameTheme === "dark";
     // Outer aluminum chassis
@@ -68,11 +72,11 @@ const StaticSnapshot = ({
       <div className="relative group/mac w-full mx-auto max-w-[900px]" style={{ perspective: "2500px" }}>
         <motion.div
           style={{ transformStyle: "preserve-3d" }}
-          initial={{ rotateX: 15, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.95, y: 20 }}
-          whileInView={{ rotateX: 15, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.95, y: 20 }}
+          initial={reduceMotion ? false : { rotateX: 15, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.95, y: 20 }}
+          whileInView={reduceMotion ? undefined : { rotateX: 15, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.95, y: 20 }}
           viewport={{ once: false, margin: "-10%" }}
-          whileHover={{ rotateX: 5, rotateY: restRotateY * 0.2, rotateZ: 0, scale: 1.02, y: 0 }}
-          transition={{ type: "spring", stiffness: 150, damping: 20, mass: 1.5 }}
+          whileHover={reduceMotion ? undefined : { rotateX: 5, rotateY: restRotateY * 0.2, rotateZ: 0, scale: 1.02, y: 0 }}
+          transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 150, damping: 20, mass: 1.5 }}
         >
           {/* Deep 3D Drop Shadow */}
           <div 
@@ -91,6 +95,8 @@ const StaticSnapshot = ({
                   alt={alt} 
                   className="block w-full h-full object-cover transition-transform duration-1000 group-hover/mac:scale-[1.02] mt-[1px]"
                   style={{ borderRadius: "2px" }}
+                  loading="lazy"
+                  decoding="async"
                   suppressHydrationWarning
                 />
               ) : (
@@ -128,13 +134,15 @@ const StaticSnapshot = ({
     alt, 
     theme: frameTheme, 
     className = "",
-    tiltDirection = "center"
+    tiltDirection = "center",
+    reduceMotion = false,
   }: { 
     src?: string | null; 
     alt: string; 
     theme: "light" | "dark"; 
     className?: string;
-    tiltDirection?: "left" | "right" | "center"
+    tiltDirection?: "left" | "right" | "center";
+    reduceMotion?: boolean;
   }) => {
     const isDark = frameTheme === "dark";
     const chassisBg = isDark ? "bg-[#e5e7eb]" : "bg-[#222222]";
@@ -150,11 +158,11 @@ const StaticSnapshot = ({
       <div className={`relative group/phone mx-auto w-full w-max-[300px] ${className}`} style={{ perspective: "2000px" }}>
         <motion.div
           style={{ transformStyle: "preserve-3d" }}
-          initial={{ rotateX: 10, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.9 }}
-          whileInView={{ rotateX: 10, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.9 }}
+          initial={reduceMotion ? false : { rotateX: 10, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.9 }}
+          whileInView={reduceMotion ? undefined : { rotateX: 10, rotateY: restRotateY, rotateZ: restRotateZ, scale: 0.9 }}
           viewport={{ once: false, margin: "-10%" }}
-          whileHover={{ rotateX: 0, rotateY: restRotateY * 0.3, rotateZ: 0, scale: 1.05, y: -20, z: 50 }}
-          transition={{ type: "spring", stiffness: 150, damping: 20, mass: 1 }}
+          whileHover={reduceMotion ? undefined : { rotateX: 0, rotateY: restRotateY * 0.3, rotateZ: 0, scale: 1.05, y: -20, z: 50 }}
+          transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 150, damping: 20, mass: 1 }}
         >
           {/* Deep 3D Drop Shadow */}
           <div 
@@ -177,6 +185,8 @@ const StaticSnapshot = ({
                   src={src} 
                   alt={alt} 
                   className="block w-full h-full object-cover transition-transform duration-1000 group-hover/phone:scale-[1.03]"
+                  loading="lazy"
+                  decoding="async"
                   suppressHydrationWarning
                 />
               ) : (
@@ -201,11 +211,11 @@ const StaticSnapshot = ({
       <div className="relative flex w-full justify-center md:gap-8 items-center h-[500px] md:h-[700px]">
         {/* Replace absolutely positioned 0-width collapse with robust flex layout */}
         <div className="w-[50%] md:w-[40%] max-w-[280px] z-10 translate-y-4 md:translate-y-12 translate-x-4 md:translate-x-0">
-          <IPhoneFrame src={mImg} alt="Primary mobile interface" theme={resolvedTheme} tiltDirection="left" />
+          <IPhoneFrame src={mImg} alt="Primary mobile interface" theme={resolvedTheme} tiltDirection="left" reduceMotion={reduceMotion} />
         </div>
         {secondaryMobile && (
           <div className="w-[50%] md:w-[40%] max-w-[280px] z-0 -translate-y-4 md:-translate-y-12 -translate-x-4 md:translate-x-0">
-            <IPhoneFrame src={sImg} alt="Secondary mobile interface" theme={resolvedTheme} tiltDirection="right" />
+            <IPhoneFrame src={sImg} alt="Secondary mobile interface" theme={resolvedTheme} tiltDirection="right" reduceMotion={reduceMotion} />
           </div>
         )}
       </div>
@@ -217,18 +227,18 @@ const StaticSnapshot = ({
       {/* Desktop (MacBook context) */}
       {dImg && (
         <div className="hidden md:block">
-          <MacBookFrame src={dImg} alt="Desktop dashboard" theme={resolvedTheme} tiltDirection="left" />
+          <MacBookFrame src={dImg} alt="Desktop dashboard" theme={resolvedTheme} tiltDirection="left" reduceMotion={reduceMotion} />
         </div>
       )}
       {!dImg && hasDesktop && (
         <div className="hidden md:block">
-          <MacBookFrame alt="Desktop dashboard" theme={resolvedTheme} tiltDirection="left" />
+          <MacBookFrame alt="Desktop dashboard" theme={resolvedTheme} tiltDirection="left" reduceMotion={reduceMotion} />
         </div>
       )}
       
       {/* Mobile (iPhone context) */}
       <div className={hasDesktop ? 'block md:hidden' : 'block'}>
-        <IPhoneFrame src={mImg} alt="Mobile interface" theme={resolvedTheme} tiltDirection="center" />
+        <IPhoneFrame src={mImg} alt="Mobile interface" theme={resolvedTheme} tiltDirection="center" reduceMotion={reduceMotion} />
       </div>
     </div>
   );
@@ -239,6 +249,7 @@ const StaticSnapshot = ({
  */
 export const ShowcaseSection: React.FC<{ onProjectSelect: (p: Project) => void }> = ({ onProjectSelect }) => {
   const { theme } = useTheme();
+  const prefersReducedMotion = useReducedMotion();
   
   // Flatten showcase items but keep reference to parent project title and category
   const featuredShowcase = projects
@@ -305,6 +316,7 @@ export const ShowcaseSection: React.FC<{ onProjectSelect: (p: Project) => void }
                     secondaryMobile={item.secondaryMobileImage}
                     layout={item.layout}
                     theme={theme}
+                    reduceMotion={Boolean(prefersReducedMotion)}
                  />
               </div>
 

@@ -60,6 +60,7 @@ export const HeroSerious = () => {
   const yParallax = useTransform(scrollY, [0, 600], [0, 250]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const [enableScene, setEnableScene] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -67,6 +68,7 @@ export const HeroSerious = () => {
     }
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setReduceMotion(prefersReducedMotion);
     const isSmallScreen = window.innerWidth < 1024;
 
     if (prefersReducedMotion || isSmallScreen) {
@@ -159,12 +161,16 @@ export const HeroSerious = () => {
         <div className="flex flex-col items-center gap-3">
           <motion.span
             className="font-mono text-[9px] uppercase tracking-[0.3em] text-[var(--text-ghost)]"
-            animate={{ opacity: [0.45, 0.85, 0.45] }}
-            transition={{
-              duration: 2.4,
-              ease: [0.4, 0, 0.6, 1],
-              repeat: Number.POSITIVE_INFINITY,
-            }}
+            animate={reduceMotion ? { opacity: 0.75 } : { opacity: [0.45, 0.85, 0.45] }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 2.4,
+                    ease: [0.4, 0, 0.6, 1],
+                    repeat: Number.POSITIVE_INFINITY,
+                  }
+            }
           >
             Scroll
           </motion.span>
