@@ -13,11 +13,14 @@ interface UITeardownProps {
   className?: string;
 }
 
+type IconComponent = React.ComponentType<{ size?: number }>;
+const iconMap = LucideIcons as unknown as Record<string, IconComponent>;
+
 export const UITeardown: React.FC<UITeardownProps> = ({ points, className = "" }) => {
   return (
     <div className={`grid gap-3 ${className}`}>
       {points.map((point, idx) => {
-        const Icon = (LucideIcons as any)[point.icon] || LucideIcons.Code;
+        const Icon = iconMap[point.icon] ?? LucideIcons.Code;
         return (
           <motion.div
             key={point.label}

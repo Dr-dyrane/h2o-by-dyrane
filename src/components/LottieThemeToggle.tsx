@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Lottie from 'lottie-react';
+import React, { useEffect, useRef, useState } from "react";
+import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 
 interface LottieThemeToggleProps {
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   onToggle: () => void;
   isHovered: boolean;
   isActive: boolean;
 }
 
 // Create animation data dynamically based on theme
-const createLampAnimation = (theme: 'light' | 'dark') => ({
+const createLampAnimation = (theme: "light" | "dark") => ({
   "v": "5.5.7",
   "fr": 60,
   "ip": 0,
@@ -161,7 +161,7 @@ const createLampAnimation = (theme: 'light' | 'dark') => ({
 });
 
 export const LottieThemeToggle = ({ theme, onToggle, isHovered, isActive }: LottieThemeToggleProps) => {
-  const lottieRef = useRef<any>(null);
+  const lottieRef = useRef<LottieRefCurrentProps | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const animationData = createLampAnimation(theme);
 
@@ -217,12 +217,13 @@ export const LottieThemeToggle = ({ theme, onToggle, isHovered, isActive }: Lott
           loop={false}
           autoplay={false}
           style={{
-            width: '100%',
-            height: '100%',
-            filter: theme === 'dark' 
-              ? 'drop-shadow(0 0 20px rgba(255,255,255,0.3))' 
-              : 'drop-shadow(0 0 10px rgba(0,0,0,0.2))'
-          } as any}
+            width: "100%",
+            height: "100%",
+            filter:
+              theme === "dark"
+                ? "drop-shadow(0 0 20px rgba(255,255,255,0.3))"
+                : "drop-shadow(0 0 10px rgba(0,0,0,0.2))",
+          }}
         />
       </div>
 

@@ -71,6 +71,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
  *
  * @returns Current theme state and toggle action.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTheme() {
     const context = useContext(ThemeContext);
     if (!context) throw new Error("useTheme must be used within a ThemeProvider");

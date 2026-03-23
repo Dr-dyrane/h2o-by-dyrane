@@ -98,7 +98,7 @@ export const FloatingNav = () => {
           exit={{ opacity: 0, y: -20 }}
           transition={entryTransition}
         >
-          <div className="flex items-center gap-2 rounded-full bg-[var(--surface-glass)] px-3 py-2 backdrop-blur-xl ring-1 ring-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.18)]">
+          <div className="flex items-center gap-2 rounded-full bg-[var(--surface-glass)] px-3 py-2 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.18)]">
             <a
               href="#hero"
               className="px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.35em] text-[var(--text)]/80 transition-colors duration-300 hover:text-[var(--text)]"
