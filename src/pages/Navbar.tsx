@@ -13,7 +13,7 @@ const navItems = [
 /**
  * Hydration-safe theme icon that avoids mismatches between server and client render.
  */
-const ThemeGlyph = ({ theme }: { theme: "light" | "dark" }) => {
+export const ThemeGlyph = ({ theme }: { theme: "light" | "dark" }) => {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {

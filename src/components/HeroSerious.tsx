@@ -155,15 +155,15 @@ export const HeroSerious = () => {
           </motion.h1>
 
           {/* Narrative (Rule 15: Respect Intelligence) */}
-          <motion.p 
+          {/* <motion.p 
             variants={itemVariants} 
             className="mb-14 max-w-xl text-[clamp(1.25rem,3vw,2.25rem)] font-light leading-tight text-[var(--text-muted)]"
           >
             Design for operations, internal tools, and high-stakes AI systems.
-          </motion.p>
+          </motion.p> */}
 
           {/* Core Action (Rule 4: One Screen, One Action) */}
-          <motion.div variants={itemVariants} className="flex flex-wrap gap-5">
+          {/* <motion.div variants={itemVariants} className="flex flex-wrap gap-5">
             <a
               href="#featured-work"
               className="group inline-flex items-center justify-center gap-3 px-10 py-5 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]"
@@ -180,12 +180,12 @@ export const HeroSerious = () => {
             >
               Start a Project
             </a>
-          </motion.div>
+          </motion.div> */}
         </motion.div>
       </motion.div>
 
       {/* ── Footer / Indicator ──────────────────────────────────────────────── */}
-      <motion.div 
+      {/* <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.8, duration: 1.2 }}
@@ -196,7 +196,7 @@ export const HeroSerious = () => {
            <div className="h-6 w-px bg-gradient-to-b from-[var(--text)] to-transparent" />
            <ChevronDown size={16} className="animate-bounce" />
         </div>
-      </motion.div>
+      </motion.div> */}
 
       {/* Edge vignette for depth */}
       <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.15))]" />

@@ -266,7 +266,7 @@ export const ShowcaseSection: React.FC<{ onProjectSelect: (p: Project) => void }
       <div className="mb-32 flex flex-col pt-12">
         <div className="relative w-full">
           <p className="mb-6 text-[11px] font-mono uppercase tracking-[0.4em] text-[var(--cat-ux)] opacity-80 pl-6 md:pl-12 lg:pl-24">
-            04 / Showcase
+            Showcase
           </p>
           
           <div className="flex w-full flex-col pl-6 md:pl-12 lg:pl-24 overflow-hidden">

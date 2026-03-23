@@ -65,9 +65,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--surface)] font-sans text-[var(--text)] selection:bg-[var(--cat-ux-bg)] selection:text-[var(--text)] transition-colors duration-300">
-      <Navbar />
+      {/* <Navbar /> */}
 
-      <main id="main-content" className="relative z-10 pt-[calc(4.75rem+env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pt-32 md:pb-20">
+      <main id="main-content" className="relative z-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-20">
         <HeroSerious />
         
         <section className="w-full border-y border-[var(--surface-stroke)] bg-[var(--surface-alt)]/30 py-12 md:py-20">
