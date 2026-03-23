@@ -1,19 +1,15 @@
 import {
   Suspense,
   lazy,
-  useEffect,
   useState,
 } from "react";
 import type { Project } from "@/data/projects";
 import { projects } from "@/data/projects";
-import { Navbar } from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
-import { ProjectGrid } from "@/components/ProjectGrid";
 import { ShowcaseSection } from "@/components/ShowcaseSection";
-import { ContributionGraph } from "@/components/ContributionGraph";
+import { FloatingNav } from "@/components/FloatingNav";
 import {
   buildProofStrip,
-  heroShowcase,
 } from "@/content/homepage";
 import { ArrowUpRight } from "@/components/icons/lucide";
 import { HeroSerious } from "@/components/HeroSerious";
@@ -28,7 +24,6 @@ const ProjectOverlay = lazy(() =>
 
 // Real data: summed from projects.ts
 const totalCommits = projects.reduce((sum, p) => sum + p.github_stats.commits, 0);
-const totalProjects = projects.length;
 
 /**
  * Homepage route composing the portfolio narrative, proof, and project exploration flows.
@@ -36,15 +31,6 @@ const totalProjects = projects.length;
 const Index = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  const [activeShowcase, setActiveShowcase] = useState(0);
-
-  // Kinetic hero panel: rotate every 4s
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveShowcase((prev) => (prev + 1) % heroShowcase.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
 
   /**
    * Opens the project overlay for the selected project card.
@@ -65,16 +51,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--surface)] font-sans text-[var(--text)] selection:bg-[var(--cat-ux-bg)] selection:text-[var(--text)] transition-colors duration-300">
-      {/* <Navbar /> */}
+      <FloatingNav />
 
       <main id="main-content" className="relative z-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-20">
         <HeroSerious />
         
         <section className="w-full border-y border-[var(--surface-stroke)] bg-[var(--surface-alt)]/30 py-12 md:py-20">
           <div className="flex flex-wrap items-center justify-around gap-12 px-6 md:px-12 lg:px-24">
-            {proofStrip.map((item, index) => {
-              const isLast = index === proofStrip.length - 1;
-
+            {proofStrip.map((item) => {
               return (
                 <div
                   key={item.value}
@@ -106,7 +90,10 @@ const Index = () => {
         <ProcessSteps />
 
         {/* ── MASSIVE FINAL CTA ────────────────── */}
-        <section className="relative w-full pb-32 pt-24 md:pb-48 md:pt-40 bg-[var(--surface)] flex flex-col items-center justify-center text-center overflow-hidden">
+        <section
+          id="contact"
+          className="relative w-full pb-32 pt-24 md:pb-48 md:pt-40 bg-[var(--surface)] flex flex-col items-center justify-center text-center overflow-hidden"
+        >
           {/* Subtle background glow pulsing behind the massive text */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full bg-[var(--cat-ux-bg)] opacity-30 blur-[120px] pointer-events-none mix-blend-screen" />
           
@@ -123,9 +110,13 @@ const Index = () => {
               <span>hello@dyrane.tech</span>
               <ArrowUpRight
                 strokeWidth={1.5}
-                className="w-10 h-10 md:w-16 md:h-16 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-3 group-hover:-translate-y-3 opacity-30 group-hover:opacity-100"
+                className="w-10 h-10 md:w-16 md:h-16 transition-transform duration-700 group-hover:translate-x-3 group-hover:-translate-y-3 opacity-30 group-hover:opacity-100"
+                style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
               />
-              <div className="absolute -bottom-4 md:-bottom-8 left-0 h-[2px] w-0 bg-[var(--text)] transition-all duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:w-full opacity-60" />
+              <div
+                className="absolute -bottom-4 md:-bottom-8 left-0 h-[2px] w-0 bg-[var(--text)] transition-all duration-700 group-hover:w-full opacity-60"
+                style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
+              />
             </a>
           </div>
         </section>

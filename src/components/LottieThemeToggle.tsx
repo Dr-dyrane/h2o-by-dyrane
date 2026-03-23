@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Lottie from 'lottie-react';
 
 interface LottieThemeToggleProps {
@@ -162,7 +162,12 @@ const createLampAnimation = (theme: 'light' | 'dark') => ({
 
 export const LottieThemeToggle = ({ theme, onToggle, isHovered, isActive }: LottieThemeToggleProps) => {
   const lottieRef = useRef<any>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const animationData = createLampAnimation(theme);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (lottieRef.current) {
@@ -183,6 +188,19 @@ export const LottieThemeToggle = ({ theme, onToggle, isHovered, isActive }: Lott
       }
     }
   }, [theme, isActive]);
+
+  if (!isMounted) {
+    return (
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label="Toggle theme"
+        className="relative group perspective-1000"
+      >
+        <span className="relative block h-14 w-14 rounded-2xl bg-[var(--surface-elevated)] ring-1 ring-[var(--surface-stroke)]" />
+      </button>
+    );
+  }
 
   return (
     <div className="relative group perspective-1000">
