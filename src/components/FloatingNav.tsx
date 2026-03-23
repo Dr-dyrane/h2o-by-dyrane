@@ -92,30 +92,30 @@ export const FloatingNav = () => {
       {isVisible ? (
         <motion.nav
           aria-label="Site navigation"
-          className="fixed left-1/2 top-6 z-50 w-fit -translate-x-1/2"
+          className="fixed left-1/2 top-[max(0.5rem,env(safe-area-inset-top))] z-50 w-fit max-w-[calc(100vw-1rem)] -translate-x-1/2 md:top-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={entryTransition}
         >
-          <div className="flex items-center gap-2 rounded-full bg-[var(--surface-glass)] px-3 py-2 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.18)]">
+          <div className="flex max-w-full items-center gap-1 rounded-full bg-[var(--surface-glass)] px-2 py-1.5 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.18)] md:gap-2 md:px-3 md:py-2">
             <a
               href="#hero"
-              className="px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.35em] text-[var(--text)]/80 transition-colors duration-300 hover:text-[var(--text)]"
+              className="px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--text)]/80 transition-colors duration-300 hover:text-[var(--text)] md:px-3 md:text-[11px] md:tracking-[0.35em]"
               aria-label="Back to top"
             >
-              Dyrane
+              <span className="hidden md:inline">Dyrane</span>
             </a>
 
-            <div className="h-4 w-px bg-white/15" />
+            <div className="hidden h-4 w-px bg-white/15 md:block" />
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5 md:gap-1">
               {navLinks.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
                   aria-current={activeSection === link.sectionId ? "page" : undefined}
-                  className={`group relative rounded-full px-3 py-1.5 text-[13px] font-light transition-colors duration-300 ${
+                  className={`group relative whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-light transition-colors duration-300 md:px-3 md:py-1.5 md:text-[13px] ${
                     activeSection === link.sectionId
                       ? "text-[var(--text)]"
                       : "text-[var(--text-muted)] hover:text-[var(--text)]"
@@ -123,7 +123,7 @@ export const FloatingNav = () => {
                 >
                   {link.label}
                   <span
-                    className={`absolute bottom-0.5 left-3 right-3 h-px origin-left bg-[var(--cat-ux)] transition-transform duration-300 ${
+                    className={`absolute bottom-0.5 left-2 right-2 h-px origin-left bg-[var(--cat-ux)] transition-transform duration-300 md:left-3 md:right-3 ${
                       activeSection === link.sectionId ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     }`}
                   />
@@ -136,7 +136,7 @@ export const FloatingNav = () => {
             <div
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              className="flex items-center"
+              className="flex origin-right items-center scale-90 md:scale-100"
             >
               <LottieThemeToggle
                 theme={theme}
