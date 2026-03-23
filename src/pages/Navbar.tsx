@@ -72,7 +72,7 @@ export function Navbar() {
           Dyrane
         </a>
 
-        <div className="hidden items-center gap-1 lg:flex">
+        {/* <div className="hidden items-center gap-1 lg:flex">
           {navItems.map((item) => (
             <a
               key={item.name}
@@ -82,7 +82,7 @@ export function Navbar() {
               {item.name}
             </a>
           ))}
-        </div>
+        </div> */}
 
         <div className="hidden items-center gap-2 lg:flex">
           <a

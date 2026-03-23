@@ -95,9 +95,9 @@ const Index = () => {
           </div>
         </section>
 
-        <div id="featured-work" className="scroll-mt-28 w-full"></div>
+        {/* <div id="featured-work" className="scroll-mt-28 w-full"></div> */}
 
-        <ProjectGrid onProjectSelect={handleProjectSelect} />
+        {/* <ProjectGrid onProjectSelect={handleProjectSelect} /> */}
 
         <ShowcaseSection onProjectSelect={handleProjectSelect} />
 
