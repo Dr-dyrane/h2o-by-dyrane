@@ -622,117 +622,162 @@ export const ProjectGrid = ({ onProjectSelect }: ProjectGridProps) => {
   const archiveProjects = categoryProjects.filter((p) => p.title !== featuredProject?.title);
 
   return (
-    <section>
-      {/* ── Massive Typographic Navigation (Category Hero) ── */}
-      <div className="flex min-h-[70vh] flex-col justify-center px-6 py-20 md:px-12 md:py-24 lg:px-24">
-        <div className="max-w-7xl">
-          {categoryOrder.map((category) => {
-            const catMeta = categoryMeta[category];
-            const isActive = activeCategory === category;
-            
-            return (
-              <motion.div
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className="group relative cursor-pointer select-none py-2"
-                style={{ perspective: "1500px" }}
-              >
-                {/* 3D Skewing Container */}
-                <motion.div
-                  className="inline-flex flex-col"
-                  initial={false}
-                  animate={{
-                    color: isActive ? "var(--text)" : "var(--text-ghost)",
-                  }}
-                  whileHover={{ 
-                    x: 20,
-                    color: isActive ? "var(--text)" : "var(--text-muted)",
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                >
-                  <div className="flex items-baseline gap-4 md:gap-8">
-                    {/* Small number/eyebrow */}
-                    <span 
-                      className="text-xs md:text-sm font-mono tracking-[0.2em] transition-opacity duration-300"
-                      style={{ 
-                        color: catMeta.accent,
-                        opacity: isActive ? 1 : 0, 
-                        transform: "translateZ(30px)" 
+    <section className="min-h-screen">
+      {/* ── Sticky Dual-Column Layout (Desktop) / Vertical Stack (Mobile) ── */}
+      <div className="flex flex-col lg:flex-row lg:min-h-screen">
+        
+        {/* ── Left Column: Sticky Category Navigation (Desktop Only) ── */}
+        <div className="lg:sticky lg:top-0 lg:h-screen lg:w-[45%] lg:overflow-y-auto lg:px-6 lg:py-20 xl:px-12 xl:py-24">
+          <div className="flex min-h-[70vh] flex-col justify-center lg:min-h-full">
+            <div className="max-w-3xl xl:max-w-4xl">
+              {categoryOrder.map((category) => {
+                const catMeta = categoryMeta[category];
+                const isActive = activeCategory === category;
+                
+                return (
+                  <motion.div
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    className="group relative cursor-pointer select-none py-2"
+                    style={{ perspective: "1500px" }}
+                  >
+                    {/* 3D Skewing Container */}
+                    <motion.div
+                      className="inline-flex flex-col"
+                      initial={false}
+                      animate={{
+                        color: isActive ? "var(--text)" : "var(--text-ghost)",
                       }}
+                      whileHover={{ 
+                        x: 20,
+                        color: isActive ? "var(--text)" : "var(--text-muted)",
+                      }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
-                      {catMeta.eyebrow}
-                    </span>
-                    
-                    {/* Massive Display Title */}
-                    <h2 
-                      className="text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] font-light tracking-[-0.04em] leading-[0.9]"
-                      style={{ transform: "translateZ(10px)" }}
-                    >
-                      {category.split(' ').map((word, i) => (
-                        <span key={i} className="block">{word}</span>
-                      ))}
-                    </h2>
-                  </div>
-                </motion.div>
-              </motion.div>
-            );
-          })}
+                      <div className="flex items-baseline gap-4 md:gap-8">
+                        {/* Small number/eyebrow */}
+                        <span 
+                          className="text-xs md:text-sm font-mono tracking-[0.2em] transition-opacity duration-300"
+                          style={{ 
+                            color: catMeta.accent,
+                            opacity: isActive ? 1 : 0, 
+                            transform: "translateZ(30px)" 
+                          }}
+                        >
+                          {catMeta.eyebrow}
+                        </span>
+                        
+                        {/* Massive Display Title */}
+                        <h2 
+                          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-[-0.04em] leading-[0.9]"
+                          style={{ transform: "translateZ(10px)" }}
+                        >
+                          {category.split(' ').map((word, i) => (
+                            <span key={i} className="block">{word}</span>
+                          ))}
+                        </h2>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* ── Active Category Content ── */}
-      <div className="w-full px-6 pb-16 md:px-6 md:pb-20">
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="space-y-16 md:space-y-20 pt-8"
-        >
-          {/* Active Category Header summary */}
-          <div className="max-w-3xl space-y-6 lg:px-18">
-            <h3 className="text-3xl font-light tracking-tight text-[var(--text)] sm:text-4xl">
-              {meta.title}
-            </h3>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {meta.signals.map((signal) => (
-                <span
-                  key={signal}
-                  className="squircle-chip surface-chip px-3 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-dim)]"
-                >
-                  {signal}
-                </span>
-              ))}
+        {/* ── Right Column: Scrolling Content ── */}
+        <div className="lg:w-[55%] lg:overflow-y-auto">
+          {/* Mobile Category Navigation (Hidden on Desktop) */}
+          <div className="lg:hidden px-6 py-12 md:px-12 md:py-16">
+            <div className="max-w-7xl">
+              {categoryOrder.map((category) => {
+                const catMeta = categoryMeta[category];
+                const isActive = activeCategory === category;
+                
+                return (
+                  <motion.div
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    className="group relative cursor-pointer select-none py-2"
+                    style={{ perspective: "1500px" }}
+                  >
+                    <motion.div
+                      className="inline-flex flex-col"
+                      initial={false}
+                      animate={{
+                        color: isActive ? "var(--text)" : "var(--text-ghost)",
+                      }}
+                      whileHover={{ 
+                        x: 20,
+                        color: isActive ? "var(--text)" : "var(--text-muted)",
+                      }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    >
+                      <div className="flex items-baseline gap-4 md:gap-8">
+                        <span 
+                          className="text-xs md:text-sm font-mono tracking-[0.2em] transition-opacity duration-300"
+                          style={{ 
+                            color: catMeta.accent,
+                            opacity: isActive ? 1 : 0, 
+                            transform: "translateZ(30px)" 
+                          }}
+                        >
+                          {catMeta.eyebrow}
+                        </span>
+                        
+                        <h2 
+                          className="text-6xl sm:text-7xl md:text-8xl font-light tracking-[-0.04em] leading-[0.9]"
+                          style={{ transform: "translateZ(10px)" }}
+                        >
+                          {category.split(' ').map((word, i) => (
+                            <span key={i} className="block">{word}</span>
+                          ))}
+                        </h2>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
 
-          {featuredProject && (
-            <ProjectSurface
-              project={featuredProject}
-              meta={meta}
-              onProjectSelect={onProjectSelect}
-            />
-          )}
+          {/* Active Category Content */}
+          <div className="w-full px-6 pb-16 md:px-6 md:pb-20 lg:px-12 xl:px-16">
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="space-y-16 md:space-y-20 pt-8 lg:pt-16"
+            >
+              {/* Active Category Header summary */}
+              <div className="max-w-3xl space-y-6">
+                <h3 className="text-3xl font-light tracking-tight text-[var(--text)] sm:text-4xl">
+                  {meta.title}
+                </h3>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {meta.signals.map((signal) => (
+                    <span
+                      key={signal}
+                      className="squircle-chip surface-chip px-3 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-dim)]"
+                    >
+                      {signal}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-          {archiveProjects.length > 0 && (
-            <div className="mt-6">
-               <div className="mb-6 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-                 <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--text-ghost)]">
-                   More from this focus
-                 </p>
-               </div>
-               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                 {archiveProjects.map((project) => (
-                   <ArchiveCard
-                     key={project.title}
-                     project={project}
-                     onProjectSelect={onProjectSelect}
-                   />
-                 ))}
-               </div>
-            </div>
-          )}
-        </motion.div>
+              {featuredProject && (
+                <ProjectSurface
+                  project={featuredProject}
+                  meta={meta}
+                  onProjectSelect={onProjectSelect}
+                />
+              )}
+
+                          </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );
