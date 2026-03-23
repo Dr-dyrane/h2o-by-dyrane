@@ -83,7 +83,7 @@ async function createServer() {
         render = (await import('./dist/server/entry-server.js')).render
       }
 
-      const { html: appHtml } = render(url)
+      const { html: appHtml } = await render(url)
 
       const html = template
         .replace(/<script id="vite-plugin-pwa:register-sw"[^>]*><\/script>/, '')

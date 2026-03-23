@@ -1,5 +1,11 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, {
+  Suspense,
+  lazy,
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from "react";
 import { ArrowUpRight } from "@/components/icons/lucide";
 
 const HeroThreeScene = lazy(() =>
@@ -19,29 +25,33 @@ const WordReveal = ({
   className,
   baseDelay = 0.3,
   stagger = 0.08,
+  reduceMotion,
 }: {
   words: HeadlineWord[];
   className?: string;
   baseDelay?: number;
   stagger?: number;
+  reduceMotion: boolean;
 }) => {
   return (
     <span className={className} aria-label={words.map((word) => word.text).join(" ")}>
       {words.map((word, i) => (
         <React.Fragment key={`${word.text}-${i}`}>
           <span className="word-clip mr-[0.22em] last:mr-0">
-            <motion.span
-              className={`inline-block ${word.className ?? ""}`}
-              initial={{ y: 80, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{
-                duration: 0.6,
-                delay: baseDelay + i * stagger,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+            <span
+              className={`inline-block will-gpu ${word.className ?? ""}`}
+              style={
+                reduceMotion
+                  ? undefined
+                  : ({
+                      animation:
+                        "heroWordReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both",
+                      animationDelay: `${baseDelay + i * stagger}s`,
+                    } as CSSProperties)
+              }
             >
               {word.text}
-            </motion.span>
+            </span>
           </span>
           {word.breakAfter ? <br /> : null}
         </React.Fragment>
@@ -56,9 +66,6 @@ const headlineWords: HeadlineWord[] = [
 ];
 
 export const HeroSerious = () => {
-  const { scrollY } = useScroll();
-  const yParallax = useTransform(scrollY, [0, 600], [0, 250]);
-  const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const [enableScene, setEnableScene] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -67,28 +74,63 @@ export const HeroSerious = () => {
       return;
     }
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setReduceMotion(prefersReducedMotion);
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const setMotionPreference = () => setReduceMotion(mediaQuery.matches);
+    setMotionPreference();
+    mediaQuery.addEventListener("change", setMotionPreference);
+
     const isSmallScreen = window.innerWidth < 1024;
 
-    if (prefersReducedMotion || isSmallScreen) {
-      return;
+    if (mediaQuery.matches || isSmallScreen) {
+      return () => {
+        mediaQuery.removeEventListener("change", setMotionPreference);
+      };
     }
 
-    const sceneTimerId = window.setTimeout(() => {
-      setEnableScene(true);
-    }, 650);
+    let idleCallbackId: number | null = null;
+    let sceneTimerId: number | null = null;
+
+    const scheduleSceneLoad = () => {
+      sceneTimerId = window.setTimeout(() => {
+        setEnableScene(true);
+      }, 650);
+    };
+
+    if ("requestIdleCallback" in window) {
+      idleCallbackId = window.requestIdleCallback(
+        () => {
+          scheduleSceneLoad();
+        },
+        { timeout: 2200 }
+      );
+    } else {
+      scheduleSceneLoad();
+    }
 
     return () => {
-      window.clearTimeout(sceneTimerId);
+      mediaQuery.removeEventListener("change", setMotionPreference);
+      if (idleCallbackId !== null && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleCallbackId);
+      }
+      if (sceneTimerId !== null) {
+        window.clearTimeout(sceneTimerId);
+      }
     };
   }, []);
 
-  const fadeUp = (delay: number) => ({
-    initial: { y: 24, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    transition: { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] },
-  });
+  const fadeUp = useMemo(
+    () => (delay: number): CSSProperties => {
+      if (reduceMotion) {
+        return {};
+      }
+
+      return {
+        animation: "heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both",
+        animationDelay: `${delay}s`,
+      };
+    },
+    [reduceMotion]
+  );
 
   return (
     <section
@@ -108,30 +150,32 @@ export const HeroSerious = () => {
         </div>
       </div>
 
-      <motion.div
-        style={{ y: yParallax, opacity: contentOpacity }}
-        className="relative z-10 flex h-full w-full flex-col justify-center px-6 md:px-12 lg:px-24"
-      >
+      <div className="relative z-10 flex h-full w-full flex-col justify-center px-6 md:px-12 lg:px-24">
         <div className="max-w-6xl">
-          <motion.div {...fadeUp(0.2)} className="mb-10 flex items-center gap-4">
+          <div style={fadeUp(0.2)} className="mb-10 flex items-center gap-4 will-gpu">
             <div className="h-2 w-2 rounded-full bg-[var(--cat-ux)] shadow-[0_0_12px_var(--cat-ux)]" />
             <span className="font-mono text-[11px] font-medium uppercase tracking-[0.4em] text-[var(--cat-ux)]">
               System Active // Portfolio 2026
             </span>
-          </motion.div>
+          </div>
 
           <h1 className="mb-8 text-[clamp(3.5rem,12vw,12rem)] font-light leading-[0.85] tracking-[-0.06em] text-[var(--text)]">
-            <WordReveal words={headlineWords} baseDelay={0.3} stagger={0.08} />
+            <WordReveal
+              words={headlineWords}
+              baseDelay={0.3}
+              stagger={0.08}
+              reduceMotion={reduceMotion}
+            />
           </h1>
 
-          <motion.p
-            {...fadeUp(0.4)}
+          <p
+            style={fadeUp(0.4)}
             className="mb-14 max-w-xl text-[clamp(1.1rem,2.5vw,1.75rem)] font-light leading-snug text-[var(--text-muted)]"
           >
             Design for operations, internal tools, and high-stakes AI systems.
-          </motion.p>
+          </p>
 
-          <motion.div {...fadeUp(0.8)} className="flex flex-wrap gap-5">
+          <div style={fadeUp(0.8)} className="flex flex-wrap gap-5 will-gpu">
             <a
               href="#showcase"
               className="group inline-flex items-center justify-center gap-3 px-10 py-5 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]"
@@ -148,35 +192,28 @@ export const HeroSerious = () => {
             >
               Start a Project
             </a>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9, duration: 0.9 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+      <div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 will-gpu"
+        style={fadeUp(0.9)}
       >
         <div className="flex flex-col items-center gap-3">
-          <motion.span
+          <span
             className="font-mono text-[9px] uppercase tracking-[0.3em] text-[var(--text-ghost)]"
-            animate={reduceMotion ? { opacity: 0.75 } : { opacity: [0.45, 0.85, 0.45] }}
-            transition={
+            style={
               reduceMotion
-                ? { duration: 0 }
-                : {
-                    duration: 2.4,
-                    ease: [0.4, 0, 0.6, 1],
-                    repeat: Number.POSITIVE_INFINITY,
-                  }
+                ? { opacity: 0.75 }
+                : ({ animation: "heroPulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite" } as CSSProperties)
             }
           >
             Scroll
-          </motion.span>
+          </span>
           <div className="breathe-line h-12 w-px bg-gradient-to-b from-[var(--text-ghost)] to-transparent" />
         </div>
-      </motion.div>
+      </div>
 
       <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.15))]" />
     </section>

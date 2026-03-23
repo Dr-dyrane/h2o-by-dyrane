@@ -6,7 +6,6 @@ import {
 import type { Project } from "@/data/projects";
 import { projects } from "@/data/projects";
 import Footer from "@/pages/Footer";
-import { FloatingNav } from "@/components/FloatingNav";
 import {
   buildProofStrip,
 } from "@/content/homepage";
@@ -27,6 +26,11 @@ const ShowcaseSection = lazy(() =>
 
 const ServicesMarquee = lazy(() => import("@/components/ServicesMarquee"));
 const ProcessSteps = lazy(() => import("@/components/ProcessSteps"));
+const FloatingNav = lazy(() =>
+  import("@/components/FloatingNav").then((m) => ({
+    default: m.FloatingNav,
+  }))
+);
 
 // Real data: summed from projects.ts
 const totalCommits = projects.reduce((sum, p) => sum + p.github_stats.commits, 0);
@@ -57,7 +61,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--surface)] font-sans text-[var(--text)] selection:bg-[var(--cat-ux-bg)] selection:text-[var(--text)] transition-colors duration-300">
-      <FloatingNav />
+      <Suspense fallback={null}>
+        <FloatingNav />
+      </Suspense>
 
       <main id="main-content" className="relative z-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-20">
         <HeroSerious />
