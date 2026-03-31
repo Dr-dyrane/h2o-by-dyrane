@@ -321,6 +321,86 @@ export const projects: Project[] = [
 		},
 	},
 	{
+		title: "Kradle",
+		description: "School report-card workspace for score entry, review, exports, and print-ready academic records.",
+		link: "kradle.dyrane.tech",
+		category: "Modernized UX",
+		challenge: "Schools often manage report cards in spreadsheets and WhatsApp images, which makes score entry, ranking, and final exports harder to trust.",
+		architecture: "Combines a teacher-owned workspace, structured report-entry sheets, scan-assisted intake, live ranking, and PDF/CSV/Excel exports in one calm system.",
+		proposal: "Best for school operations teams that need a clearer, more trustworthy way to enter scores, review reports, and generate polished report cards.",
+		github_stats: {
+			commits: 520,
+			languages: ["TypeScript", "Next.js", "Prisma", "PostgreSQL", "React PDF"],
+		},
+		caseStudy: {
+			role: "Product design, workflow architecture, and frontend implementation",
+			users: "Teachers and school administrators preparing, reviewing, and exporting report cards",
+			surfaces: "Desktop academic workspace, mobile utility flows, report entry sheet, and print/PDF export",
+			constraints: [
+				"Report workflows have to stay dense and accurate without feeling overwhelming.",
+				"Printed output must feel trustworthy because the export is part of the product, not an afterthought.",
+				"Teachers need spreadsheet-level speed without inheriting spreadsheet confusion."
+			],
+			decisions: [
+				{
+					title: "Student-sheet-first workflow",
+					detail: "The product is organized around entering and reviewing a student's report sheet directly, so teachers spend less time navigating admin chrome."
+				},
+				{
+					title: "Calm operational shell",
+					detail: "Mobile and desktop navigation separate primary tasks, account utilities, and quick actions so the product feels focused instead of dashboard-heavy."
+				},
+				{
+					title: "Export-native trust layer",
+					detail: "Preview, PDF, CSV, and Excel outputs are treated as first-class surfaces so rankings, totals, and report structure stay consistent across the workflow."
+				}
+			],
+			proofPoints: [
+				"Shipped with authenticated teacher workflows, CRUD for core school models, and a full report-entry surface.",
+				"Supports live ranking updates, archived report recovery, and dedicated PDF/Excel/CSV export flows.",
+				"Built as a high-fidelity academic operations product rather than a generic admin dashboard."
+			],
+			outcomes: [
+				{
+					label: "Status",
+					value: "Live",
+					detail: "Working product with authenticated entry, export, and review flows."
+				},
+				{
+					label: "Workflow",
+					value: "Teacher-owned",
+					detail: "The system keeps classes, students, reports, and exports scoped to one accountable workspace."
+				},
+				{
+					label: "Trust",
+					value: "Print-ready",
+					detail: "Exports are designed as polished report-card artifacts, not screenshots of the web app."
+				}
+			]
+		},
+		showcase: [
+			{
+				id: "kradle-reports",
+				title: "Academic Reporting Workspace",
+				description: "A report-card operations surface designed for score entry, ranking visibility, and clean export paths across desktop and mobile.",
+				desktopImage: {
+					light: "/showcase/kradle-desktop-light.png",
+					dark: "/showcase/kradle-desktop-dark.png"
+				},
+				mobileImage: {
+					light: "/showcase/kradle-mobile-light.png",
+					dark: "/showcase/kradle-mobile-dark.png"
+				},
+				layout: "single",
+				features: [
+					{ icon: "Layers", label: "Report workflow", detail: "Students, sheets, rankings, and exports stay connected in one calm academic workspace." },
+					{ icon: "Activity", label: "Teacher speed", detail: "The interface is built for fast score entry and review without spreadsheet clutter." },
+					{ icon: "Zap", label: "Export trust", detail: "PDF, CSV, and Excel outputs are part of the product flow instead of a bolt-on utility." }
+				]
+			}
+		],
+	},
+	{
 		title: "smartEdu",
 		description: "Learning platform for courses, discussion, and community participation.",
 		link: "smartedu-v1.vercel.app",
