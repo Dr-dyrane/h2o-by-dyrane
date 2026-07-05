@@ -14,8 +14,8 @@ export interface ProjectShowcase {
 	id: string;
 	title: string;
 	description: string;
-	desktopImage?: ThemeVariant; // 16:9 
-	mobileImage: ThemeVariant;  // 9:16
+	desktopImage?: ThemeVariant; // 16:9
+	mobileImage?: ThemeVariant;  // 9:16 (optional: desktop-only rows render in the laptop frame at all breakpoints)
 	secondaryMobileImage?: ThemeVariant; // For Aero dual layout
 	layout?: "single" | "dual-mobile";
 	features: {
@@ -635,6 +635,97 @@ export const projects: Project[] = [
 					{ icon: "Activity", label: "Merchandising flow", detail: "Key product information stays visible through the buying journey." },
 					{ icon: "Layers", label: "Product storytelling", detail: "The page explains why the product matters before it asks for the sale." },
 					{ icon: "Zap", label: "Responsive storefront", detail: "Performance and presentation stay intact across devices." }
+				]
+			}
+		],
+	},
+	{
+		title: "AU Mosaic",
+		description: "Digital storefront for a Lagos mosaic-tile and pool-materials business, built to turn online interest into real WhatsApp enquiries.",
+		link: "aumosaic.com",
+		category: "Modernized UX",
+		challenge: "The business sells by conversation, photos on WhatsApp, and a quote per job, but it had no digital storefront that matched how it actually closes sales.",
+		architecture: "A fast, static storefront where every product and price opens a prefilled WhatsApp chat, backed by a Phase 2 back office for stock, catalogue, and enquiries.",
+		proposal: "Best for local or physical businesses that sell through conversation and want a storefront that drives real enquiries instead of an unfamiliar checkout.",
+		github_stats: {
+			commits: 234,
+			languages: ["TypeScript", "Next.js", "React", "Tailwind CSS", "PostgreSQL"],
+		},
+		caseStudy: {
+			role: "Product strategy, storefront UX, and full-stack implementation",
+			users: "Walk-in and online customers pricing tiles and pool materials, plus the owner managing stock and quotes",
+			surfaces: "Static storefront, WhatsApp enquiry flow, and a Phase 2 back office",
+			constraints: [
+				"The business closes sales by chat and quote-per-job, so the site had to lead to a real conversation, not a cart.",
+				"Buyers judge tile and pool work by eye, so the imagery had to feel showroom-grade while staying fast.",
+				"The product was built from the owner's Business Discovery, so it had to match how the shop already works."
+			],
+			decisions: [
+				{
+					title: "WhatsApp as the checkout",
+					detail: "Every price and product routes into a prefilled WhatsApp chat, matching how the business already sells instead of forcing an unfamiliar cart."
+				},
+				{
+					title: "Showroom-grade, still fast",
+					detail: "Full-bleed imagery and a calm liquid-glass interface carry the product, while a fully static build keeps every route quick on mobile networks."
+				},
+				{
+					title: "A back office that fits the shop",
+					detail: "A Phase 2 admin layer adds stock, catalogue, and enquiry tracking so the owner runs the storefront without touching code."
+				}
+			],
+			proofPoints: [
+				"Live at aumosaic.com as the business's digital flagship.",
+				"234 commits across the storefront and the Phase 2 back office.",
+				"Built directly from the owner's Business Discovery so the product matches how the shop actually sells."
+			],
+			outcomes: [
+				{
+					label: "Status",
+					value: "Live",
+					detail: "Shipped as the working storefront for a real Lagos business."
+				},
+				{
+					label: "Conversion path",
+					value: "WhatsApp-native",
+					detail: "Every price leads to a prefilled chat, the way the shop already sells."
+				},
+				{
+					label: "Operations",
+					value: "Owner-run",
+					detail: "A Phase 2 back office lets the owner manage stock and enquiries without code."
+				}
+			]
+		},
+		showcase: [
+			{
+				id: "aumosaic-storefront",
+				title: "WhatsApp-Native Storefront",
+				description: "A showroom-grade storefront where every tile, pool kit, and price routes straight into a prefilled WhatsApp enquiry.",
+				desktopImage: {
+					light: "/showcase/aumosaic-hero-light.png",
+					dark: "/showcase/aumosaic-hero-dark.png"
+				},
+				layout: "single",
+				features: [
+					{ icon: "MessageCircle", label: "Enquiry-first", detail: "Every price opens a prefilled WhatsApp chat instead of a cart." },
+					{ icon: "Layers", label: "Showroom imagery", detail: "Full-bleed tile and pool visuals carry the product." },
+					{ icon: "Zap", label: "Static and fast", detail: "An SSG build keeps every route quick on mobile networks." }
+				]
+			},
+			{
+				id: "aumosaic-back-office",
+				title: "Phase 2 Back Office",
+				description: "An owner-run admin layer for stock, catalogue, and enquiries, so the storefront stays current without touching code.",
+				desktopImage: {
+					light: "/showcase/aumosaic-backroom-light.png",
+					dark: "/showcase/aumosaic-backroom-dark.png"
+				},
+				layout: "single",
+				features: [
+					{ icon: "Activity", label: "Live stock", detail: "Stock and catalogue stay current from one place." },
+					{ icon: "Layers", label: "Catalogue control", detail: "Ranges and products are managed without code." },
+					{ icon: "Shield", label: "Owner-run", detail: "The shop runs its own storefront day to day." }
 				]
 			}
 		],

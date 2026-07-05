@@ -8,7 +8,8 @@ import { ArrowUpRight } from "@/components/icons/lucide";
 export const PatternGallery: React.FC = () => {
   const featuredShowcase = projects
     .filter((p) => p.showcase && p.showcase.length > 0)
-    .flatMap((p) => p.showcase || []);
+    .flatMap((p) => p.showcase || [])
+    .filter((item) => Boolean(item.mobileImage));
 
   if (featuredShowcase.length === 0) return null;
 
@@ -34,7 +35,7 @@ export const PatternGallery: React.FC = () => {
             {/* Visual Viewport */}
             <div className="relative order-2 lg:order-1">
                <AutoScrollRender 
-                image={item.mobileImage.light} 
+                image={item.mobileImage?.light ?? ""}
                 height="min(600px, 60vh)" 
                 className="shadow-2xl ring-1 ring-white/10"
               />

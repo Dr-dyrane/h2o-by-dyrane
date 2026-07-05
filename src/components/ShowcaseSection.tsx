@@ -17,7 +17,7 @@ const StaticSnapshot = ({
   reduceMotion = false,
 }: { 
   desktop?: { light: string; dark: string };
-  mobile: { light: string; dark: string };
+  mobile?: { light: string; dark: string };
   secondaryMobile?: { light: string; dark: string };
   layout?: "single" | "dual-mobile";
   theme: "light" | "dark";
@@ -26,6 +26,7 @@ const StaticSnapshot = ({
   const [isHydrated, setIsHydrated] = React.useState(false);
   const isDual = layout === "dual-mobile";
   const hasDesktop = Boolean(desktop);
+  const hasMobile = Boolean(mobile);
 
   React.useEffect(() => {
     setIsHydrated(true);
@@ -33,7 +34,7 @@ const StaticSnapshot = ({
 
   const resolvedTheme = isHydrated ? theme : "dark";
   const dImg = isHydrated && desktop ? (resolvedTheme === "dark" ? desktop.dark : desktop.light) : null;
-  const mImg = isHydrated ? (resolvedTheme === "dark" ? mobile.dark : mobile.light) : null;
+  const mImg = isHydrated && mobile ? (resolvedTheme === "dark" ? mobile.dark : mobile.light) : null;
   const sImg = isHydrated && secondaryMobile ? (resolvedTheme === "dark" ? secondaryMobile.dark : secondaryMobile.light) : null;
 
   /**
@@ -224,22 +225,19 @@ const StaticSnapshot = ({
 
   return (
     <div className="relative w-full py-12 md:py-20">
-      {/* Desktop (MacBook context) */}
-      {dImg && (
-        <div className="hidden md:block">
+      {/* Desktop (MacBook context) — shown at every breakpoint when there is no mobile asset */}
+      {hasDesktop && (
+        <div className={hasMobile ? "hidden md:block" : "block"}>
           <MacBookFrame src={dImg} alt="Desktop dashboard" theme={resolvedTheme} tiltDirection="left" reduceMotion={reduceMotion} />
         </div>
       )}
-      {!dImg && hasDesktop && (
-        <div className="hidden md:block">
-          <MacBookFrame alt="Desktop dashboard" theme={resolvedTheme} tiltDirection="left" reduceMotion={reduceMotion} />
+
+      {/* Mobile (iPhone context) */}
+      {hasMobile && (
+        <div className={hasDesktop ? 'block md:hidden' : 'block'}>
+          <IPhoneFrame src={mImg} alt="Mobile interface" theme={resolvedTheme} tiltDirection="center" reduceMotion={reduceMotion} />
         </div>
       )}
-      
-      {/* Mobile (iPhone context) */}
-      <div className={hasDesktop ? 'block md:hidden' : 'block'}>
-        <IPhoneFrame src={mImg} alt="Mobile interface" theme={resolvedTheme} tiltDirection="center" reduceMotion={reduceMotion} />
-      </div>
     </div>
   );
 };
@@ -251,14 +249,17 @@ export const ShowcaseSection: React.FC<{ onProjectSelect: (p: Project) => void }
   const { theme } = useTheme();
   const prefersReducedMotion = useReducedMotion();
   
-  // Flatten showcase items but keep reference to parent project title and category
+  // Flatten every showcase item (a project may contribute more than one row) but keep
+  // a reference to the parent project title and category for accents and overlay routing.
   const featuredShowcase = projects
     .filter((p) => p.showcase && p.showcase.length > 0)
-    .map(p => ({
-        ...p.showcase![0],
+    .flatMap((p) =>
+      p.showcase!.map((item) => ({
+        ...item,
         parentProjectTitle: p.title,
-        category: p.category
-    }));
+        category: p.category,
+      }))
+    );
 
   /**
    * Maps showcase categories to the correct semantic accent token.
