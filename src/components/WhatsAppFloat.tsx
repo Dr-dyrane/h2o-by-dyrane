@@ -8,8 +8,8 @@ import { useState } from "react";
  * (digits only, no "+" or spaces) — e.g. "2348012345678". The button stays
  * hidden until a number is set, so it never renders a broken link.
  */
-// Country code assumed +234 (Nigeria) from context; change if you're elsewhere.
-const WHATSAPP_NUMBER = "2349517284218";
+// +1 (USA), Hemet CA. wa.me needs the full international number, digits only.
+const WHATSAPP_NUMBER = "19517284218";
 const PREFILL = "Hi Dyrane, I have a project I'd like to talk through.";
 
 export const WhatsAppFloat = () => {
