@@ -6,23 +6,23 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 const processSteps = [
   {
     step: "01",
-    title: "Discovery & Blueprint",
+    title: "Find where trust or clarity breaks.",
     description:
-      "Deep dive into your business logic. We define the exact problem, the ideal state, and the fastest path between them.",
+      "Start with the business goal, what users are unsure about, and what needs to become obvious within the first few seconds.",
     accent: "var(--cat-logistics)",
   },
   {
     step: "02",
-    title: "Design & Prototype",
+    title: "Reshape the workflow and message around that moment.",
     description:
-      "Visual direction and interactive prototypes. Liquid glass aesthetics and cinematic pacing applied to your core workflows.",
+      "Adjust hierarchy, interaction, and copy so the product becomes easier to scan, easier to use, and easier to believe.",
     accent: "var(--cat-intelligence)",
   },
   {
     step: "03",
-    title: "Development & Handoff",
+    title: "Build the final version and sharpen the proof.",
     description:
-      "Production-ready engineering using React, Tailwind, and Framer Motion. Built to scale, designed to impress.",
+      "The same pass that shapes the structure also ships the product, tightens performance, and strengthens the signals people use to decide.",
     accent: "var(--cat-ux)",
   },
 ];
@@ -82,7 +82,7 @@ const StepPanel = ({
   return (
     <div
       ref={ref}
-      className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden border-t border-white/5"
+      className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden"
       style={{
         zIndex: index + 10,
         backgroundColor: "var(--surface-alt)",
@@ -112,9 +112,9 @@ const StepPanel = ({
             }
             className="text-[12rem] font-light leading-none tracking-tighter mix-blend-plus-lighter md:text-[20rem] lg:text-[28rem]"
             style={{
-              color: "transparent",
-              WebkitTextStroke: `2px ${step.accent}`,
-              textShadow: `0 0 80px ${step.accent}22`,
+              color: `color-mix(in srgb, ${step.accent} 14%, transparent)`,
+              WebkitTextStroke: `3px ${step.accent}`,
+              textShadow: `0 0 80px color-mix(in srgb, ${step.accent} 22%, transparent)`,
             }}
           >
             {step.step}

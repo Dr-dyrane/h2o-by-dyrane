@@ -56,15 +56,15 @@ export const heroShowcase: HeroShowcaseItem[] = [
 ];
 
 /**
- * Builds the compact proof strip shown beneath the hero using the latest commit total.
+ * Builds the compact proof strip shown beneath the hero.
  *
- * @param totalCommits Aggregate commit count across the portfolio dataset.
+ * @param projectCount Number of shipped products in the portfolio dataset.
  * @returns Display-ready proof cards for the homepage.
  */
-export const buildProofStrip = (totalCommits: number) => [
+export const buildProofStrip = (projectCount: number) => [
   {
-    value: `${(totalCommits / 1000).toFixed(1).replace(".0", "")}k+`,
-    label: "commits across shipped portfolio work",
+    value: `${Math.floor(projectCount / 5) * 5}+`,
+    label: "products shipped, live in production",
   },
   {
     value: "3 lanes",

@@ -170,9 +170,10 @@ export const HeroSerious = () => {
 
           <p
             style={fadeUp(0.4)}
-            className="mb-14 max-w-xl text-[clamp(1.1rem,2.5vw,1.75rem)] font-light leading-snug text-[var(--text-muted)]"
+            className="mb-14 max-w-2xl text-[clamp(1.1rem,2.5vw,1.75rem)] font-light leading-snug text-[var(--text-muted)]"
           >
-            Design for operations, internal tools, and high-stakes AI systems.
+            I design and build websites, internal tools, and AI products for teams
+            that need complex things to feel simple and to sell.
           </p>
 
           <div style={fadeUp(0.8)} className="flex flex-wrap gap-5 will-gpu">
@@ -180,7 +181,7 @@ export const HeroSerious = () => {
               href="#showcase"
               className="group inline-flex items-center justify-center gap-3 px-10 py-5 squircle-pill bg-[var(--cta-bg)] text-[var(--cta-text)] font-medium transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Explore Evidence
+              See the work
               <ArrowUpRight
                 size={20}
                 className="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1"

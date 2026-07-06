@@ -171,7 +171,7 @@ export const FloatingNav = () => {
           : "transition-all duration-300 ease-out"
       } ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-5 opacity-0 pointer-events-none"}`}
     >
-      <div className="flex max-w-full items-center gap-1 rounded-full bg-[var(--surface-glass)] px-2 py-1.5 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.18)] md:gap-2 md:px-3 md:py-2">
+      <div className="flex max-w-full items-center gap-1 rounded-full bg-[var(--nav-surface)] px-2 py-1.5 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.28)] md:gap-2 md:px-3 md:py-2">
         <a
           href="#hero"
           className="px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--text)]/80 md:px-3 md:text-[11px] md:tracking-[0.35em]"

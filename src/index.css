@@ -130,6 +130,8 @@
 		/* Apple's signature light grey — not pure white */
 		--surface-alt: #f1e6d8;
 		--surface-glass: rgba(251, 245, 238, 0.82);
+		/* Floating chrome: near-opaque so page content passes cleanly under it (F1) */
+		--nav-surface: rgba(251, 245, 238, 0.94);
 		--surface-card: rgba(255, 251, 247, 0.88);
 		/* White card lifts off grey surface */
 		--surface-card-hover: rgba(255, 252, 249, 0.96);
@@ -241,6 +243,8 @@
 		--surface: #000000;
 		--surface-alt: #121110;
 		--surface-glass: rgba(28, 25, 23, 0.72);
+		/* Floating chrome: near-opaque so page content passes cleanly under it (F1) */
+		--nav-surface: rgba(10, 9, 8, 0.92);
 		--surface-card: rgba(255, 248, 243, 0.03);
 		--surface-card-hover: rgba(255, 248, 243, 0.05);
 		--surface-elevated: rgba(255, 248, 243, 0.05);
@@ -639,4 +643,23 @@ background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.3
 .breathe-line {
   animation: breathe 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   transform-origin: top center;
+}
+
+/* ── Floating chrome offset + reduced-transparency solidify ──
+   Borrowed from AU Mosaic's liquid-glass law: content flows under the
+   chrome, in-page jumps clear it, and glass solidifies when the OS asks
+   for reduced transparency so text always holds over the worst backdrop. */
+html {
+  scroll-padding-top: 5.5rem;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  nav[aria-label="Site navigation"] > div,
+  .glass-ultra, .glass-ultra-thin, .glass-thin, .glass-regular, .glass-thick {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  nav[aria-label="Site navigation"] > div {
+    background: var(--surface-alt) !important;
+  }
 }

@@ -89,7 +89,7 @@ const StaticSnapshot = ({
           <div className={`relative p-[3px] md:p-2 overflow-hidden rounded-t-[1.4rem] ${chassisBg} ring-1 ${chassisRing} shadow-2xl`} style={{ transform: "translateZ(0px)" }}>
             
             {/* Inner Black Bezel */}
-            <div className="relative aspect-[16/10] overflow-hidden rounded-t-xl bg-black ring-1 ring-white/10 shadow-inner">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-t-xl bg-[radial-gradient(circle_at_30%_20%,_rgba(255,255,255,0.08),_transparent_45%),linear-gradient(160deg,#262421,#080808)] ring-1 ring-white/10 shadow-inner">
               {src ? (
                 <img 
                   src={src} 
@@ -180,7 +180,7 @@ const StaticSnapshot = ({
           <div className={`relative p-[4px] overflow-hidden rounded-[2.8rem] md:rounded-[3rem] ${chassisBg} shadow-2xl ring-[2px] ${chassisRing} ring-inset`} style={{ transform: "translateZ(0px)" }}>
             
             {/* Inner Black Bezel */}
-            <div className={`relative aspect-[9/19.5] overflow-hidden rounded-[2.6rem] md:rounded-[2.8rem] bg-black ring-4 ring-black shadow-inner`}>
+            <div className={`relative aspect-[9/19.5] overflow-hidden rounded-[2.6rem] md:rounded-[2.8rem] bg-[radial-gradient(circle_at_30%_15%,_rgba(255,255,255,0.08),_transparent_45%),linear-gradient(160deg,#262421,#080808)] ring-4 ring-black shadow-inner`}>
               {src ? (
                 <img 
                   src={src} 
@@ -290,8 +290,8 @@ export const ShowcaseSection: React.FC<{ onProjectSelect: (p: Project) => void }
                 Shipped
               </span>
               <span 
-                className="text-transparent ml-[8vw] md:ml-[12vw] mix-blend-plus-lighter"
-                style={{ WebkitTextStroke: "1px var(--text-dim)" }}
+                className="ml-[8vw] md:ml-[12vw] mix-blend-plus-lighter"
+                style={{ color: "rgba(248, 243, 239, 0.16)", WebkitTextStroke: "1.5px var(--text-muted)" }}
               >
                 Interfaces
               </span>

@@ -11,6 +11,7 @@ import {
 } from "@/content/homepage";
 import { ArrowUpRight } from "@/components/icons/lucide";
 import { HeroSerious } from "@/components/HeroSerious";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 
 const ProjectOverlay = lazy(() =>
   import("@/components/ProjectOverlay").then((m) => ({
@@ -32,8 +33,8 @@ const FloatingNav = lazy(() =>
   }))
 );
 
-// Real data: summed from projects.ts
-const totalCommits = projects.reduce((sum, p) => sum + p.github_stats.commits, 0);
+// Real data: derived from projects.ts
+const totalProjects = projects.length;
 
 /**
  * Homepage route composing the portfolio narrative, proof, and project exploration flows.
@@ -57,7 +58,7 @@ const Index = () => {
     setIsOverlayOpen(false);
     window.setTimeout(() => setSelectedProject(null), 500);
   };
-  const proofStrip = buildProofStrip(totalCommits);
+  const proofStrip = buildProofStrip(totalProjects);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--surface)] font-sans text-[var(--text)] selection:bg-[var(--cat-ux-bg)] selection:text-[var(--text)] transition-colors duration-300">
@@ -117,7 +118,7 @@ const Index = () => {
           
           <div className="relative z-10 flex flex-col items-center px-6">
             <h2 className="text-[14vw] sm:text-[12vw] md:text-[10vw] font-light leading-[0.85] tracking-tighter select-none mb-16">
-              <span className="block text-[var(--text-ghost)] mix-blend-plus-lighter" style={{ WebkitTextStroke: "1px var(--text-dim)", color: "transparent" }}>Tell me what</span>
+              <span className="block mix-blend-plus-lighter" style={{ WebkitTextStroke: "1.5px var(--text-muted)", color: "rgba(248, 243, 239, 0.14)" }}>Tell me what</span>
               <span className="block text-[var(--text)]" style={{ textShadow: "0 0 60px rgba(255,255,255,0.1)" }}>needs to ship.</span>
             </h2>
             
@@ -141,6 +142,8 @@ const Index = () => {
       </main>
 
       <Footer />
+
+      <WhatsAppFloat />
 
       {selectedProject ? (
         <Suspense fallback={null}>
