@@ -1,0 +1,65 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
+const root = process.cwd()
+const read = (file) => fs.readFileSync(path.join(root, file), 'utf8')
+const fail = (message) => {
+  console.error(`Awwwards finish verification failed: ${message}`)
+  process.exitCode = 1
+}
+
+const entry = read('src/styles/immersive.css')
+const finish = read('src/styles/immersive/award-finish.css')
+const portfolio = read('src/components/immersive/ImmersivePortfolio.tsx')
+const projects = read('src/data/immersiveProjects.ts')
+
+const imports = entry
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean)
+
+if (imports.at(-1) !== "@import './immersive/award-finish.css';") {
+  fail('award-finish.css must remain the last immersive stylesheet import')
+}
+
+for (const id of ['ivisit', 'weddings', 'jelocare', 'wetindey', 'aumosaic', 'justurbanwears']) {
+  if (!finish.includes(`#${id}`)) fail(`missing authored ${id} treatment`)
+}
+
+const requiredContracts = [
+  '.h2o-project-proof',
+  '.h2o-project-media-link > span',
+  '.h2o-hero__sticky',
+  '#justurbanwears .h2o-project-media-link > span',
+]
+
+for (const contract of requiredContracts) {
+  if (!finish.includes(contract)) fail(`missing ${contract} contract`)
+}
+
+if (!portfolio.includes('className="h2o-project-media-link"')) {
+  fail('project media must remain a semantic full-surface link')
+}
+
+const proofCount = (projects.match(/\bproof:\s*['"]/g) ?? []).length
+if (proofCount < 6) fail(`expected six project proof statements, found ${proofCount}`)
+
+if (/\bbox-shadow\s*:\s*[^;]*\binset\b/i.test(finish)) {
+  fail('inset rings are forbidden in the award finish')
+}
+
+if (/\bborder(?:-(?:top|right|bottom|left))?\s*:/i.test(finish)) {
+  fail('structural borders are forbidden in the award finish')
+}
+
+let depth = 0
+for (const character of finish) {
+  if (character === '{') depth += 1
+  if (character === '}') depth -= 1
+  if (depth < 0) break
+}
+if (depth !== 0) fail('stylesheet braces are unbalanced')
+
+if (!process.exitCode) {
+  console.log('Awwwards finish contract passed.')
+}

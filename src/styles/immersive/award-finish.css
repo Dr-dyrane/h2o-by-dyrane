@@ -1,0 +1,332 @@
+/* Awwwards candidate finish
+   One project, one idea, one proof, one unmistakable exit.
+   This layer is intentionally last: it resolves the award-facing composition
+   without weakening the semantic or reduced-motion versions underneath. */
+
+.h2o-project-proof {
+  display: flex;
+  max-width: 31rem;
+  align-items: flex-start;
+  gap: 0.66rem;
+  margin-top: clamp(1rem, 1.8vh, 1.4rem);
+}
+
+.h2o-project-proof > span {
+  width: 0.42rem;
+  height: 0.42rem;
+  flex: 0 0 auto;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--project-accent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--project-accent) 68%, transparent);
+  color: transparent;
+  font-size: 0;
+}
+
+.h2o-project-proof > p {
+  margin: 0;
+  color: rgba(244, 246, 244, 0.62);
+  font-size: 0.67rem;
+  font-weight: 500;
+  letter-spacing: 0.075em;
+  line-height: 1.42;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.h2o-project-chapter[data-direction='reverse'] .h2o-project-proof {
+  flex-direction: row-reverse;
+  margin-left: auto;
+  text-align: right;
+}
+
+.h2o-project-description,
+.h2o-project-modes {
+  display: none;
+}
+
+/* The image is the primary exit. Keep only a real secondary destination below copy. */
+.h2o-project-actions > a:first-child {
+  display: none;
+}
+
+.h2o-project-actions:not(:has(.h2o-project-actions__secondary)) {
+  display: none;
+}
+
+.h2o-project-actions:has(.h2o-project-actions__secondary) {
+  margin-top: 1.05rem;
+}
+
+.h2o-project-actions > .h2o-project-actions__secondary {
+  display: inline-flex;
+  min-height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: rgba(244, 246, 244, 0.68);
+  font-size: 0.64rem;
+  letter-spacing: 0.095em;
+  text-transform: uppercase;
+}
+
+/* Full-surface link, visibly discoverable without introducing a button or card. */
+.h2o-project-media-link > span {
+  position: absolute;
+  right: clamp(1rem, 2.2vw, 2rem);
+  bottom: clamp(1rem, 2.2vw, 2rem);
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0;
+  font-weight: 600;
+  letter-spacing: 0.105em;
+  line-height: 1;
+  text-shadow: 0 7px 24px rgba(0, 0, 0, 0.88);
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.8;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity var(--h2o-motion-fast) var(--h2o-ease-fluid),
+    transform var(--h2o-motion-fast) var(--h2o-ease-fluid);
+}
+
+.h2o-project-media-link > span::before {
+  content: 'View project';
+  font-size: 0.64rem;
+}
+
+.h2o-project-media-link > span::after {
+  color: var(--project-accent);
+  content: '↗';
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--project-accent) 74%, transparent);
+}
+
+.h2o-project-media-link:hover > span,
+.h2o-project-media-link:focus-visible > span {
+  opacity: 1;
+  transform: translate3d(0.28rem, -0.2rem, 0);
+}
+
+.h2o-project-media-link:focus-visible::after {
+  display: none;
+}
+
+/* Every source image receives an authored crop rather than one generic screenshot rule. */
+#ivisit .h2o-project-media__desktop {
+  object-position: 98% 50%;
+  transform: scale(1.15);
+}
+
+#ivisit:hover .h2o-project-media__desktop {
+  transform: scale(1.165);
+}
+
+#ivisit .h2o-project-media__wash {
+  background:
+    linear-gradient(106deg, rgba(3, 5, 6, 0.99) 0%, rgba(3, 5, 6, 0.97) 38%, rgba(3, 5, 6, 0.74) 50%, transparent 68%, transparent 91%, rgba(3, 5, 6, 0.38)),
+    linear-gradient(to bottom, rgba(3, 5, 6, 0.12), transparent 68%, rgba(3, 5, 6, 0.35)),
+    radial-gradient(circle at 78% 22%, var(--project-accent-soft), transparent 32%);
+}
+
+#weddings .h2o-project-media__desktop {
+  object-position: 53% 50%;
+  transform: scale(1.025);
+}
+
+#weddings:hover .h2o-project-media__desktop {
+  transform: scale(1.04);
+}
+
+#jelocare .h2o-project-media__desktop {
+  object-position: 72% 34%;
+  transform: scale(1.16);
+}
+
+#jelocare:hover .h2o-project-media__desktop {
+  transform: scale(1.175);
+}
+
+#jelocare .h2o-project-media__wash {
+  background:
+    linear-gradient(108deg, rgba(3, 5, 6, 0.98) 0%, rgba(3, 5, 6, 0.9) 38%, rgba(3, 5, 6, 0.56) 50%, transparent 66%, transparent 92%, rgba(3, 5, 6, 0.28)),
+    linear-gradient(to bottom, rgba(3, 5, 6, 0.08), transparent 70%, rgba(3, 5, 6, 0.36)),
+    linear-gradient(to top, rgba(3, 5, 6, 0.88), transparent 46%),
+    radial-gradient(circle at 76% 16%, var(--project-accent-soft), transparent 34%);
+}
+
+#wetindey .h2o-project-media__desktop {
+  object-position: 47% 50%;
+  transform: scale(1.035);
+}
+
+#wetindey:hover .h2o-project-media__desktop {
+  transform: scale(1.05);
+}
+
+#aumosaic .h2o-project-media__desktop {
+  object-position: 100% 30%;
+  transform: scale(1.34);
+}
+
+#aumosaic:hover .h2o-project-media__desktop {
+  transform: scale(1.355);
+}
+
+#aumosaic .h2o-project-media__wash {
+  background:
+    linear-gradient(112deg, rgba(3, 5, 6, 0.99) 0%, rgba(3, 5, 6, 0.96) 42%, rgba(3, 5, 6, 0.66) 54%, transparent 72%, transparent 94%, rgba(3, 5, 6, 0.3)),
+    linear-gradient(to bottom, rgba(3, 5, 6, 0.08), transparent 76%, rgba(3, 5, 6, 0.3)),
+    linear-gradient(to top, rgba(3, 5, 6, 0.92), rgba(3, 5, 6, 0.58) 30%, transparent 58%),
+    radial-gradient(circle at 76% 18%, var(--project-accent-soft), transparent 34%);
+}
+
+#justurbanwears .h2o-project-media__desktop {
+  object-position: 66% 42%;
+  transform: scale(1.075);
+}
+
+#justurbanwears:hover .h2o-project-media__desktop {
+  transform: scale(1.09);
+}
+
+/* The mobile opening states the proposition in the first view, not after a long abstract prelude. */
+@media (max-width: 560px) {
+  .h2o-hero {
+    height: 142svh;
+  }
+
+  .h2o-hero__sticky {
+    align-items: flex-start;
+    padding-top: max(27svh, 12.5rem);
+    padding-bottom: 3rem;
+  }
+
+  .h2o-hero__copy {
+    width: 100%;
+    transform-origin: left center;
+  }
+
+  .h2o-eyebrow {
+    max-width: 21rem;
+    font-size: 0.62rem;
+    line-height: 1.55;
+  }
+
+  .h2o-hero h1 {
+    margin-top: 1.15rem;
+    font-size: clamp(3.6rem, 18.4vw, 5.45rem);
+    line-height: 0.79;
+  }
+
+  .h2o-hero__footer {
+    gap: 1.15rem;
+    margin-top: 1.65rem;
+  }
+
+  .h2o-hero__footer p {
+    max-width: 19rem;
+    line-height: 1.38;
+  }
+
+  .h2o-project-proof {
+    max-width: 21rem;
+    gap: 0.52rem;
+    margin-top: 0.86rem;
+  }
+
+  .h2o-project-proof > span {
+    width: 0.36rem;
+    height: 0.36rem;
+    margin-top: 0.2rem;
+  }
+
+  .h2o-project-proof > p {
+    font-size: 0.56rem;
+    letter-spacing: 0.07em;
+    line-height: 1.4;
+  }
+
+  .h2o-project-chapter[data-direction='reverse'] .h2o-project-proof {
+    flex-direction: row;
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .h2o-project-media-link > span {
+    right: calc(10vw + 1rem);
+    bottom: 1.15rem;
+    gap: 0.4rem;
+    opacity: 0.9;
+  }
+
+  .h2o-project-media-link > span::before {
+    font-size: 0.57rem;
+  }
+
+  .h2o-project-media-link > span::after {
+    font-size: 0.84rem;
+  }
+
+  .h2o-project-actions:has(.h2o-project-actions__secondary),
+  .h2o-project-chapter[data-direction='reverse'] .h2o-project-actions:has(.h2o-project-actions__secondary) {
+    margin-top: 0.82rem;
+    margin-left: 0;
+  }
+
+  .h2o-project-actions > .h2o-project-actions__secondary {
+    font-size: 0.57rem;
+  }
+
+  #aumosaic .h2o-project-media__mobile {
+    object-position: 90% 34%;
+    transform: scale(1.2);
+  }
+
+  #aumosaic .h2o-project-media__wash {
+    background:
+      linear-gradient(90deg, rgba(3, 5, 6, 0.56), transparent 48%),
+      linear-gradient(to bottom, rgba(3, 5, 6, 0.08), transparent 68%, rgba(3, 5, 6, 0.36));
+  }
+
+  #jelocare .h2o-project-media__mobile {
+    object-position: 72% 36%;
+    transform: scale(1.12);
+  }
+
+  /* The captured JUW campaign already contains its own title, copy and action. */
+  #justurbanwears .h2o-project-media-link > span,
+  #justurbanwears .h2o-project-proof {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h2o-project-media-link > span {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  #ivisit .h2o-project-media__desktop,
+  #weddings .h2o-project-media__desktop,
+  #jelocare .h2o-project-media__desktop,
+  #wetindey .h2o-project-media__desktop,
+  #aumosaic .h2o-project-media__desktop,
+  #justurbanwears .h2o-project-media__desktop {
+    transform: none;
+  }
+}
