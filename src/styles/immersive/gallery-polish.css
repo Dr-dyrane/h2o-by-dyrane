@@ -1,0 +1,32 @@
+/* Final gallery tuning: the image occupies the field rather than beginning as a slab. */
+
+@media (min-width: 901px) {
+  .h2o-project-media,
+  .h2o-project-chapter:nth-of-type(2n) .h2o-project-media {
+    top: 8svh;
+    height: min(84svh, 60rem);
+  }
+
+  .h2o-project-chapter:nth-of-type(2n) .h2o-project-media {
+    top: 6svh;
+    height: min(88svh, 62rem);
+  }
+
+  .h2o-project-media::before {
+    height: 16%;
+    background: linear-gradient(to bottom, rgba(3, 5, 6, 0.46), transparent);
+  }
+
+  .h2o-project-media::after {
+    height: 22%;
+    background: linear-gradient(to top, rgba(3, 5, 6, 0.56), transparent);
+  }
+
+  .h2o-project-copy {
+    top: 47%;
+  }
+
+  .h2o-project-chapter[data-direction='reverse'] .h2o-project-copy {
+    top: 51%;
+  }
+}
