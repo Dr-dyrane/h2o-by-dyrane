@@ -57,8 +57,22 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         navigateFallback: null,
-        globPatterns: ["**/*.{js,css,ico,jpg,png,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,ico,svg,woff2,webmanifest}"],
         runtimeCaching: [
+          {
+            urlPattern: /\/showcase\/.*\.(?:jpg|jpeg|png|webp)$/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "h2o-project-captures-v1",
+              expiration: {
+                maxEntries: 48,
+                maxAgeSeconds: 60 * 60 * 24 * 7,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
