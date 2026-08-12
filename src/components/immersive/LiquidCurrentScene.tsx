@@ -8,6 +8,7 @@ interface LiquidCurrentSceneProps {
   activeIndexRef: MutableRefObject<number>
   activityRef: MutableRefObject<number>
   palette: string[]
+  compact: boolean
 }
 
 const vertexShader = /* glsl */ `
@@ -65,7 +66,7 @@ function createLiquidMaterial(color: THREE.Color) {
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
-    side: THREE.DoubleSide,
+    side: THREE.FrontSide,
   })
 }
 
@@ -93,13 +94,7 @@ function ActivityDriver({ activityRef }: { activityRef: MutableRefObject<number>
       }
     }
 
-    const events: Array<keyof WindowEventMap> = [
-      'scroll',
-      'pointerdown',
-      'touchmove',
-      'keydown',
-      'resize',
-    ]
+    const events: Array<keyof WindowEventMap> = ['scroll', 'resize']
     events.forEach((event) => window.addEventListener(event, wake, { passive: true }))
     wake()
 
@@ -117,6 +112,7 @@ function CurrentScene({
   activeIndexRef,
   activityRef,
   palette,
+  compact,
 }: LiquidCurrentSceneProps) {
   const groupRef = useRef<THREE.Group>(null)
   const primaryRef = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>>(null)
@@ -131,8 +127,10 @@ function CurrentScene({
   const cameraTarget = useMemo(() => new THREE.Vector3(), [])
   const cameraPosition = useMemo(() => new THREE.Vector3(), [])
 
+  const quality = compact ? webglMotionBudget.compact : webglMotionBudget.full
+
   const particles = useMemo(() => {
-    const count = webglMotionBudget.particleCount
+    const count = quality.particleCount
     const positions = new Float32Array(count * 3)
 
     for (let index = 0; index < count; index += 1) {
@@ -145,11 +143,11 @@ function CurrentScene({
     }
 
     return positions
-  }, [])
+  }, [quality.particleCount])
 
   const filamentGeometries = useMemo(
     () =>
-      Array.from({ length: webglMotionBudget.filamentCount }, (_, filamentIndex) => {
+      Array.from({ length: quality.filamentCount }, (_, filamentIndex) => {
         const points = Array.from({ length: 9 }, (_, pointIndex) => {
           const progress = pointIndex / 8
           const angle = progress * Math.PI * 3.4 + filamentIndex * 0.72
@@ -163,13 +161,13 @@ function CurrentScene({
         const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.42)
         return new THREE.TubeGeometry(
           curve,
-          webglMotionBudget.filamentSegments,
+          quality.filamentSegments,
           0.008 + filamentIndex * 0.0015,
-          webglMotionBudget.filamentRadialSegments,
+          quality.filamentRadialSegments,
           false,
         )
       }),
-    [],
+    [quality.filamentCount, quality.filamentRadialSegments, quality.filamentSegments],
   )
 
   const nodePositions = useMemo(
@@ -201,38 +199,38 @@ function CurrentScene({
     const activeIndex = Math.max(0, Math.min(palette.length - 1, activeIndexRef.current))
     const phase = progress * Math.PI * 3.6
     targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
-    accent.lerp(targetAccent, frameBlend(6.2, delta))
+    accent.lerp(targetAccent, frameBlend(10, delta))
 
     if (groupRef.current) {
       const activeDirection = activeIndex % 2 === 0 ? 1 : -1
       groupRef.current.rotation.y = THREE.MathUtils.damp(
         groupRef.current.rotation.y,
         progress * Math.PI * 2.15 + Math.sin(phase) * 0.22,
-        5.4,
+        9.5,
         delta,
       )
       groupRef.current.rotation.x = THREE.MathUtils.damp(
         groupRef.current.rotation.x,
         -0.13 + Math.cos(phase * 0.72) * 0.12,
-        5,
+        9,
         delta,
       )
       groupRef.current.position.x = THREE.MathUtils.damp(
         groupRef.current.position.x,
         1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16,
-        4.8,
+        8.8,
         delta,
       )
       groupRef.current.position.y = THREE.MathUtils.damp(
         groupRef.current.position.y,
         0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46,
-        4.4,
+        8.2,
         delta,
       )
       groupRef.current.position.z = THREE.MathUtils.damp(
         groupRef.current.position.z,
         -0.18 + Math.sin(phase * 0.48) * 0.72,
-        4.5,
+        8.4,
         delta,
       )
     }
@@ -242,7 +240,7 @@ function CurrentScene({
       Math.cos(phase * 0.35) * 0.26,
       6.1 + Math.sin(phase * 0.26) * 0.38,
     )
-    state.camera.position.lerp(cameraPosition, frameBlend(3.8, delta))
+    state.camera.position.lerp(cameraPosition, frameBlend(9.2, delta))
     cameraTarget.set(Math.sin(phase * 0.5) * 0.22, -progress * 0.38, -0.35)
     state.camera.lookAt(cameraTarget)
 
@@ -271,7 +269,7 @@ function CurrentScene({
       pointsRef.current.rotation.z = -0.65 + Math.sin(phase * 0.35) * 0.16
       pointsRef.current.position.y = -progress * 1.05
       const pointsMaterial = pointsRef.current.material as THREE.PointsMaterial
-      pointsMaterial.color.lerp(accent, frameBlend(5.2, delta))
+      pointsMaterial.color.lerp(accent, frameBlend(8.5, delta))
     }
 
     if (filamentsRef.current) {
@@ -279,7 +277,7 @@ function CurrentScene({
       filamentsRef.current.rotation.z = 0.5 + Math.sin(phase * 0.32) * 0.22
       filamentsRef.current.children.forEach((child, index) => {
         const mesh = child as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>
-        mesh.material.color.lerp(accent, frameBlend(3.5 + index * 0.22, delta))
+        mesh.material.color.lerp(accent, frameBlend(7 + index * 0.24, delta))
         mesh.material.opacity = 0.035 + index * 0.009 + Math.sin(elapsed * 0.3 + index) * 0.008
       })
     }
@@ -289,12 +287,12 @@ function CurrentScene({
         const mesh = node as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>
         const selected = index === activeIndex
         const targetScale = selected ? 1.9 : 0.7
-        const nextScale = THREE.MathUtils.damp(mesh.scale.x, targetScale, 8, delta)
+        const nextScale = THREE.MathUtils.damp(mesh.scale.x, targetScale, 12, delta)
         mesh.scale.setScalar(nextScale)
         mesh.material.opacity = THREE.MathUtils.damp(
           mesh.material.opacity,
           selected ? 0.94 : 0.24,
-          7,
+          11,
           delta,
         )
       })
@@ -320,17 +318,19 @@ function CurrentScene({
           ))}
         </group>
         <mesh ref={primaryRef} material={primaryMaterial} rotation={[0.2, -0.4, 0.18]}>
-          <icosahedronGeometry args={[1.58, webglMotionBudget.primaryDetail]} />
+          <icosahedronGeometry args={[1.58, quality.primaryDetail]} />
         </mesh>
-        <mesh
-          ref={secondaryRef}
-          material={secondaryMaterial}
-          position={[-1.65, -1.05, -0.72]}
-          scale={0.5}
-          rotation={[-0.4, 0.55, 0.3]}
-        >
-          <icosahedronGeometry args={[1.2, webglMotionBudget.secondaryDetail]} />
-        </mesh>
+        {compact ? null : (
+          <mesh
+            ref={secondaryRef}
+            material={secondaryMaterial}
+            position={[-1.65, -1.05, -0.72]}
+            scale={0.5}
+            rotation={[-0.4, 0.55, 0.3]}
+          >
+            <icosahedronGeometry args={[1.2, quality.secondaryDetail]} />
+          </mesh>
+        )}
         <points ref={pointsRef} rotation={[0.35, 0.15, -0.65]}>
           <bufferGeometry>
             <bufferAttribute attach="attributes-position" args={[particles, 3]} />
@@ -351,8 +351,8 @@ function CurrentScene({
               <sphereGeometry
                 args={[
                   0.055,
-                  webglMotionBudget.nodeSegments,
-                  webglMotionBudget.nodeSegments,
+                  quality.nodeSegments,
+                  quality.nodeSegments,
                 ]}
               />
               <meshBasicMaterial
@@ -376,9 +376,17 @@ export default function LiquidCurrentScene(props: LiquidCurrentSceneProps) {
     <div className="h2o-current-canvas" aria-hidden="true">
       <Canvas
         frameloop="demand"
-        dpr={[1, webglMotionBudget.maxDpr]}
+        dpr={compact ? webglMotionBudget.compact.dpr : webglMotionBudget.full.dpr}
         camera={{ position: [0, 0, 6.1], fov: 42, near: 0.1, far: 30 }}
-        gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+        flat
+        gl={{
+          alpha: true,
+          antialias: false,
+          depth: false,
+          stencil: false,
+          precision: 'mediump',
+          powerPreference: 'high-performance',
+        }}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       >
         <CurrentScene {...props} />

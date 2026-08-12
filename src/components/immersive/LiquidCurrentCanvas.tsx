@@ -18,18 +18,27 @@ const LazyLiquidCurrentScene = lazy(() => import('./LiquidCurrentScene'))
 export function LiquidCurrentCanvas(props: LiquidCurrentCanvasProps) {
   const [enabled, setEnabled] = useState(false)
   const [ready, setReady] = useState(false)
+  const [compact, setCompact] = useState(false)
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const coarsePointer = window.matchMedia('(pointer: coarse)')
     const update = () => {
       const constrainedDevice =
         typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 2
+      setCompact(coarsePointer.matches || window.innerWidth < 900)
       setEnabled(!media.matches && !constrainedDevice)
     }
 
     update()
     media.addEventListener?.('change', update)
-    return () => media.removeEventListener?.('change', update)
+    coarsePointer.addEventListener?.('change', update)
+    window.addEventListener('resize', update, { passive: true })
+    return () => {
+      media.removeEventListener?.('change', update)
+      coarsePointer.removeEventListener?.('change', update)
+      window.removeEventListener('resize', update)
+    }
   }, [])
 
   useEffect(() => {
@@ -63,7 +72,7 @@ export function LiquidCurrentCanvas(props: LiquidCurrentCanvasProps) {
 
   return (
     <Suspense fallback={<div className="h2o-current-fallback" aria-hidden="true" />}>
-      <LazyLiquidCurrentScene {...props} />
+      <LazyLiquidCurrentScene {...props} compact={compact} />
     </Suspense>
   )
 }

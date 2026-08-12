@@ -1,0 +1,49 @@
+name: Materialize optimized H2O motion
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .staging/optimized-motion/**
+      - .github/workflows/materialize-optimized-motion.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-materialize-optimized-motion
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Reconstruct and validate portfolio motion source
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat .staging/optimized-motion/portfolio/chunk.* | tr -d '\n\r ' | base64 --decode > src/components/immersive/ImmersivePortfolio.tsx
+
+          echo 'd08130f40dea651a4efac89127baf87f7ebfc454297a8bc0f2762074d766ed3f  src/components/immersive/ImmersivePortfolio.tsx' | sha256sum -c -
+          echo '035de5f30fe321f627b1160ac619d137c14200d4c8da7ec48f823fe46699d348  src/components/immersive/LiquidCurrentScene.tsx' | sha256sum -c -
+          echo 'e6cbe87901e9e83251ebe24511d824558b4ddf15f925da10eebe9e3a44179eaf  src/components/immersive/LiquidCurrentCanvas.tsx' | sha256sum -c -
+          echo '9ea91c7e1e1b082bca7b523f09232b53f6a9d17986327f200ca22c9bf603c0ab  src/motion/tokens.ts' | sha256sum -c -
+          echo 'c3b16e590914832e31bbad4a126afc36f46ed61adb29e43581d5ea9c6ce2dab5  src/styles/immersive/motion.css' | sha256sum -c -
+
+          node scripts/verify-motion-contract.mjs
+          npm ci
+          npm run lint
+          npm run build
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/immersive/ImmersivePortfolio.tsx
+          git commit -m "perf: remove H2O fill-rate bottlenecks"
+          git push
