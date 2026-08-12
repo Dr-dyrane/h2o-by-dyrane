@@ -376,7 +376,7 @@ export default function LiquidCurrentScene(props: LiquidCurrentSceneProps) {
     <div className="h2o-current-canvas" aria-hidden="true">
       <Canvas
         frameloop="demand"
-        dpr={compact ? webglMotionBudget.compact.dpr : webglMotionBudget.full.dpr}
+        dpr={props.compact ? webglMotionBudget.compact.dpr : webglMotionBudget.full.dpr}
         camera={{ position: [0, 0, 6.1], fov: 42, near: 0.1, far: 30 }}
         flat
         gl={{
