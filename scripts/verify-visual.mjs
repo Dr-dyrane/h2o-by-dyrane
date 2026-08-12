@@ -80,6 +80,7 @@ async function captureProfile(name, profile) {
   const consoleErrors = []
   const pageErrors = []
   const failedRequests = []
+  const frameTargetFailures = []
 
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text())
@@ -192,18 +193,48 @@ async function captureProfile(name, profile) {
 
     const captures = []
     for (const section of profile.sections) {
-      await page.evaluate(({ id, progress }) => {
+      const target = await page.evaluate(({ id, progress }) => {
         if (!id) {
           window.scrollTo(0, 0)
-          return
+          return { id: null, missing: false }
         }
 
         const element = document.getElementById(id)
-        if (!element) return
-        const maximumTravel = Math.max(0, element.offsetHeight - window.innerHeight)
-        window.scrollTo(0, element.offsetTop + maximumTravel * progress)
+        if (!element) return { id, missing: true }
+
+        const rect = element.getBoundingClientRect()
+        const documentTop = rect.top + window.scrollY
+        const maximumTravel = Math.max(0, rect.height - window.innerHeight)
+        window.scrollTo(0, documentTop + maximumTravel * progress)
+        return { id, missing: false }
       }, section)
+
+      if (target.missing) {
+        frameTargetFailures.push(`${section.name}: missing #${section.id}`)
+      }
+
       await sleep(section.name === 'top' ? 800 : 1150)
+
+      if (section.id) {
+        const settledTarget = await page.evaluate((id) => {
+          const element = document.getElementById(id)
+          if (!element) return { missing: true, intersects: false, top: null, bottom: null }
+          const rect = element.getBoundingClientRect()
+          return {
+            missing: false,
+            intersects: rect.bottom > 0 && rect.top < window.innerHeight,
+            top: Math.round(rect.top),
+            bottom: Math.round(rect.bottom),
+          }
+        }, section.id)
+
+        if (settledTarget.missing || !settledTarget.intersects) {
+          frameTargetFailures.push(
+            `${section.name}: #${section.id} outside viewport (top=${settledTarget.top}, bottom=${settledTarget.bottom})`,
+          )
+        }
+      }
+
       const fileName = `${name}-${section.name}.png`
       await page.screenshot({
         path: resolve(outputDirectory, fileName),
@@ -219,6 +250,7 @@ async function captureProfile(name, profile) {
       consoleErrors,
       pageErrors,
       failedRequests,
+      frameTargetFailures,
     }
   } finally {
     await page.close()
@@ -252,6 +284,7 @@ for (const [name, result] of Object.entries(report.profiles)) {
   if (denseDescriptions.length > 0) {
     failures.push(`${name}: project copy exceeds 24 words: ${denseDescriptions.map(({ project, words }) => `${project}=${words}`).join(', ')}`)
   }
+  if (result.frameTargetFailures.length > 0) failures.push(`${name}: incorrect proof targets: ${result.frameTargetFailures.join(' | ')}`)
   if (result.pageErrors.length > 0) failures.push(`${name}: page errors: ${result.pageErrors.join(' | ')}`)
   if (result.failedRequests.length > 0) failures.push(`${name}: failed same-origin requests: ${result.failedRequests.join(' | ')}`)
 }
