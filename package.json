@@ -8,6 +8,7 @@
     "dev:vite": "vite",
     "generate:og": "node scripts/generate-og-image.mjs",
     "capture:showcase": "node scripts/capture-showcase.mjs",
+    "verify:visual": "node scripts/verify-visual.mjs",
     "build": "rimraf dist && npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
