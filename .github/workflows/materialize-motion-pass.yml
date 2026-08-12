@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p src/components/immersive src/motion src/styles/immersive scripts .github/workflows
+          mkdir -p src/components/immersive src/motion src/styles/immersive scripts
 
           cat .staging/motion-pass/chunks/ImmersivePortfolio.* | tr -d '\n\r ' | base64 --decode > src/components/immersive/ImmersivePortfolio.tsx
           cat .staging/motion-pass/chunks/LiquidCurrentScene.* | tr -d '\n\r ' | base64 --decode > src/components/immersive/LiquidCurrentScene.tsx
@@ -39,9 +39,6 @@ jobs:
           cp .staging/motion-pass/files/src/styles/immersive/motion.css src/styles/immersive/motion.css
           cp .staging/motion-pass/files/src/styles/immersive.css src/styles/immersive.css
           cp .staging/motion-pass/files/scripts/verify-motion-contract.mjs scripts/verify-motion-contract.mjs
-          cp .staging/motion-pass/files/.github/workflows/quality.yml .github/workflows/quality.yml
-          cp .staging/motion-pass/files/.github/workflows/visual-proof.yml .github/workflows/visual-proof.yml
-          cp .staging/motion-pass/files/.github/workflows/project-gallery-proof.yml .github/workflows/project-gallery-proof.yml
 
           echo '8ae76a6ace4afa5a08858163682969799622edc8f4bd9c636e0cd2f54a1c2c5b  src/components/immersive/ImmersivePortfolio.tsx' | sha256sum -c -
           echo 'a857ae12de5d6072d514a437d12a12a0ce903ccf2758e6e757c82af8a24ec04b  src/components/immersive/LiquidCurrentScene.tsx' | sha256sum -c -
@@ -50,20 +47,21 @@ jobs:
           echo 'df2ef96860424d0532389db867ada40618be263087cce94d3fb44821476e7eba  src/styles/immersive/motion.css' | sha256sum -c -
           echo '5cb12fcf17a458baa5e1ff80bc2f28425d073013a47556019df9fd9356b9080f  scripts/verify-motion-contract.mjs' | sha256sum -c -
           echo 'b7e1d435d51cb7ba8edfdd4502bf0037ef1408e32bb98001b2dbb3fb84a0e908  src/styles/immersive.css' | sha256sum -c -
-          echo 'fe3bd9d0ae1cd4229c9471feb2fdfa9aaa05da11eddeaff3b7cb086a9c4a91df  .github/workflows/quality.yml' | sha256sum -c -
-          echo '1c28d970146bd56c878d1a009882143abb0139ae2945881358af121e7e35de7d  .github/workflows/visual-proof.yml' | sha256sum -c -
-          echo 'a82b7395916f9191c5b0cc1c655a5b44de3557efd9d19e4579fb6b1f54c14a9d  .github/workflows/project-gallery-proof.yml' | sha256sum -c -
 
           node scripts/verify-motion-contract.mjs
           npm ci
           npm run lint
           npm run build
 
-          rm -rf .staging/motion-pass
-          rm .github/workflows/materialize-motion-pass.yml
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add \
+            src/components/immersive/ImmersivePortfolio.tsx \
+            src/components/immersive/LiquidCurrentScene.tsx \
+            src/components/immersive/LiquidCurrentCanvas.tsx \
+            src/motion/tokens.ts \
+            src/styles/immersive/motion.css \
+            src/styles/immersive.css \
+            scripts/verify-motion-contract.mjs
           git commit -m "perf: fluid motion tokens and preview-led JUW mobile"
           git push
