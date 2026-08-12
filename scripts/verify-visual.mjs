@@ -83,6 +83,29 @@ async function captureProfile(name, profile) {
     await page.waitForSelector('#ivisit', { timeout: 20_000 })
     await page.evaluate(async () => {
       if (document.fonts?.ready) await document.fonts.ready
+
+      const images = Array.from(document.querySelectorAll('.h2o-project-media img'))
+      images.forEach((image) => {
+        if (!(image instanceof HTMLImageElement)) return
+        image.loading = 'eager'
+        image.fetchPriority = 'high'
+      })
+
+      await Promise.all(
+        images.map(
+          (image) =>
+            new Promise((resolveImage) => {
+              if (image instanceof HTMLImageElement && image.complete) {
+                resolveImage(undefined)
+                return
+              }
+              const settle = () => resolveImage(undefined)
+              image.addEventListener('load', settle, { once: true })
+              image.addEventListener('error', settle, { once: true })
+              window.setTimeout(settle, 12_000)
+            }),
+        ),
+      )
     })
     await sleep(900)
 
