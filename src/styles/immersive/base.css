@@ -79,9 +79,9 @@ body {
 }
 
 .h2o-current-canvas {
-  opacity: 0.92;
-  mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+  opacity: 0.86;
+  mask-image: linear-gradient(to bottom, black 0%, black 84%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 84%, transparent 100%);
 }
 
 .h2o-current-canvas canvas {
@@ -110,18 +110,6 @@ body {
   mix-blend-mode: soft-light;
 }
 
-.h2o-scroll-progress {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 80;
-  height: 2px;
-  transform-origin: 0 50%;
-  background: linear-gradient(90deg, #ff4b3e, #f5ce45, #54f0b3, #ae91ff);
-  box-shadow: 0 0 18px rgba(245, 206, 69, 0.26);
-}
-
 .h2o-nav {
   position: fixed;
   top: max(1rem, env(safe-area-inset-top));
@@ -130,16 +118,20 @@ body {
   z-index: 50;
   display: grid;
   grid-template-columns: minmax(9rem, 1fr) auto minmax(12rem, 1fr);
-  align-items: center;
   min-height: 3.6rem;
-  padding: 0.55rem 0.65rem 0.55rem 1rem;
-  border-radius: 1.3rem;
-  background: rgba(4, 7, 8, 0.56);
-  box-shadow:
-    0 18px 60px rgba(0, 0, 0, 0.16),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.035);
-  backdrop-filter: blur(24px) saturate(135%);
-  -webkit-backdrop-filter: blur(24px) saturate(135%);
+  align-items: center;
+  padding: 0.45rem 0;
+  isolation: isolate;
+}
+
+.h2o-nav::before {
+  position: absolute;
+  inset: -1.1rem -2.6rem -1.5rem;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(3, 5, 6, 0.88), rgba(3, 5, 6, 0.34) 58%, transparent);
+  filter: blur(12px);
+  content: "";
+  opacity: 0.92;
 }
 
 .h2o-nav__brand {
@@ -188,9 +180,7 @@ body {
   min-height: 2.5rem;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 0.92rem;
-  background: rgba(255, 255, 255, 0.045);
+  padding: 0.7rem 0;
   color: var(--h2o-muted);
   font-size: 0.68rem;
 }
@@ -231,7 +221,9 @@ body {
 .h2o-hero {
   position: relative;
   z-index: 2;
-  height: 178svh;
+  height: 168svh;
+  perspective: 1600px;
+  transform-style: preserve-3d;
 }
 
 .h2o-hero__sticky {
@@ -240,13 +232,18 @@ body {
   display: flex;
   min-height: 100svh;
   align-items: center;
+  overflow: hidden;
   padding: clamp(7.5rem, 13vh, 10rem) var(--h2o-gutter) 4rem;
+  perspective: 1600px;
+  transform-style: preserve-3d;
 }
 
 .h2o-hero__copy {
   position: relative;
   z-index: 2;
   width: min(78rem, 92vw);
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
 }
 
 .h2o-hero h1 {
@@ -281,7 +278,7 @@ body {
 
 .h2o-hero__footer {
   display: grid;
-  grid-template-columns: minmax(16rem, 28rem) auto;
+  grid-template-columns: minmax(16rem, 24rem) auto;
   align-items: end;
   gap: 2rem;
   margin-top: clamp(2.5rem, 6vh, 5rem);
@@ -291,9 +288,9 @@ body {
 .h2o-hero__footer p {
   margin: 0;
   color: var(--h2o-muted);
-  font-size: clamp(1rem, 1.55vw, 1.38rem);
+  font-size: clamp(1rem, 1.45vw, 1.28rem);
   letter-spacing: -0.02em;
-  line-height: 1.45;
+  line-height: 1.42;
 }
 
 .h2o-hero__footer a,
@@ -351,64 +348,4 @@ body {
   font-size: 0.62rem;
   letter-spacing: 0.11em;
   text-transform: uppercase;
-}
-
-.h2o-thesis {
-  position: relative;
-  z-index: 2;
-  padding: clamp(6rem, 13vw, 13rem) var(--h2o-gutter) clamp(7rem, 13vw, 14rem);
-  background: linear-gradient(to bottom, transparent, rgba(3, 5, 6, 0.91) 12%, #030506 42%);
-}
-
-.h2o-thesis > h2 {
-  width: min(82rem, 96%);
-  margin: 1.8rem 0 clamp(5rem, 10vw, 9rem);
-  font-size: clamp(3rem, 7.3vw, 8rem);
-  font-weight: 500;
-  letter-spacing: -0.07em;
-  line-height: 0.94;
-}
-
-.h2o-modes {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1.5rem, 4vw, 5.5rem);
-  margin-left: clamp(0rem, 12vw, 12rem);
-}
-
-.h2o-mode {
-  position: relative;
-  min-height: 18rem;
-  padding-top: 1.25rem;
-}
-
-.h2o-mode::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.34), transparent);
-  content: "";
-}
-
-.h2o-mode > span {
-  color: var(--h2o-dim);
-  font-size: 0.69rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.h2o-mode h3 {
-  margin: 2.7rem 0 1rem;
-  font-size: clamp(1.8rem, 3vw, 3.4rem);
-  font-weight: 500;
-  letter-spacing: -0.055em;
-}
-
-.h2o-mode p {
-  max-width: 28rem;
-  margin: 0;
-  color: var(--h2o-muted);
-  font-size: clamp(0.95rem, 1.15vw, 1.12rem);
-  line-height: 1.58;
 }

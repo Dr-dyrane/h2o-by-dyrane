@@ -36,14 +36,33 @@ const browser = await puppeteer.launch({
   ],
 })
 
+const frame = (name, id = null, progress = 0) => ({ name, id, progress })
+
 const profiles = {
   desktop: {
     viewport: { width: 1440, height: 1000, deviceScaleFactor: 1, isMobile: false, hasTouch: false },
-    sections: ['top', 'ivisit', 'weddings', 'contact'],
+    sections: [
+      frame('top'),
+      frame('practice-observe', 'practice', 0.12),
+      frame('practice-build', 'practice', 0.5),
+      frame('practice-operate', 'practice', 0.84),
+      frame('ivisit', 'ivisit', 0.08),
+      frame('weddings', 'weddings', 0.08),
+      frame('archive', 'archive', 0.57),
+      frame('contact', 'contact', 0.16),
+      frame('signature', 'contact', 0.9),
+    ],
   },
   mobile: {
     viewport: { width: 430, height: 932, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
-    sections: ['top', 'ivisit', 'weddings'],
+    sections: [
+      frame('top'),
+      frame('practice-build', 'practice', 0.5),
+      frame('ivisit', 'ivisit', 0.08),
+      frame('weddings', 'weddings', 0.08),
+      frame('archive', 'archive', 0.57),
+      frame('signature', 'contact', 0.9),
+    ],
   },
 }
 
@@ -81,10 +100,13 @@ async function captureProfile(name, profile) {
     await page.goto(baseUrl, { waitUntil: 'networkidle0', timeout: 60_000 })
     await page.waitForSelector('.h2o-immersive', { timeout: 20_000 })
     await page.waitForSelector('#ivisit', { timeout: 20_000 })
+    await page.waitForSelector('#signature', { timeout: 20_000 })
     await page.evaluate(async () => {
       if (document.fonts?.ready) await document.fonts.ready
 
-      const images = Array.from(document.querySelectorAll('.h2o-project-media img'))
+      const images = Array.from(
+        document.querySelectorAll('.h2o-project-media img, .h2o-archive-card img'),
+      )
       images.forEach((image) => {
         if (!(image instanceof HTMLImageElement)) return
         image.loading = 'eager'
@@ -107,38 +129,82 @@ async function captureProfile(name, profile) {
         ),
       )
     })
-    await sleep(900)
+    await sleep(1200)
 
     const layout = await page.evaluate(() => {
       const root = document.documentElement
-      const projectImages = Array.from(document.querySelectorAll('.h2o-project-media img'))
-      const brokenImages = projectImages
+      const mediaImages = Array.from(
+        document.querySelectorAll('.h2o-project-media img, .h2o-archive-card img'),
+      )
+      const brokenImages = mediaImages
         .filter((image) => !(image instanceof HTMLImageElement) || image.naturalWidth === 0)
         .map((image) => image.getAttribute('alt') || image.getAttribute('src') || 'unknown image')
+
+      const borderSelectors = [
+        '.h2o-nav',
+        '.h2o-nav__status',
+        '.h2o-project-proof',
+        '.h2o-project-actions__secondary',
+        '.h2o-project-media',
+        '.h2o-project-media__mobile-shell',
+        '.h2o-contact__actions a:last-child',
+      ]
+      const borderLeaks = borderSelectors.flatMap((selector) =>
+        Array.from(document.querySelectorAll(selector)).flatMap((element, index) => {
+          const style = window.getComputedStyle(element)
+          const borderWidths = [
+            style.borderTopWidth,
+            style.borderRightWidth,
+            style.borderBottomWidth,
+            style.borderLeftWidth,
+          ].map((value) => Number.parseFloat(value) || 0)
+          const hasBorder = borderWidths.some((value) => value > 0)
+          const hasInsetRing = style.boxShadow.includes('inset')
+          return hasBorder || hasInsetRing
+            ? [`${selector}[${index}] border=${borderWidths.join('/')} shadow=${style.boxShadow}`]
+            : []
+        }),
+      )
+
+      const descriptionWordCounts = Array.from(
+        document.querySelectorAll('.h2o-project-description'),
+      ).map((element) => ({
+        project: element.closest('.h2o-project-chapter')?.id || 'unknown',
+        words: (element.textContent || '').trim().split(/\s+/).filter(Boolean).length,
+      }))
 
       return {
         title: document.title,
         headingCount: document.querySelectorAll('h1').length,
         projectCount: document.querySelectorAll('.h2o-project-chapter').length,
+        practiceCount: document.querySelectorAll('.h2o-practice__stage').length,
+        archiveCount: document.querySelectorAll('.h2o-archive-card').length,
+        signatureCount: document.querySelectorAll('#signature').length,
         canvasCount: document.querySelectorAll('canvas').length,
         horizontalOverflow: root.scrollWidth > window.innerWidth + 2,
         documentWidth: root.scrollWidth,
         viewportWidth: window.innerWidth,
         brokenImages,
+        borderLeaks,
+        descriptionWordCounts,
       }
     })
 
     const captures = []
     for (const section of profile.sections) {
-      if (section === 'top') {
-        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
-      } else {
-        await page.evaluate((sectionId) => {
-          document.getElementById(sectionId)?.scrollIntoView({ block: 'start', behavior: 'instant' })
-        }, section)
-      }
-      await sleep(section === 'top' ? 650 : 1050)
-      const fileName = `${name}-${section}.png`
+      await page.evaluate(({ id, progress }) => {
+        if (!id) {
+          window.scrollTo(0, 0)
+          return
+        }
+
+        const element = document.getElementById(id)
+        if (!element) return
+        const maximumTravel = Math.max(0, element.offsetHeight - window.innerHeight)
+        window.scrollTo(0, element.offsetTop + maximumTravel * progress)
+      }, section)
+      await sleep(section.name === 'top' ? 800 : 1150)
+      const fileName = `${name}-${section.name}.png`
       await page.screenshot({
         path: resolve(outputDirectory, fileName),
         type: 'png',
@@ -173,10 +239,19 @@ const failures = []
 for (const [name, result] of Object.entries(report.profiles)) {
   if (result.layout.headingCount !== 1) failures.push(`${name}: expected one h1, received ${result.layout.headingCount}`)
   if (result.layout.projectCount !== 6) failures.push(`${name}: expected six project chapters, received ${result.layout.projectCount}`)
+  if (result.layout.practiceCount !== 3) failures.push(`${name}: expected three spatial practice stages, received ${result.layout.practiceCount}`)
+  if (result.layout.archiveCount !== 4) failures.push(`${name}: expected four archive projects, received ${result.layout.archiveCount}`)
+  if (result.layout.signatureCount !== 1) failures.push(`${name}: expected one Dyrane signature, received ${result.layout.signatureCount}`)
+  if (result.layout.canvasCount < 1) failures.push(`${name}: expected the deferred WebGL current to load`)
   if (result.layout.horizontalOverflow) {
     failures.push(`${name}: horizontal overflow (${result.layout.documentWidth}px document / ${result.layout.viewportWidth}px viewport)`)
   }
   if (result.layout.brokenImages.length > 0) failures.push(`${name}: broken project images: ${result.layout.brokenImages.join(', ')}`)
+  if (result.layout.borderLeaks.length > 0) failures.push(`${name}: visual border leaks: ${result.layout.borderLeaks.join(' | ')}`)
+  const denseDescriptions = result.layout.descriptionWordCounts.filter(({ words }) => words > 24)
+  if (denseDescriptions.length > 0) {
+    failures.push(`${name}: project copy exceeds 24 words: ${denseDescriptions.map(({ project, words }) => `${project}=${words}`).join(', ')}`)
+  }
   if (result.pageErrors.length > 0) failures.push(`${name}: page errors: ${result.pageErrors.join(' | ')}`)
   if (result.failedRequests.length > 0) failures.push(`${name}: failed same-origin requests: ${result.failedRequests.join(' | ')}`)
 }

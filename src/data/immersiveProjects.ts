@@ -50,7 +50,7 @@ export const immersiveProjects: ImmersiveProject[] = [
     category: 'Emergency healthcare coordination',
     statement: 'An emergency should not begin with a waiting room.',
     description:
-      'A live patient, provider, and dispatch ecosystem for requesting an ambulance, finding hospital capacity, and following response as it happens. The work joins clinical judgment, geospatial systems, real-time operations, and calm mobile interaction.',
+      'A live patient, provider, and dispatch system for requesting an ambulance, finding capacity, and following response in real time.',
     proof: 'Live on Google Play · Patient experience at app.ivisit.ng',
     modes: ['Observe', 'Build', 'Operate'],
     accent: '#ff4b3e',
@@ -83,7 +83,7 @@ export const immersiveProjects: ImmersiveProject[] = [
     category: 'Spatial publishing and celebration',
     statement: 'An invitation that opens into a world.',
     description:
-      'A cinematic wedding invitation shaped as a continuous guest journey rather than a decorated card. The experience carries story, identity, RSVP, sharing, calendar, accessibility, and graceful no-WebGL continuity inside one authored world.',
+      'A cinematic invitation carrying story, RSVP, sharing, and accessibility through one continuous guest journey.',
     proof: 'Spatial invitation · truthful RSVP boundary · public event surface',
     modes: ['Observe', 'Build', 'Operate'],
     accent: '#f5ce45',
@@ -114,7 +114,7 @@ export const immersiveProjects: ImmersiveProject[] = [
     category: 'Evidence-led skincare and retail trust',
     statement: 'Trust is the product before the product.',
     description:
-      'A Nigerian-first skincare experience that begins with the concern, keeps evidence legible, and carries trust across the final handoff to a retailer. It treats guidance, seller identity, availability, and uncertainty as one product problem.',
+      'Nigerian-first skincare guidance that keeps evidence, seller identity, availability, and uncertainty legible through the retailer handoff.',
     proof: 'Concern discovery · evidence boundaries · retailer trust bridge',
     modes: ['Observe', 'Build', 'Operate'],
     accent: '#ff8f9b',
@@ -139,7 +139,7 @@ export const immersiveProjects: ImmersiveProject[] = [
     category: 'Community-confirmed local availability',
     statement: 'The map knows what is nearby. People know what is actually there.',
     description:
-      'A map-first public utility for finding everyday essentials through recent community confirmation. The interface compresses category, distance, freshness, price, and contribution into a calm sheet that works at street speed.',
+      'A map-first utility for finding essentials through recent community confirmation of availability, freshness, and price.',
     proof: 'Map-first PWA · confirmation freshness · local contribution loop',
     modes: ['Observe', 'Build'],
     accent: '#54f0b3',
@@ -164,7 +164,7 @@ export const immersiveProjects: ImmersiveProject[] = [
     category: 'Material commerce and visual decision support',
     statement: 'Materials become believable when they enter the room.',
     description:
-      'A warm editorial commerce experience with a visualizer that helps a customer understand mosaic scale, surface, geometry, and placement before purchase. The interaction makes a difficult material decision tangible.',
+      'Editorial commerce and a surface visualizer that makes mosaic scale, geometry, and placement tangible before purchase.',
     proof: 'Surface visualizer · geometry-aware placement · editorial commerce',
     modes: ['Observe', 'Build', 'Operate'],
     accent: '#ff9e5f',
@@ -189,7 +189,7 @@ export const immersiveProjects: ImmersiveProject[] = [
     category: 'Fashion identity, studio, and commerce',
     statement: 'A fashion label needs a point of view, not another product grid.',
     description:
-      'A connected identity and commerce system for a Nigerian fashion brand: public collection storytelling, product discovery, bag and checkout, plus a private creative studio for the work behind the release.',
+      'A connected identity, storefront, and private creative studio for a Nigerian fashion label.',
     proof: 'Brand system · collection direction · storefront and studio',
     modes: ['Observe', 'Build', 'Operate'],
     accent: '#ae91ff',

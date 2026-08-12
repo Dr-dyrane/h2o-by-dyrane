@@ -2,8 +2,8 @@ import {
   motion,
   useMotionValueEvent,
   useScroll,
-  useSpring,
   useTransform,
+  type MotionValue,
 } from 'framer-motion'
 import { ArrowDown, ArrowUpRight, Github, Mail } from 'lucide-react'
 import {
@@ -22,6 +22,27 @@ import {
   type ImmersiveProjectImage,
 } from '@/data/immersiveProjects'
 import { LiquidCurrentCanvas } from './LiquidCurrentCanvas'
+
+const practiceSteps = [
+  {
+    number: '01',
+    title: 'Observe',
+    headline: 'Find the break.',
+    copy: 'See the system around the symptom: stakes, uncertainty, trust, and what fails under pressure.',
+  },
+  {
+    number: '02',
+    title: 'Build',
+    headline: 'Make it obvious.',
+    copy: 'Turn that reading into hierarchy, interaction, architecture, and working software.',
+  },
+  {
+    number: '03',
+    title: 'Operate',
+    headline: 'Stay for reality.',
+    copy: 'Follow the handoffs, failures, evidence, and consequences after the product ships.',
+  },
+] as const
 
 function ProjectImage({
   image,
@@ -71,14 +92,31 @@ function ProjectChapter({
   register: (element: HTMLElement | null, index: number) => void
 }) {
   const sectionRef = useRef<HTMLElement | null>(null)
+  const direction = index % 2 === 0 ? 1 : -1
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   })
-  const mediaScale = useTransform(scrollYProgress, [0, 0.24, 0.74, 1], [0.9, 1, 1, 0.94])
-  const mediaY = useTransform(scrollYProgress, [0, 0.5, 1], ['8%', '0%', '-7%'])
-  const copyY = useTransform(scrollYProgress, [0, 0.5, 1], ['11%', '0%', '-10%'])
-  const opacity = useTransform(scrollYProgress, [0, 0.13, 0.84, 1], [0.2, 1, 1, 0.18])
+  const mediaScale = useTransform(scrollYProgress, [0, 0.24, 0.74, 1], [0.87, 1, 1, 0.92])
+  const mediaX = useTransform(
+    scrollYProgress,
+    [0, 0.24, 0.74, 1],
+    [`${direction * 9}%`, '0%', '0%', `${direction * -5}%`],
+  )
+  const mediaY = useTransform(scrollYProgress, [0, 0.5, 1], ['7%', '0%', '-6%'])
+  const mediaRotateY = useTransform(
+    scrollYProgress,
+    [0, 0.24, 0.74, 1],
+    [direction * -7, 0, 0, direction * 4],
+  )
+  const copyX = useTransform(
+    scrollYProgress,
+    [0, 0.24, 0.74, 1],
+    [`${direction * -7}%`, '0%', '0%', `${direction * 6}%`],
+  )
+  const copyY = useTransform(scrollYProgress, [0, 0.5, 1], ['8%', '0%', '-8%'])
+  const copyScale = useTransform(scrollYProgress, [0, 0.25, 0.76, 1], [0.95, 1, 1, 0.96])
+  const opacity = useTransform(scrollYProgress, [0, 0.12, 0.84, 1], [0.08, 1, 1, 0.12])
   const style = {
     '--project-accent': project.accent,
     '--project-accent-soft': project.accentSoft,
@@ -94,11 +132,15 @@ function ProjectChapter({
       className="h2o-project-chapter"
       style={style}
       data-project-index={index}
+      data-direction={direction > 0 ? 'forward' : 'reverse'}
     >
       <div className="h2o-project-sticky">
         <div className="h2o-project-glow" aria-hidden="true" />
 
-        <motion.div className="h2o-project-media" style={{ scale: mediaScale, y: mediaY, opacity }}>
+        <motion.div
+          className="h2o-project-media"
+          style={{ scale: mediaScale, x: mediaX, y: mediaY, rotateY: mediaRotateY, opacity }}
+        >
           <div className="h2o-project-media__wash" aria-hidden="true" />
           <ProjectImage
             image={project.desktop}
@@ -119,7 +161,10 @@ function ProjectChapter({
           </span>
         </motion.div>
 
-        <motion.div className="h2o-project-copy" style={{ y: copyY, opacity }}>
+        <motion.div
+          className="h2o-project-copy"
+          style={{ x: copyX, y: copyY, scale: copyScale, opacity }}
+        >
           <div className="h2o-project-kicker">
             <span>{project.sequence}</span>
             <span>{project.category}</span>
@@ -163,41 +208,243 @@ function ProjectChapter({
   )
 }
 
-function ModeStatement({
-  number,
-  title,
-  children,
+type PracticeStep = (typeof practiceSteps)[number]
+
+type PracticeChoreography = {
+  input: [number, number, number, number]
+  x: [string, string, string, string]
+  y: [string, string, string, string]
+  z: [number, number, number, number]
+  rotateY: [number, number, number, number]
+  scale: [number, number, number, number]
+  opacity: [number, number, number, number]
+  wordX: [string, string, string, string]
+}
+
+const practiceChoreography: PracticeChoreography[] = [
+  {
+    input: [0, 0.08, 0.27, 0.43],
+    x: ['0vw', '0vw', '0vw', '-44vw'],
+    y: ['0vh', '0vh', '0vh', '-5vh'],
+    z: [0, 0, 0, -720],
+    rotateY: [0, 0, 0, 15],
+    scale: [1, 1, 1, 0.72],
+    opacity: [1, 1, 1, 0],
+    wordX: ['0vw', '0vw', '0vw', '-16vw'],
+  },
+  {
+    input: [0.18, 0.38, 0.57, 0.73],
+    x: ['46vw', '0vw', '0vw', '-42vw'],
+    y: ['7vh', '0vh', '0vh', '-5vh'],
+    z: [-880, 0, 0, -680],
+    rotateY: [-18, 0, 0, 14],
+    scale: [0.68, 1, 1, 0.74],
+    opacity: [0, 1, 1, 0],
+    wordX: ['18vw', '0vw', '0vw', '-16vw'],
+  },
+  {
+    input: [0.49, 0.7, 0.9, 1],
+    x: ['46vw', '0vw', '0vw', '0vw'],
+    y: ['7vh', '0vh', '0vh', '0vh'],
+    z: [-880, 0, 0, 0],
+    rotateY: [-18, 0, 0, 0],
+    scale: [0.68, 1, 1, 1],
+    opacity: [0, 1, 1, 1],
+    wordX: ['18vw', '0vw', '0vw', '0vw'],
+  },
+]
+
+function SpatialStep({
+  step,
+  index,
+  progress,
 }: {
-  number: string
-  title: string
-  children: string
+  step: PracticeStep
+  index: number
+  progress: MotionValue<number>
 }) {
+  const choreography = practiceChoreography[index]
+  const x = useTransform(progress, choreography.input, choreography.x)
+  const y = useTransform(progress, choreography.input, choreography.y)
+  const z = useTransform(progress, choreography.input, choreography.z)
+  const rotateY = useTransform(progress, choreography.input, choreography.rotateY)
+  const scale = useTransform(progress, choreography.input, choreography.scale)
+  const opacity = useTransform(progress, choreography.input, choreography.opacity)
+  const wordX = useTransform(progress, choreography.input, choreography.wordX)
+
   return (
     <motion.article
-      className="h2o-mode"
-      initial={{ y: 34, opacity: 0 }}
-      whileInView={{ y: 0, opacity: 1 }}
-      viewport={{ amount: 0.45, once: true }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="h2o-practice__stage"
+      style={{ x, y, z, rotateY, scale, opacity }}
+      data-stage={step.number}
     >
-      <span>{number}</span>
-      <h3>{title}</h3>
-      <p>{children}</p>
+      <motion.span className="h2o-practice__number" style={{ x: wordX }} aria-hidden="true">
+        {step.number}
+      </motion.span>
+      <div className="h2o-practice__copy">
+        <p>
+          {step.number} · {step.title}
+        </p>
+        <h2>{step.headline}</h2>
+        <span>{step.copy}</span>
+      </div>
     </motion.article>
+  )
+}
+
+function SpatialPractice() {
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+  const currentX = useTransform(scrollYProgress, [0, 1], ['18vw', '-24vw'])
+  const currentZ = useTransform(scrollYProgress, [0, 0.5, 1], [-420, 40, -460])
+  const currentOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.1, 0.22, 0.08])
+
+  return (
+    <section ref={sectionRef} className="h2o-practice" id="practice" aria-label="How the work moves">
+      <div className="h2o-practice__sticky">
+        <p className="h2o-section-label h2o-practice__label">How the work moves</p>
+        <motion.div
+          className="h2o-practice__current-word"
+          style={{ x: currentX, z: currentZ, opacity: currentOpacity }}
+          aria-hidden="true"
+        >
+          CURRENT
+        </motion.div>
+        {practiceSteps.map((step, index) => (
+          <SpatialStep key={step.number} step={step} index={index} progress={scrollYProgress} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ArchiveCurrent() {
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+  const railX = useTransform(scrollYProgress, [0, 0.08, 0.92, 1], ['8vw', '6vw', '-68%', '-70%'])
+  const wordX = useTransform(scrollYProgress, [0, 1], ['18vw', '-28vw'])
+  const wordZ = useTransform(scrollYProgress, [0, 0.55, 1], [-520, 40, -620])
+
+  return (
+    <section ref={sectionRef} className="h2o-archive" id="archive" aria-labelledby="h2o-archive-title">
+      <div className="h2o-archive__sticky">
+        <div className="h2o-archive__heading">
+          <p className="h2o-section-label">The wider current</p>
+          <h2 id="h2o-archive-title">Experiments that changed what came next.</h2>
+        </div>
+        <motion.div className="h2o-archive__word" style={{ x: wordX, z: wordZ }} aria-hidden="true">
+          MORE WORK
+        </motion.div>
+        <motion.div className="h2o-archive__rail" style={{ x: railX }}>
+          {archiveProjects.map((project, index) => {
+            const cardStyle = {
+              '--archive-tilt': `${index % 2 === 0 ? 5 : -6}deg`,
+              '--archive-depth': `${index % 2 === 0 ? 0 : -90}px`,
+            } as CSSProperties
+
+            return (
+              <article key={project.title} className="h2o-archive-card" style={cardStyle}>
+                <img src={project.image} alt={`${project.title} product interface`} loading="lazy" />
+                <div>
+                  <span>{project.period}</span>
+                  <h3>{project.title}</h3>
+                  <p>{project.category}</p>
+                </div>
+              </article>
+            )
+          })}
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function EndCredits() {
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+  const contactY = useTransform(scrollYProgress, [0, 0.38, 0.62], [0, 0, -170])
+  const contactScale = useTransform(scrollYProgress, [0, 0.38, 0.62], [1, 1, 0.84])
+  const contactOpacity = useTransform(scrollYProgress, [0, 0.4, 0.64], [1, 1, 0])
+  const nameY = useTransform(scrollYProgress, [0, 0.45, 0.8, 1], ['34vh', '24vh', '0vh', '-1vh'])
+  const nameZ = useTransform(scrollYProgress, [0, 0.45, 0.8, 1], [-800, -520, 0, 80])
+  const nameScale = useTransform(scrollYProgress, [0, 0.45, 0.8, 1], [0.58, 0.68, 1, 1.04])
+  const nameOpacity = useTransform(scrollYProgress, [0, 0.42, 0.76, 1], [0.05, 0.12, 0.88, 1])
+  const letterSpacing = useTransform(
+    scrollYProgress,
+    [0, 0.45, 0.8, 1],
+    ['0.08em', '0.03em', '-0.08em', '-0.09em'],
+  )
+
+  return (
+    <section ref={sectionRef} className="h2o-end" id="contact" aria-labelledby="h2o-contact-title">
+      <div className="h2o-end__sticky">
+        <motion.div
+          className="h2o-end__contact"
+          style={{ y: contactY, scale: contactScale, opacity: contactOpacity }}
+        >
+          <p className="h2o-section-label">The next current</p>
+          <h2 id="h2o-contact-title">Bring me the difficult thing.</h2>
+          <p>Strategy, interface, engineering—and the reality after launch.</p>
+          <div className="h2o-contact__actions">
+            <a href="mailto:hello@dyrane.tech">
+              <Mail aria-hidden="true" size={19} strokeWidth={1.6} />
+              Start a conversation
+            </a>
+            <a href="https://github.com/Dr-dyrane" target="_blank" rel="noreferrer">
+              <Github aria-hidden="true" size={19} strokeWidth={1.6} />
+              Read the code
+            </a>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="h2o-end__name"
+          style={{ y: nameY, z: nameZ, scale: nameScale, opacity: nameOpacity }}
+          id="signature"
+          aria-label="Dyrane, Alexander Udeogaranya"
+        >
+          <span>Alexander Udeogaranya</span>
+          <motion.strong style={{ letterSpacing }}>DYRANE</motion.strong>
+        </motion.div>
+
+        <footer>
+          <span>Doctor · Product designer · Software engineer</span>
+          <span>California · Nigeria · Worldwide</span>
+          <span>© {new Date().getFullYear()}</span>
+        </footer>
+      </div>
+    </section>
   )
 }
 
 export default function ImmersivePortfolio() {
   const chapterRefs = useRef<Array<HTMLElement | null>>([])
+  const heroRef = useRef<HTMLElement | null>(null)
   const progressRef = useRef(0)
   const activeIndexRef = useRef(0)
   const activityRef = useRef(0)
   const [activeIndex, setActiveIndex] = useState(0)
   const { scrollYProgress } = useScroll()
-  const progressScale = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.25 })
-  const heroCopyY = useTransform(scrollYProgress, [0, 0.18], [0, -130])
-  const heroCopyOpacity = useTransform(scrollYProgress, [0, 0.14], [1, 0])
-  const heroWordSpacing = useTransform(scrollYProgress, [0, 0.12], ['-0.07em', '-0.03em'])
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  })
+  const heroCopyX = useTransform(heroProgress, [0, 0.56, 1], ['0vw', '0vw', '-18vw'])
+  const heroCopyY = useTransform(heroProgress, [0, 0.55, 1], [0, -30, -150])
+  const heroCopyZ = useTransform(heroProgress, [0, 0.55, 1], [0, 0, -420])
+  const heroCopyScale = useTransform(heroProgress, [0, 0.58, 1], [1, 1, 0.78])
+  const heroCopyRotateY = useTransform(heroProgress, [0, 0.58, 1], [0, 0, 10])
+  const heroCopyOpacity = useTransform(heroProgress, [0, 0.7, 1], [1, 1, 0])
+  const heroWordSpacing = useTransform(heroProgress, [0, 0.7], ['-0.07em', '-0.035em'])
 
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     progressRef.current = value
@@ -257,7 +504,6 @@ export default function ImmersivePortfolio() {
       />
 
       <div className="h2o-grain" aria-hidden="true" />
-      <motion.div className="h2o-scroll-progress" style={{ scaleX: progressScale }} />
 
       <nav className="h2o-nav" aria-label="Primary navigation">
         <a className="h2o-nav__brand" href="#top" aria-label="H2O by Dyrane, back to top">
@@ -266,7 +512,7 @@ export default function ImmersivePortfolio() {
         </a>
         <div className="h2o-nav__links">
           <a href="#work">Work</a>
-          <a href="#practice">Practice</a>
+          <a href="#practice">Method</a>
           <a href="#contact">Contact</a>
         </div>
         <div className="h2o-nav__status" aria-live="polite">
@@ -278,9 +524,19 @@ export default function ImmersivePortfolio() {
         </div>
       </nav>
 
-      <section className="h2o-hero" aria-labelledby="h2o-hero-title">
+      <section ref={heroRef} className="h2o-hero" aria-labelledby="h2o-hero-title">
         <div className="h2o-hero__sticky">
-          <motion.div className="h2o-hero__copy" style={{ y: heroCopyY, opacity: heroCopyOpacity }}>
+          <motion.div
+            className="h2o-hero__copy"
+            style={{
+              x: heroCopyX,
+              y: heroCopyY,
+              z: heroCopyZ,
+              scale: heroCopyScale,
+              rotateY: heroCopyRotateY,
+              opacity: heroCopyOpacity,
+            }}
+          >
             <p className="h2o-eyebrow">
               Alexander Udeogaranya · Doctor · Product designer · Software engineer
             </p>
@@ -290,11 +546,8 @@ export default function ImmersivePortfolio() {
               <em>in motion.</em>
             </motion.h1>
             <div className="h2o-hero__footer">
-              <p>
-                I observe complex systems, build the product, then stay for what happens in the
-                real world.
-              </p>
-              <a href="#work">
+              <p>I observe the system, build the product, and stay for reality.</p>
+              <a href="#practice">
                 Enter the current
                 <ArrowDown aria-hidden="true" size={18} strokeWidth={1.7} />
               </a>
@@ -307,37 +560,12 @@ export default function ImmersivePortfolio() {
         </div>
       </section>
 
-      <section className="h2o-thesis" id="practice" aria-labelledby="h2o-thesis-title">
-        <p className="h2o-section-label">The practice</p>
-        <motion.h2
-          id="h2o-thesis-title"
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ amount: 0.25, once: true }}
-          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-        >
-          Most portfolios show finished screens. This one follows the judgment that moved between
-          them.
-        </motion.h2>
-        <div className="h2o-modes">
-          <ModeStatement number="01" title="Observe">
-            Medicine taught me to notice the system around the symptom: stakes, uncertainty, trust,
-            and what breaks under pressure.
-          </ModeStatement>
-          <ModeStatement number="02" title="Build">
-            I turn that reading into interfaces, architecture, interaction, and working software.
-          </ModeStatement>
-          <ModeStatement number="03" title="Operate">
-            Shipping changes the question. I stay for reliability, users, handoffs, evidence, and
-            the consequences of the product.
-          </ModeStatement>
-        </div>
-      </section>
+      <SpatialPractice />
 
       <section className="h2o-work" id="work" aria-labelledby="h2o-work-title">
         <header className="h2o-work__intro">
           <p className="h2o-section-label">Selected current · 2024—2026</p>
-          <h2 id="h2o-work-title">Six systems. Six different kinds of consequence.</h2>
+          <h2 id="h2o-work-title">Six systems. Real consequences.</h2>
         </header>
 
         {immersiveProjects.map((project, index) => (
@@ -350,57 +578,8 @@ export default function ImmersivePortfolio() {
         ))}
       </section>
 
-      <section className="h2o-archive" aria-labelledby="h2o-archive-title">
-        <div className="h2o-archive__heading">
-          <p className="h2o-section-label">The wider current</p>
-          <h2 id="h2o-archive-title">Not every experiment becomes a flagship. Every one changes the next.</h2>
-        </div>
-        <div className="h2o-archive__grid">
-          {archiveProjects.map((project, index) => (
-            <motion.article
-              key={project.title}
-              className="h2o-archive-card"
-              initial={{ y: 32, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ amount: 0.25, once: true }}
-              transition={{ duration: 0.65, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <img src={project.image} alt={`${project.title} product interface`} loading="lazy" />
-              <div>
-                <span>{project.period}</span>
-                <h3>{project.title}</h3>
-                <p>{project.category}</p>
-              </div>
-            </motion.article>
-          ))}
-        </div>
-      </section>
-
-      <section className="h2o-contact" id="contact" aria-labelledby="h2o-contact-title">
-        <p className="h2o-section-label">The next current</p>
-        <h2 id="h2o-contact-title">
-          Bring me the problem that is still difficult after the meeting ends.
-        </h2>
-        <p>
-          Product strategy, interface direction, full-stack engineering, spatial web, and the
-          operational work required to make the idea survive contact with reality.
-        </p>
-        <div className="h2o-contact__actions">
-          <a href="mailto:hello@dyrane.tech">
-            <Mail aria-hidden="true" size={19} strokeWidth={1.6} />
-            Start a conversation
-          </a>
-          <a href="https://github.com/Dr-dyrane" target="_blank" rel="noreferrer">
-            <Github aria-hidden="true" size={19} strokeWidth={1.6} />
-            Read the code
-          </a>
-        </div>
-        <footer>
-          <span>H₂O by Dyrane</span>
-          <span>California · Nigeria · Worldwide</span>
-          <span>© {new Date().getFullYear()}</span>
-        </footer>
-      </section>
+      <ArchiveCurrent />
+      <EndCredits />
     </main>
   )
 }
