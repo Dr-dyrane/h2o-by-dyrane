@@ -1,0 +1,49 @@
+name: Fix project exit inset
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-project-exit-inset.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Keep the project exit inside the visible frame
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >> src/styles/immersive/award-finish.css <<'EOF'
+
+/* Right-entering media extends beyond the viewport. Keep its quiet exit label inside the visible frame. */
+.h2o-project-chapter[data-direction='forward'] .h2o-project-media-link > span {
+  right: calc(5vw + clamp(1rem, 2.2vw, 2rem));
+}
+
+@media (max-width: 900px) {
+  .h2o-project-chapter[data-direction='forward'] .h2o-project-media-link > span {
+    right: calc(6vw + 1rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .h2o-project-chapter[data-direction='forward'] .h2o-project-media-link > span {
+    right: calc(10vw + 1rem);
+  }
+}
+EOF
+          rm .github/workflows/fix-project-exit-inset.yml
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/styles/immersive/award-finish.css .github/workflows/fix-project-exit-inset.yml
+          git commit -m "fix: keep project exits inside the viewport"
+          git push origin HEAD:main
