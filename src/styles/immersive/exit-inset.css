@@ -1,0 +1,16 @@
+/* Right-entering media extends beyond the viewport. Keep its quiet exit label inside the visible frame. */
+.h2o-project-chapter[data-direction='forward'] .h2o-project-media-link > span {
+  right: calc(5vw + clamp(1rem, 2.2vw, 2rem));
+}
+
+@media (max-width: 900px) {
+  .h2o-project-chapter[data-direction='forward'] .h2o-project-media-link > span {
+    right: calc(6vw + 1rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .h2o-project-chapter[data-direction='forward'] .h2o-project-media-link > span {
+    right: calc(10vw + 1rem);
+  }
+}
