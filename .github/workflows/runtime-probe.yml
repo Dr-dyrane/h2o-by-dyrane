@@ -5,6 +5,8 @@ on:
   push:
     branches: [main]
     paths:
+      - src/components/immersive/**
+      - src/motion/**
       - scripts/probe-runtime.mjs
       - .github/workflows/runtime-probe.yml
 
