@@ -1,0 +1,131 @@
+name: Repair gallery proof contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/repair-gallery-contract.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-repair-gallery-contract
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Align gallery assertions with the final presentation contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/capture-project-gallery.mjs')
+          source = path.read_text()
+
+          old = """        const clutter = [
+          '.h2o-project-description',
+          '.h2o-project-proof',
+          '.h2o-project-modes',
+        ].map((selector) => {
+          const element = chapter.querySelector(selector)
+          return { selector, display: element ? getComputedStyle(element).display : 'missing' }
+        })
+        const mediaRect = media?.getBoundingClientRect()
+"""
+          new = """        const clutter = [
+          '.h2o-project-description',
+          '.h2o-project-modes',
+        ].map((selector) => {
+          const element = chapter.querySelector(selector)
+          return { selector, display: element ? getComputedStyle(element).display : 'missing' }
+        })
+        const proof = chapter.querySelector('.h2o-project-proof')
+        const exitLabel = chapter.querySelector('.h2o-project-media-link > span')
+        const mediaRect = media?.getBoundingClientRect()
+"""
+          if source.count(old) != 1:
+              raise SystemExit(f'expected one clutter block, found {source.count(old)}')
+          source = source.replace(old, new)
+
+          old = """        const mediaStyle = media ? getComputedStyle(media) : null
+        const desktopStyle = desktopImage ? getComputedStyle(desktopImage) : null
+        const mobileStyle = mobileShell ? getComputedStyle(mobileShell) : null
+        const images = Array.from(chapter.querySelectorAll('.h2o-project-media img'))
+"""
+          new = """        const mediaStyle = media ? getComputedStyle(media) : null
+        const desktopStyle = desktopImage ? getComputedStyle(desktopImage) : null
+        const mobileStyle = mobileShell ? getComputedStyle(mobileShell) : null
+        const proofStyle = proof ? getComputedStyle(proof) : null
+        const exitLabelStyle = exitLabel ? getComputedStyle(exitLabel) : null
+        const images = Array.from(chapter.querySelectorAll('.h2o-project-media img'))
+"""
+          if source.count(old) != 1:
+              raise SystemExit(f'expected one computed-style block, found {source.count(old)}')
+          source = source.replace(old, new)
+
+          old = """          desktopDisplay: desktopStyle?.display || '',
+          mobileDisplay: mobileStyle?.display || '',
+          clutter,
+          brokenImages: images
+"""
+          new = """          desktopDisplay: desktopStyle?.display || '',
+          mobileDisplay: mobileStyle?.display || '',
+          proofDisplay: proofStyle?.display || 'missing',
+          exitLabelDisplay: exitLabelStyle?.display || 'missing',
+          clutter,
+          brokenImages: images
+"""
+          if source.count(old) != 1:
+              raise SystemExit(f'expected one metrics block, found {source.count(old)}')
+          source = source.replace(old, new)
+
+          old = """    for (const item of result.clutter) {
+      if (item.display !== 'none') failures.push(`${profileName}/${project}: ${item.selector} displays as ${item.display}`)
+    }
+    if (profileName === 'desktop' && result.mobileDisplay !== 'none') {
+"""
+          new = """    for (const item of result.clutter) {
+      if (item.display !== 'none') failures.push(`${profileName}/${project}: ${item.selector} displays as ${item.display}`)
+    }
+    const previewAuthoredMobile = profileName === 'mobile' && project === 'justurbanwears'
+    if (previewAuthoredMobile && result.proofDisplay !== 'none') {
+      failures.push(`${profileName}/${project}: duplicate H2O proof remains visible`)
+    }
+    if (!previewAuthoredMobile && (result.proofDisplay === 'none' || result.proofDisplay === 'missing')) {
+      failures.push(`${profileName}/${project}: proof line is not visible`)
+    }
+    if (previewAuthoredMobile && result.exitLabelDisplay !== 'none') {
+      failures.push(`${profileName}/${project}: duplicate exit label remains visible`)
+    }
+    if (!previewAuthoredMobile && (result.exitLabelDisplay === 'none' || result.exitLabelDisplay === 'missing')) {
+      failures.push(`${profileName}/${project}: project exit is not discoverable`)
+    }
+    if (profileName === 'desktop' && result.mobileDisplay !== 'none') {
+"""
+          if source.count(old) != 1:
+              raise SystemExit(f'expected one validation block, found {source.count(old)}')
+          source = source.replace(old, new)
+
+          path.write_text(source)
+          PY
+
+          node --check scripts/capture-project-gallery.mjs
+          rm .github/workflows/repair-gallery-contract.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/capture-project-gallery.mjs .github/workflows/repair-gallery-contract.yml
+          git commit -m "test: certify proof-led project gallery"
+          git push origin HEAD:main
