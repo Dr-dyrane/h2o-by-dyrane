@@ -29,27 +29,13 @@ jobs:
           set -euo pipefail
 
           python - <<'PY'
+          import base64
           from pathlib import Path
 
           path = Path('src/components/immersive/ImmersivePortfolio.tsx')
           source = path.read_text()
-          needle = '''          <span className="h2o-project-media__index" aria-hidden="true">
-            {project.sequence}
-          </span>
-        </motion.div>'''
-          replacement = '''          <span className="h2o-project-media__index" aria-hidden="true">
-            {project.sequence}
-          </span>
-          <a
-            className="h2o-project-media-link"
-            href={project.url}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Open ${project.title} live experience`}
-          >
-            <span>Open {project.title}</span>
-          </a>
-        </motion.div>'''
+          needle = base64.b64decode('ICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iaDJvLXByb2plY3QtbWVkaWFfX2luZGV4IiBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICAgICAgICAgIHtwcm9qZWN0LnNlcXVlbmNlfQogICAgICAgICAgPC9zcGFuPgogICAgICAgIDwvbW90aW9uLmRpdj4=').decode()
+          replacement = base64.b64decode('ICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iaDJvLXByb2plY3QtbWVkaWFfX2luZGV4IiBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICAgICAgICAgIHtwcm9qZWN0LnNlcXVlbmNlfQogICAgICAgICAgPC9zcGFuPgogICAgICAgICAgPGEKICAgICAgICAgICAgY2xhc3NOYW1lPSJoMm8tcHJvamVjdC1tZWRpYS1saW5rIgogICAgICAgICAgICBocmVmPXtwcm9qZWN0LnVybH0KICAgICAgICAgICAgdGFyZ2V0PSJfYmxhbmsiCiAgICAgICAgICAgIHJlbD0ibm9yZWZlcnJlciIKICAgICAgICAgICAgYXJpYS1sYWJlbD17YE9wZW4gJHtwcm9qZWN0LnRpdGxlfSBsaXZlIGV4cGVyaWVuY2VgfQogICAgICAgICAgPgogICAgICAgICAgICA8c3Bhbj5PcGVuIHtwcm9qZWN0LnRpdGxlfTwvc3Bhbj4KICAgICAgICAgIDwvYT4KICAgICAgICA8L21vdGlvbi5kaXY+').decode()
 
           if source.count(needle) != 1:
               raise SystemExit(f'expected one project-media insertion point, found {source.count(needle)}')
