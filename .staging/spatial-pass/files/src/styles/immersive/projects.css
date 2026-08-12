@@ -1,0 +1,267 @@
+.h2o-work {
+  position: relative;
+  z-index: 3;
+  background: linear-gradient(to bottom, rgba(3, 5, 6, 0.72), rgba(3, 5, 6, 0.91) 8%, rgba(3, 5, 6, 0.78) 100%);
+}
+
+.h2o-work__intro {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.32fr) minmax(20rem, 1fr);
+  gap: 2rem;
+  align-items: start;
+  padding: clamp(6rem, 10vw, 10rem) var(--h2o-gutter) clamp(5rem, 8vw, 8rem);
+}
+
+.h2o-work__intro h2 {
+  max-width: 54rem;
+  margin: 0;
+  font-size: clamp(3rem, 6.6vw, 7.3rem);
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  line-height: 0.94;
+}
+
+.h2o-project-chapter {
+  position: relative;
+  min-height: 178svh;
+  background: linear-gradient(180deg, rgba(3, 5, 6, 0.89), rgba(3, 5, 6, 0.68) 42%, rgba(3, 5, 6, 0.9));
+  perspective: 1800px;
+  transform-style: preserve-3d;
+}
+
+.h2o-project-sticky {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: minmax(19rem, 0.72fr) minmax(28rem, 1.28fr);
+  gap: clamp(2rem, 5vw, 6rem);
+  min-height: 100svh;
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(7.2rem, 12vh, 9rem) var(--h2o-gutter) clamp(3rem, 7vh, 5rem);
+  perspective: 1800px;
+  transform-style: preserve-3d;
+}
+
+.h2o-project-glow {
+  position: absolute;
+  inset: 8% -12% -14% 18%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 74% 46%, var(--project-accent-soft), transparent 0 25%, transparent 58%),
+    radial-gradient(circle at 48% 75%, rgba(255, 255, 255, 0.035), transparent 42%);
+  filter: blur(34px);
+  opacity: 0.78;
+}
+
+.h2o-project-copy {
+  position: relative;
+  z-index: 3;
+  align-self: center;
+  max-width: 36rem;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.h2o-project-kicker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  color: var(--h2o-dim);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.h2o-project-kicker span:first-child {
+  color: var(--project-accent);
+}
+
+.h2o-project-kicker span:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.h2o-project-copy h3 {
+  margin: clamp(1.6rem, 3.8vh, 3rem) 0 0;
+  font-size: clamp(3.7rem, 7vw, 8.5rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.82;
+}
+
+.h2o-project-statement {
+  max-width: 33rem;
+  margin: clamp(1.45rem, 2.8vh, 2.3rem) 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.5rem, 2.45vw, 2.85rem);
+  font-style: italic;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.h2o-project-description {
+  max-width: 29rem;
+  margin: 1.35rem 0 0;
+  color: var(--h2o-muted);
+  font-size: clamp(0.93rem, 1.05vw, 1.04rem);
+  line-height: 1.52;
+}
+
+.h2o-project-proof {
+  display: grid;
+  grid-template-columns: 3.7rem 1fr;
+  gap: 0.85rem;
+  margin-top: 1.55rem;
+}
+
+.h2o-project-proof span {
+  color: var(--project-accent);
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.h2o-project-proof p {
+  margin: 0;
+  color: rgba(244, 246, 244, 0.78);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.h2o-project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.72rem 0.85rem;
+  margin-top: 1.65rem;
+}
+
+.h2o-project-actions > a {
+  min-height: 3rem;
+  padding-inline: 1.05rem;
+}
+
+.h2o-project-actions > .h2o-project-actions__secondary {
+  background: rgba(255, 255, 255, 0.075);
+  color: var(--h2o-ink);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.18);
+}
+
+.h2o-project-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.72rem;
+  margin-left: 0.3rem;
+  color: var(--h2o-dim);
+}
+
+.h2o-project-modes span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  background: none;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+}
+
+.h2o-project-modes span + span::before {
+  margin-right: 0.72rem;
+  color: var(--project-accent);
+  content: "·";
+}
+
+.h2o-project-media {
+  position: relative;
+  z-index: 2;
+  order: 2;
+  width: min(64vw, 74rem);
+  height: min(76vh, 52rem);
+  justify-self: end;
+  overflow: hidden;
+  border-radius: clamp(1.7rem, 3vw, 3.2rem);
+  background: #0a0c0e;
+  box-shadow:
+    0 50px 130px rgba(0, 0, 0, 0.52),
+    0 0 90px var(--project-accent-soft);
+  transform-origin: center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.h2o-project-media__wash {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 22%),
+    radial-gradient(circle at 88% 8%, var(--project-accent-soft), transparent 28%),
+    linear-gradient(to top, rgba(0, 0, 0, 0.16), transparent 28%);
+  mix-blend-mode: screen;
+}
+
+.h2o-project-media__desktop,
+.h2o-project-image-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  background: #0b0e10;
+}
+
+.h2o-project-media__desktop {
+  filter: saturate(0.92) contrast(1.02);
+  transform: scale(1.012);
+  transition: filter 700ms ease, transform 1.3s var(--h2o-ease);
+}
+
+.h2o-project-chapter:hover .h2o-project-media__desktop {
+  filter: saturate(1.02) contrast(1.01);
+  transform: scale(1.028);
+}
+
+.h2o-project-image-fallback {
+  display: grid;
+  place-items: center;
+  color: var(--h2o-dim);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.h2o-project-media__mobile-shell {
+  position: absolute;
+  right: clamp(1rem, 3vw, 3rem);
+  bottom: clamp(1rem, 4vh, 2.8rem);
+  z-index: 4;
+  width: clamp(7.2rem, 16%, 12.2rem);
+  aspect-ratio: 9 / 19.4;
+  overflow: hidden;
+  border-radius: clamp(1.15rem, 2vw, 2.15rem);
+  background: #060708;
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.62),
+    0 0 52px var(--project-accent-soft);
+}
+
+.h2o-project-media__mobile {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.h2o-project-media__index {
+  position: absolute;
+  left: clamp(1rem, 2.4vw, 2.2rem);
+  bottom: clamp(1rem, 2.4vw, 2.2rem);
+  z-index: 5;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.64rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+}

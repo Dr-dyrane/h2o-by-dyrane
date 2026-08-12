@@ -1,0 +1,135 @@
+.h2o-practice {
+  position: relative;
+  z-index: 3;
+  height: 332svh;
+  background:
+    radial-gradient(circle at 15% 30%, rgba(84, 240, 179, 0.08), transparent 34rem),
+    radial-gradient(circle at 82% 68%, rgba(174, 145, 255, 0.08), transparent 38rem),
+    linear-gradient(to bottom, rgba(3, 5, 6, 0.42), rgba(3, 5, 6, 0.9) 18%, rgba(3, 5, 6, 0.88) 82%, rgba(3, 5, 6, 0.68));
+  perspective: 1600px;
+  transform-style: preserve-3d;
+}
+
+.h2o-practice__sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  overflow: hidden;
+  perspective: 1600px;
+  transform-style: preserve-3d;
+}
+
+.h2o-practice__label {
+  position: absolute;
+  top: clamp(7.5rem, 13vh, 9.5rem);
+  left: var(--h2o-gutter);
+  z-index: 8;
+}
+
+.h2o-practice__current-word {
+  position: absolute;
+  top: 50%;
+  left: -7vw;
+  z-index: 0;
+  color: rgba(244, 246, 244, 0.12);
+  font-size: clamp(8rem, 23vw, 24rem);
+  font-weight: 600;
+  letter-spacing: -0.1em;
+  line-height: 0.7;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+
+.h2o-practice__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  min-height: 100svh;
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(8rem, 14vh, 11rem) var(--h2o-gutter) clamp(3rem, 7vh, 5rem);
+  perspective: 1600px;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.h2o-practice__number {
+  position: absolute;
+  top: 50%;
+  left: clamp(-1rem, 3vw, 4rem);
+  z-index: 0;
+  color: rgba(244, 246, 244, 0.075);
+  font-size: clamp(16rem, 39vw, 42rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.13em;
+  line-height: 0.62;
+  pointer-events: none;
+  transform: translateY(-50%);
+  user-select: none;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.h2o-practice__copy {
+  position: relative;
+  z-index: 3;
+  width: min(70rem, 76vw);
+  margin-left: clamp(0rem, 20vw, 21rem);
+  transform: translateZ(110px);
+}
+
+.h2o-practice__copy > p {
+  margin: 0 0 clamp(1rem, 3vh, 2rem);
+  color: var(--h2o-dim);
+  font-size: clamp(0.66rem, 0.82vw, 0.78rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.h2o-practice__copy h2 {
+  margin: 0;
+  font-size: clamp(4.7rem, 11.5vw, 12.5rem);
+  font-weight: 500;
+  letter-spacing: -0.085em;
+  line-height: 0.78;
+  text-wrap: balance;
+}
+
+.h2o-practice__copy > span {
+  display: block;
+  max-width: 34rem;
+  margin-top: clamp(1.6rem, 4vh, 3rem);
+  margin-left: clamp(0rem, 13vw, 12rem);
+  color: var(--h2o-muted);
+  font-size: clamp(1rem, 1.45vw, 1.28rem);
+  letter-spacing: -0.018em;
+  line-height: 1.5;
+}
+
+.h2o-practice__stage[data-stage="01"] .h2o-practice__copy h2 {
+  color: #f4f6f4;
+}
+
+.h2o-practice__stage[data-stage="02"] .h2o-practice__copy h2 {
+  color: rgba(245, 206, 69, 0.96);
+}
+
+.h2o-practice__stage[data-stage="03"] .h2o-practice__copy h2 {
+  color: rgba(84, 240, 179, 0.92);
+}
+
+.h2o-practice__stage::after {
+  position: absolute;
+  inset: 10% 5% 5%;
+  z-index: -1;
+  background: radial-gradient(circle at 58% 52%, rgba(255, 255, 255, 0.035), transparent 38%);
+  filter: blur(18px);
+  content: "";
+  pointer-events: none;
+}
