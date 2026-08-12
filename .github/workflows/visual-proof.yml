@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - src/components/immersive/**
+      - src/styles/immersive.css
       - src/styles/immersive/**
       - src/data/immersiveProjects.ts
       - scripts/verify-visual.mjs
