@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
     paths:
-      - .staging/optimized-motion/**
       - .github/workflows/materialize-optimized-motion.yml
 
 permissions:
@@ -24,12 +23,39 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Reconstruct and validate portfolio motion source
+      - name: Patch and validate optimized portfolio motion source
         shell: bash
         run: |
           set -euo pipefail
 
-          cat .staging/optimized-motion/portfolio/chunk.* | tr -d '\n\r ' | base64 --decode > src/components/immersive/ImmersivePortfolio.tsx
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/components/immersive/ImmersivePortfolio.tsx')
+          source = path.read_text()
+          needle = '''          <span className="h2o-project-media__index" aria-hidden="true">
+            {project.sequence}
+          </span>
+        </motion.div>'''
+          replacement = '''          <span className="h2o-project-media__index" aria-hidden="true">
+            {project.sequence}
+          </span>
+          <a
+            className="h2o-project-media-link"
+            href={project.url}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open ${project.title} live experience`}
+          >
+            <span>Open {project.title}</span>
+          </a>
+        </motion.div>'''
+
+          if source.count(needle) != 1:
+              raise SystemExit(f'expected one project-media insertion point, found {source.count(needle)}')
+
+          path.write_text(source.replace(needle, replacement))
+          PY
 
           echo 'd08130f40dea651a4efac89127baf87f7ebfc454297a8bc0f2762074d766ed3f  src/components/immersive/ImmersivePortfolio.tsx' | sha256sum -c -
           echo '035de5f30fe321f627b1160ac619d137c14200d4c8da7ec48f823fe46699d348  src/components/immersive/LiquidCurrentScene.tsx' | sha256sum -c -
