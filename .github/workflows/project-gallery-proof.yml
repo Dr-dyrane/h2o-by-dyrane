@@ -11,6 +11,7 @@ on:
       - src/styles/immersive/**
       - src/data/immersiveProjects.ts
       - scripts/capture-project-gallery.mjs
+      - scripts/verify-awwwards-gallery-report.mjs
       - .github/workflows/project-gallery-proof.yml
 
 permissions:
@@ -55,7 +56,13 @@ jobs:
           cat /tmp/h2o-gallery-server.log
           exit 1
       - name: Capture all flagship scenes
-        run: node scripts/capture-project-gallery.mjs
+        shell: bash
+        run: |
+          set +e
+          node scripts/capture-project-gallery.mjs 2>&1 | tee /tmp/h2o-gallery-proof.log
+          capture_status=${PIPESTATUS[0]}
+          set -e
+          node scripts/verify-awwwards-gallery-report.mjs /tmp/h2o-gallery-proof.log "$capture_status"
       - name: Show server log on failure
         if: failure()
         run: cat /tmp/h2o-gallery-server.log
