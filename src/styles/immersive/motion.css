@@ -1,0 +1,180 @@
+/* Motion contract
+   Fast enough to follow the hand, damped enough to feel liquid.
+   Expensive compositing is reserved for the scene that is actually active. */
+
+:root {
+  --h2o-motion-instant: 140ms;
+  --h2o-motion-fast: 240ms;
+  --h2o-motion-base: 420ms;
+  --h2o-motion-slow: 760ms;
+  --h2o-motion-cinematic: 980ms;
+  --h2o-ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+  --h2o-ease-settle: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --h2o-ease: var(--h2o-ease-fluid);
+}
+
+.h2o-nav__links a,
+.h2o-nav__brand,
+.h2o-nav__status,
+.h2o-project-actions > a,
+.h2o-contact__actions a {
+  transition-duration: var(--h2o-motion-fast);
+  transition-timing-function: var(--h2o-ease-fluid);
+}
+
+.h2o-project-actions svg {
+  transition-duration: var(--h2o-motion-base);
+  transition-timing-function: var(--h2o-ease-fluid);
+}
+
+.h2o-project-media,
+.h2o-project-copy {
+  backface-visibility: hidden;
+  will-change: auto;
+}
+
+.h2o-project-chapter[data-active='true'] .h2o-project-media,
+.h2o-project-chapter[data-active='true'] .h2o-project-copy {
+  will-change: transform, opacity;
+}
+
+.h2o-hero__copy,
+.h2o-practice__stage,
+.h2o-archive__rail,
+.h2o-end__contact,
+.h2o-end__name {
+  backface-visibility: hidden;
+}
+
+.h2o-project-media {
+  contain: layout style;
+  box-shadow:
+    0 44px 105px rgba(0, 0, 0, 0.3),
+    0 0 72px color-mix(in srgb, var(--project-accent) 9%, transparent);
+}
+
+.h2o-project-glow {
+  filter: blur(38px);
+  opacity: 0.46;
+}
+
+.h2o-project-media__wash {
+  opacity: 0.48;
+}
+
+.h2o-project-media__desktop,
+.h2o-project-media__mobile,
+.h2o-project-chapter:hover .h2o-project-media__desktop {
+  filter: none;
+}
+
+.h2o-project-media__desktop {
+  transition:
+    transform var(--h2o-motion-cinematic) var(--h2o-ease-fluid),
+    opacity var(--h2o-motion-base) var(--h2o-ease-settle);
+}
+
+.h2o-project-chapter:hover .h2o-project-media__desktop {
+  transform: scale(1.026);
+}
+
+.h2o-current-canvas canvas {
+  contain: strict;
+}
+
+@media (pointer: coarse) {
+  .h2o-project-chapter:hover .h2o-project-media__desktop {
+    transform: scale(1.018);
+  }
+}
+
+/* Just Urban Wears already carries its title in the captured campaign artwork.
+   On phones, let that authored preview speak and retain only the quiet exit. */
+@media (max-width: 560px) {
+  #justurbanwears .h2o-project-media,
+  #justurbanwears.h2o-project-chapter:nth-of-type(2n) .h2o-project-media,
+  #justurbanwears.h2o-project-chapter:nth-of-type(3n) .h2o-project-media {
+    top: 7svh;
+    height: 84svh;
+  }
+
+  #justurbanwears .h2o-project-media__wash {
+    opacity: 0.12;
+  }
+
+  #justurbanwears .h2o-project-media::before {
+    height: 10%;
+    background: linear-gradient(to bottom, rgba(3, 5, 6, 0.2), transparent);
+  }
+
+  #justurbanwears .h2o-project-media::after {
+    height: 18%;
+    background: linear-gradient(to top, rgba(3, 5, 6, 0.54), transparent);
+  }
+
+  #justurbanwears .h2o-project-media__mobile {
+    object-position: top center;
+    transform: scale(1.01);
+  }
+
+  #justurbanwears .h2o-project-kicker,
+  #justurbanwears .h2o-project-statement {
+    display: none;
+  }
+
+  #justurbanwears .h2o-project-copy h3 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  #justurbanwears .h2o-project-copy,
+  #justurbanwears.h2o-project-chapter[data-direction='reverse'] .h2o-project-copy {
+    right: 1rem;
+    bottom: max(2.4svh, env(safe-area-inset-bottom));
+    left: auto;
+    width: max-content;
+    transform: none !important;
+    opacity: 1 !important;
+    text-align: right;
+  }
+
+  #justurbanwears .h2o-project-actions,
+  #justurbanwears.h2o-project-chapter[data-direction='reverse'] .h2o-project-actions {
+    margin: 0;
+  }
+
+  #justurbanwears .h2o-project-actions__secondary {
+    display: none;
+  }
+
+  #justurbanwears .h2o-project-actions > a:first-child {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 8px 28px rgba(0, 0, 0, 0.72);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --h2o-motion-instant: 1ms;
+    --h2o-motion-fast: 1ms;
+    --h2o-motion-base: 1ms;
+    --h2o-motion-slow: 1ms;
+    --h2o-motion-cinematic: 1ms;
+  }
+
+  .h2o-project-media,
+  .h2o-project-copy,
+  .h2o-hero__copy,
+  .h2o-practice__stage,
+  .h2o-archive__rail,
+  .h2o-end__contact,
+  .h2o-end__name {
+    will-change: auto;
+  }
+}

@@ -1,6 +1,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react'
 import * as THREE from 'three'
+import { frameBlend, webglMotionBudget } from '@/motion/tokens'
 
 interface LiquidCurrentSceneProps {
   progressRef: MutableRefObject<number>
@@ -77,7 +78,7 @@ function ActivityDriver({ activityRef }: { activityRef: MutableRefObject<number>
 
     const loop = () => {
       invalidate()
-      if (performance.now() - activityRef.current < 1800) {
+      if (performance.now() - activityRef.current < webglMotionBudget.idleWindowMs) {
         frame = window.requestAnimationFrame(loop)
       } else {
         running = false
@@ -94,7 +95,6 @@ function ActivityDriver({ activityRef }: { activityRef: MutableRefObject<number>
 
     const events: Array<keyof WindowEventMap> = [
       'scroll',
-      'pointermove',
       'pointerdown',
       'touchmove',
       'keydown',
@@ -132,7 +132,7 @@ function CurrentScene({
   const cameraPosition = useMemo(() => new THREE.Vector3(), [])
 
   const particles = useMemo(() => {
-    const count = 520
+    const count = webglMotionBudget.particleCount
     const positions = new Float32Array(count * 3)
 
     for (let index = 0; index < count; index += 1) {
@@ -149,9 +149,9 @@ function CurrentScene({
 
   const filamentGeometries = useMemo(
     () =>
-      Array.from({ length: 6 }, (_, filamentIndex) => {
-        const points = Array.from({ length: 10 }, (_, pointIndex) => {
-          const progress = pointIndex / 9
+      Array.from({ length: webglMotionBudget.filamentCount }, (_, filamentIndex) => {
+        const points = Array.from({ length: 9 }, (_, pointIndex) => {
+          const progress = pointIndex / 8
           const angle = progress * Math.PI * 3.4 + filamentIndex * 0.72
           const radius = 1.7 + filamentIndex * 0.12 + Math.sin(progress * Math.PI * 4) * 0.3
           return new THREE.Vector3(
@@ -161,7 +161,13 @@ function CurrentScene({
           )
         })
         const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.42)
-        return new THREE.TubeGeometry(curve, 104, 0.008 + filamentIndex * 0.0015, 5, false)
+        return new THREE.TubeGeometry(
+          curve,
+          webglMotionBudget.filamentSegments,
+          0.008 + filamentIndex * 0.0015,
+          webglMotionBudget.filamentRadialSegments,
+          false,
+        )
       }),
     [],
   )
@@ -195,34 +201,39 @@ function CurrentScene({
     const activeIndex = Math.max(0, Math.min(palette.length - 1, activeIndexRef.current))
     const phase = progress * Math.PI * 3.6
     targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
-    accent.lerp(targetAccent, Math.min(1, delta * 2.6))
+    accent.lerp(targetAccent, frameBlend(6.2, delta))
 
     if (groupRef.current) {
       const activeDirection = activeIndex % 2 === 0 ? 1 : -1
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(
+      groupRef.current.rotation.y = THREE.MathUtils.damp(
         groupRef.current.rotation.y,
         progress * Math.PI * 2.15 + Math.sin(phase) * 0.22,
-        0.045,
+        5.4,
+        delta,
       )
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+      groupRef.current.rotation.x = THREE.MathUtils.damp(
         groupRef.current.rotation.x,
         -0.13 + Math.cos(phase * 0.72) * 0.12,
-        0.04,
+        5,
+        delta,
       )
-      groupRef.current.position.x = THREE.MathUtils.lerp(
+      groupRef.current.position.x = THREE.MathUtils.damp(
         groupRef.current.position.x,
         1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16,
-        0.04,
+        4.8,
+        delta,
       )
-      groupRef.current.position.y = THREE.MathUtils.lerp(
+      groupRef.current.position.y = THREE.MathUtils.damp(
         groupRef.current.position.y,
         0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46,
-        0.035,
+        4.4,
+        delta,
       )
-      groupRef.current.position.z = THREE.MathUtils.lerp(
+      groupRef.current.position.z = THREE.MathUtils.damp(
         groupRef.current.position.z,
         -0.18 + Math.sin(phase * 0.48) * 0.72,
-        0.036,
+        4.5,
+        delta,
       )
     }
 
@@ -231,7 +242,7 @@ function CurrentScene({
       Math.cos(phase * 0.35) * 0.26,
       6.1 + Math.sin(phase * 0.26) * 0.38,
     )
-    state.camera.position.lerp(cameraPosition, Math.min(1, delta * 1.75))
+    state.camera.position.lerp(cameraPosition, frameBlend(3.8, delta))
     cameraTarget.set(Math.sin(phase * 0.5) * 0.22, -progress * 0.38, -0.35)
     state.camera.lookAt(cameraTarget)
 
@@ -260,7 +271,7 @@ function CurrentScene({
       pointsRef.current.rotation.z = -0.65 + Math.sin(phase * 0.35) * 0.16
       pointsRef.current.position.y = -progress * 1.05
       const pointsMaterial = pointsRef.current.material as THREE.PointsMaterial
-      pointsMaterial.color.lerp(accent, Math.min(1, delta * 2.3))
+      pointsMaterial.color.lerp(accent, frameBlend(5.2, delta))
     }
 
     if (filamentsRef.current) {
@@ -268,7 +279,7 @@ function CurrentScene({
       filamentsRef.current.rotation.z = 0.5 + Math.sin(phase * 0.32) * 0.22
       filamentsRef.current.children.forEach((child, index) => {
         const mesh = child as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>
-        mesh.material.color.lerp(accent, Math.min(1, delta * (1.3 + index * 0.08)))
+        mesh.material.color.lerp(accent, frameBlend(3.5 + index * 0.22, delta))
         mesh.material.opacity = 0.035 + index * 0.009 + Math.sin(elapsed * 0.3 + index) * 0.008
       })
     }
@@ -278,9 +289,14 @@ function CurrentScene({
         const mesh = node as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>
         const selected = index === activeIndex
         const targetScale = selected ? 1.9 : 0.7
-        const nextScale = THREE.MathUtils.lerp(mesh.scale.x, targetScale, 0.09)
+        const nextScale = THREE.MathUtils.damp(mesh.scale.x, targetScale, 8, delta)
         mesh.scale.setScalar(nextScale)
-        mesh.material.opacity = THREE.MathUtils.lerp(mesh.material.opacity, selected ? 0.94 : 0.24, 0.08)
+        mesh.material.opacity = THREE.MathUtils.damp(
+          mesh.material.opacity,
+          selected ? 0.94 : 0.24,
+          7,
+          delta,
+        )
       })
     }
   })
@@ -304,7 +320,7 @@ function CurrentScene({
           ))}
         </group>
         <mesh ref={primaryRef} material={primaryMaterial} rotation={[0.2, -0.4, 0.18]}>
-          <icosahedronGeometry args={[1.58, 5]} />
+          <icosahedronGeometry args={[1.58, webglMotionBudget.primaryDetail]} />
         </mesh>
         <mesh
           ref={secondaryRef}
@@ -313,7 +329,7 @@ function CurrentScene({
           scale={0.5}
           rotation={[-0.4, 0.55, 0.3]}
         >
-          <icosahedronGeometry args={[1.2, 4]} />
+          <icosahedronGeometry args={[1.2, webglMotionBudget.secondaryDetail]} />
         </mesh>
         <points ref={pointsRef} rotation={[0.35, 0.15, -0.65]}>
           <bufferGeometry>
@@ -332,7 +348,13 @@ function CurrentScene({
         <group ref={nodesRef} rotation={[0.35, 0.15, -0.65]}>
           {nodePositions.map((position, index) => (
             <mesh key={`${palette[index]}-${index}`} position={position}>
-              <sphereGeometry args={[0.055, 16, 16]} />
+              <sphereGeometry
+                args={[
+                  0.055,
+                  webglMotionBudget.nodeSegments,
+                  webglMotionBudget.nodeSegments,
+                ]}
+              />
               <meshBasicMaterial
                 color={palette[index]}
                 transparent
@@ -354,7 +376,7 @@ export default function LiquidCurrentScene(props: LiquidCurrentSceneProps) {
     <div className="h2o-current-canvas" aria-hidden="true">
       <Canvas
         frameloop="demand"
-        dpr={[1, 1.5]}
+        dpr={[1, webglMotionBudget.maxDpr]}
         camera={{ position: [0, 0, 6.1], fov: 42, near: 0.1, far: 30 }}
         gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}

@@ -2,6 +2,7 @@ import {
   motion,
   useMotionValueEvent,
   useScroll,
+  useSpring,
   useTransform,
   type MotionValue,
 } from 'framer-motion'
@@ -21,6 +22,7 @@ import {
   type ImmersiveProject,
   type ImmersiveProjectImage,
 } from '@/data/immersiveProjects'
+import { motionSprings } from '@/motion/tokens'
 import { LiquidCurrentCanvas } from './LiquidCurrentCanvas'
 
 const practiceSteps = [
@@ -85,10 +87,12 @@ function ProjectImage({
 function ProjectChapter({
   project,
   index,
+  active,
   register,
 }: {
   project: ImmersiveProject
   index: number
+  active: boolean
   register: (element: HTMLElement | null, index: number) => void
 }) {
   const sectionRef = useRef<HTMLElement | null>(null)
@@ -97,26 +101,27 @@ function ProjectChapter({
     target: sectionRef,
     offset: ['start end', 'end start'],
   })
-  const mediaScale = useTransform(scrollYProgress, [0, 0.24, 0.74, 1], [0.87, 1, 1, 0.92])
+  const progress = useSpring(scrollYProgress, motionSprings.gallery)
+  const mediaScale = useTransform(progress, [0, 0.24, 0.74, 1], [0.87, 1, 1, 0.92])
   const mediaX = useTransform(
-    scrollYProgress,
+    progress,
     [0, 0.24, 0.74, 1],
     [`${direction * 9}%`, '0%', '0%', `${direction * -5}%`],
   )
-  const mediaY = useTransform(scrollYProgress, [0, 0.5, 1], ['7%', '0%', '-6%'])
+  const mediaY = useTransform(progress, [0, 0.5, 1], ['7%', '0%', '-6%'])
   const mediaRotateY = useTransform(
-    scrollYProgress,
+    progress,
     [0, 0.24, 0.74, 1],
     [direction * -7, 0, 0, direction * 4],
   )
   const copyX = useTransform(
-    scrollYProgress,
+    progress,
     [0, 0.24, 0.74, 1],
     [`${direction * -7}%`, '0%', '0%', `${direction * 6}%`],
   )
-  const copyY = useTransform(scrollYProgress, [0, 0.5, 1], ['8%', '0%', '-8%'])
-  const copyScale = useTransform(scrollYProgress, [0, 0.25, 0.76, 1], [0.95, 1, 1, 0.96])
-  const opacity = useTransform(scrollYProgress, [0, 0.12, 0.84, 1], [0.08, 1, 1, 0.12])
+  const copyY = useTransform(progress, [0, 0.5, 1], ['8%', '0%', '-8%'])
+  const copyScale = useTransform(progress, [0, 0.25, 0.76, 1], [0.95, 1, 1, 0.96])
+  const opacity = useTransform(progress, [0, 0.12, 0.84, 1], [0.08, 1, 1, 0.12])
   const style = {
     '--project-accent': project.accent,
     '--project-accent-soft': project.accentSoft,
@@ -133,6 +138,7 @@ function ProjectChapter({
       style={style}
       data-project-index={index}
       data-direction={direction > 0 ? 'forward' : 'reverse'}
+      data-active={active ? 'true' : 'false'}
     >
       <div className="h2o-project-sticky">
         <div className="h2o-project-glow" aria-hidden="true" />
@@ -145,17 +151,11 @@ function ProjectChapter({
           <ProjectImage
             image={project.desktop}
             className="h2o-project-media__desktop"
-            loading={index < 2 ? 'eager' : 'lazy'}
+            loading={index === 0 ? 'eager' : 'lazy'}
           />
-          <motion.div
-            className="h2o-project-media__mobile-shell"
-            initial={{ y: 42, rotate: 3, opacity: 0 }}
-            whileInView={{ y: 0, rotate: -1.5, opacity: 1 }}
-            viewport={{ amount: 0.35, once: false }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <div className="h2o-project-media__mobile-shell">
             <ProjectImage image={project.mobile} className="h2o-project-media__mobile" />
-          </motion.div>
+          </div>
           <span className="h2o-project-media__index" aria-hidden="true">
             {project.sequence}
           </span>
@@ -298,9 +298,10 @@ function SpatialPractice() {
     target: sectionRef,
     offset: ['start start', 'end end'],
   })
-  const currentX = useTransform(scrollYProgress, [0, 1], ['18vw', '-24vw'])
-  const currentZ = useTransform(scrollYProgress, [0, 0.5, 1], [-420, 40, -460])
-  const currentOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.1, 0.22, 0.08])
+  const progress = useSpring(scrollYProgress, motionSprings.spatial)
+  const currentX = useTransform(progress, [0, 1], ['18vw', '-24vw'])
+  const currentZ = useTransform(progress, [0, 0.5, 1], [-420, 40, -460])
+  const currentOpacity = useTransform(progress, [0, 0.5, 1], [0.1, 0.22, 0.08])
 
   return (
     <section ref={sectionRef} className="h2o-practice" id="practice" aria-label="How the work moves">
@@ -314,7 +315,7 @@ function SpatialPractice() {
           CURRENT
         </motion.div>
         {practiceSteps.map((step, index) => (
-          <SpatialStep key={step.number} step={step} index={index} progress={scrollYProgress} />
+          <SpatialStep key={step.number} step={step} index={index} progress={progress} />
         ))}
       </div>
     </section>
@@ -327,9 +328,10 @@ function ArchiveCurrent() {
     target: sectionRef,
     offset: ['start start', 'end end'],
   })
-  const railX = useTransform(scrollYProgress, [0, 0.08, 0.92, 1], ['8vw', '6vw', '-68%', '-70%'])
-  const wordX = useTransform(scrollYProgress, [0, 1], ['18vw', '-28vw'])
-  const wordZ = useTransform(scrollYProgress, [0, 0.55, 1], [-520, 40, -620])
+  const progress = useSpring(scrollYProgress, motionSprings.gallery)
+  const railX = useTransform(progress, [0, 0.08, 0.92, 1], ['8vw', '6vw', '-68%', '-70%'])
+  const wordX = useTransform(progress, [0, 1], ['18vw', '-28vw'])
+  const wordZ = useTransform(progress, [0, 0.55, 1], [-520, 40, -620])
 
   return (
     <section ref={sectionRef} className="h2o-archive" id="archive" aria-labelledby="h2o-archive-title">
@@ -371,15 +373,16 @@ function EndCredits() {
     target: sectionRef,
     offset: ['start start', 'end end'],
   })
-  const contactY = useTransform(scrollYProgress, [0, 0.38, 0.62], [0, 0, -170])
-  const contactScale = useTransform(scrollYProgress, [0, 0.38, 0.62], [1, 1, 0.84])
-  const contactOpacity = useTransform(scrollYProgress, [0, 0.4, 0.64], [1, 1, 0])
-  const nameY = useTransform(scrollYProgress, [0, 0.45, 0.8, 1], ['34vh', '24vh', '0vh', '-1vh'])
-  const nameZ = useTransform(scrollYProgress, [0, 0.45, 0.8, 1], [-800, -520, 0, 80])
-  const nameScale = useTransform(scrollYProgress, [0, 0.45, 0.8, 1], [0.58, 0.68, 1, 1.04])
-  const nameOpacity = useTransform(scrollYProgress, [0, 0.42, 0.76, 1], [0.05, 0.12, 0.88, 1])
+  const progress = useSpring(scrollYProgress, motionSprings.spatial)
+  const contactY = useTransform(progress, [0, 0.38, 0.62], [0, 0, -170])
+  const contactScale = useTransform(progress, [0, 0.38, 0.62], [1, 1, 0.84])
+  const contactOpacity = useTransform(progress, [0, 0.4, 0.64], [1, 1, 0])
+  const nameY = useTransform(progress, [0, 0.45, 0.8, 1], ['34vh', '24vh', '0vh', '-1vh'])
+  const nameZ = useTransform(progress, [0, 0.45, 0.8, 1], [-800, -520, 0, 80])
+  const nameScale = useTransform(progress, [0, 0.45, 0.8, 1], [0.58, 0.68, 1, 1.04])
+  const nameOpacity = useTransform(progress, [0, 0.42, 0.76, 1], [0.05, 0.12, 0.88, 1])
   const letterSpacing = useTransform(
-    scrollYProgress,
+    progress,
     [0, 0.45, 0.8, 1],
     ['0.08em', '0.03em', '-0.08em', '-0.09em'],
   )
@@ -434,19 +437,21 @@ export default function ImmersivePortfolio() {
   const activityRef = useRef(0)
   const [activeIndex, setActiveIndex] = useState(0)
   const { scrollYProgress } = useScroll()
+  const smoothPageProgress = useSpring(scrollYProgress, motionSprings.world)
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   })
-  const heroCopyX = useTransform(heroProgress, [0, 0.56, 1], ['0vw', '0vw', '-18vw'])
-  const heroCopyY = useTransform(heroProgress, [0, 0.55, 1], [0, -30, -150])
-  const heroCopyZ = useTransform(heroProgress, [0, 0.55, 1], [0, 0, -420])
-  const heroCopyScale = useTransform(heroProgress, [0, 0.58, 1], [1, 1, 0.78])
-  const heroCopyRotateY = useTransform(heroProgress, [0, 0.58, 1], [0, 0, 10])
-  const heroCopyOpacity = useTransform(heroProgress, [0, 0.7, 1], [1, 1, 0])
-  const heroWordSpacing = useTransform(heroProgress, [0, 0.7], ['-0.07em', '-0.035em'])
+  const smoothHeroProgress = useSpring(heroProgress, motionSprings.hero)
+  const heroCopyX = useTransform(smoothHeroProgress, [0, 0.56, 1], ['0vw', '0vw', '-18vw'])
+  const heroCopyY = useTransform(smoothHeroProgress, [0, 0.55, 1], [0, -30, -150])
+  const heroCopyZ = useTransform(smoothHeroProgress, [0, 0.55, 1], [0, 0, -420])
+  const heroCopyScale = useTransform(smoothHeroProgress, [0, 0.58, 1], [1, 1, 0.78])
+  const heroCopyRotateY = useTransform(smoothHeroProgress, [0, 0.58, 1], [0, 0, 10])
+  const heroCopyOpacity = useTransform(smoothHeroProgress, [0, 0.7, 1], [1, 1, 0])
+  const heroWordSpacing = useTransform(smoothHeroProgress, [0, 0.7], ['-0.07em', '-0.035em'])
 
-  useMotionValueEvent(scrollYProgress, 'change', (value) => {
+  useMotionValueEvent(smoothPageProgress, 'change', (value) => {
     progressRef.current = value
     activityRef.current = typeof performance === 'undefined' ? Date.now() : performance.now()
   })
@@ -573,6 +578,7 @@ export default function ImmersivePortfolio() {
             key={project.id}
             project={project}
             index={index}
+            active={index === activeIndex}
             register={registerChapter}
           />
         ))}

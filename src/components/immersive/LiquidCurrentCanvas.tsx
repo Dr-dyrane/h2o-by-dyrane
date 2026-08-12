@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState, type MutableRefObject } from 'react'
+import { webglMotionBudget } from '@/motion/tokens'
 
 interface LiquidCurrentCanvasProps {
   progressRef: MutableRefObject<number>
@@ -43,9 +44,11 @@ export function LiquidCurrentCanvas(props: LiquidCurrentCanvasProps) {
     const reveal = () => setReady(true)
 
     if (idleWindow.requestIdleCallback) {
-      idleHandle = idleWindow.requestIdleCallback(reveal, { timeout: 900 })
+      idleHandle = idleWindow.requestIdleCallback(reveal, {
+        timeout: webglMotionBudget.idleLoadTimeoutMs,
+      })
     } else {
-      timeoutHandle = window.setTimeout(reveal, 180)
+      timeoutHandle = window.setTimeout(reveal, webglMotionBudget.fallbackLoadDelayMs)
     }
 
     return () => {
