@@ -1,0 +1,238 @@
+export type PracticeMode = 'Observe' | 'Build' | 'Operate'
+
+export interface ImmersiveProjectImage {
+  src: string
+  fallbacks: string[]
+  alt: string
+}
+
+export interface ImmersiveProject {
+  id: string
+  sequence: string
+  period: string
+  title: string
+  category: string
+  statement: string
+  description: string
+  proof: string
+  modes: PracticeMode[]
+  accent: string
+  accentSoft: string
+  url: string
+  secondaryUrl?: string
+  secondaryLabel?: string
+  desktop: ImmersiveProjectImage
+  mobile: ImmersiveProjectImage
+}
+
+export interface ArchiveProject {
+  title: string
+  category: string
+  period: string
+  image: string
+}
+
+const capture = (slug: string, viewport: 'desktop' | 'mobile') =>
+  `/showcase/live/${slug}-${viewport}.jpg`
+
+const remoteCapture = (url: string, viewport: 'desktop' | 'mobile') => {
+  const width = viewport === 'desktop' ? 1600 : 430
+  const crop = viewport === 'desktop' ? 1000 : 932
+  return `https://image.thum.io/get/width/${width}/crop/${crop}/noanimate/${url}`
+}
+
+export const immersiveProjects: ImmersiveProject[] = [
+  {
+    id: 'ivisit',
+    sequence: '01',
+    period: '2024 — now',
+    title: 'iVisit',
+    category: 'Emergency healthcare coordination',
+    statement: 'An emergency should not begin with a waiting room.',
+    description:
+      'A live patient, provider, and dispatch ecosystem for requesting an ambulance, finding hospital capacity, and following response as it happens. The work joins clinical judgment, geospatial systems, real-time operations, and calm mobile interaction.',
+    proof: 'Live on Google Play · Patient experience at app.ivisit.ng',
+    modes: ['Observe', 'Build', 'Operate'],
+    accent: '#ff4b3e',
+    accentSoft: 'rgba(255, 75, 62, 0.24)',
+    url: 'https://app.ivisit.ng',
+    secondaryUrl: 'https://play.google.com/store/apps/details?id=com.dyrane.ivisit',
+    secondaryLabel: 'Google Play',
+    desktop: {
+      src: capture('ivisit', 'desktop'),
+      fallbacks: [
+        remoteCapture('https://app.ivisit.ng', 'desktop'),
+        '/showcase/ivisit-console-dark.png',
+      ],
+      alt: 'iVisit live patient and emergency coordination experience on desktop',
+    },
+    mobile: {
+      src: capture('ivisit', 'mobile'),
+      fallbacks: [
+        remoteCapture('https://app.ivisit.ng', 'mobile'),
+        '/showcase/ivisit-mobile-dark.png',
+      ],
+      alt: 'iVisit live patient experience on mobile',
+    },
+  },
+  {
+    id: 'weddings',
+    sequence: '02',
+    period: '2026 — now',
+    title: 'Dyrane Weddings',
+    category: 'Spatial publishing and celebration',
+    statement: 'An invitation that opens into a world.',
+    description:
+      'A cinematic wedding invitation shaped as a continuous guest journey rather than a decorated card. The experience carries story, identity, RSVP, sharing, calendar, accessibility, and graceful no-WebGL continuity inside one authored world.',
+    proof: 'Spatial invitation · truthful RSVP boundary · public event surface',
+    modes: ['Observe', 'Build', 'Operate'],
+    accent: '#f5ce45',
+    accentSoft: 'rgba(245, 206, 69, 0.22)',
+    url: 'https://weddings.dyrane.tech/the_ogranyas',
+    desktop: {
+      src: capture('weddings', 'desktop'),
+      fallbacks: [
+        remoteCapture('https://weddings.dyrane.tech/the_ogranyas', 'desktop'),
+        'https://weddings.dyrane.tech/the_ogranyas/card/3',
+      ],
+      alt: 'Alexander and Chioma spatial wedding invitation on desktop',
+    },
+    mobile: {
+      src: capture('weddings', 'mobile'),
+      fallbacks: [
+        remoteCapture('https://weddings.dyrane.tech/the_ogranyas', 'mobile'),
+        'https://weddings.dyrane.tech/the_ogranyas/card/3',
+      ],
+      alt: 'Alexander and Chioma spatial wedding invitation on mobile',
+    },
+  },
+  {
+    id: 'jelocare',
+    sequence: '03',
+    period: '2026 — now',
+    title: 'JeloCare',
+    category: 'Evidence-led skincare and retail trust',
+    statement: 'Trust is the product before the product.',
+    description:
+      'A Nigerian-first skincare experience that begins with the concern, keeps evidence legible, and carries trust across the final handoff to a retailer. It treats guidance, seller identity, availability, and uncertainty as one product problem.',
+    proof: 'Concern discovery · evidence boundaries · retailer trust bridge',
+    modes: ['Observe', 'Build', 'Operate'],
+    accent: '#ff8f9b',
+    accentSoft: 'rgba(255, 143, 155, 0.22)',
+    url: 'https://jelocare.com',
+    desktop: {
+      src: capture('jelocare', 'desktop'),
+      fallbacks: [remoteCapture('https://jelocare.com', 'desktop')],
+      alt: 'JeloCare evidence-led skincare experience on desktop',
+    },
+    mobile: {
+      src: capture('jelocare', 'mobile'),
+      fallbacks: [remoteCapture('https://jelocare.com', 'mobile')],
+      alt: 'JeloCare evidence-led skincare experience on mobile',
+    },
+  },
+  {
+    id: 'wetindey',
+    sequence: '04',
+    period: '2026 — now',
+    title: 'WetinDey',
+    category: 'Community-confirmed local availability',
+    statement: 'The map knows what is nearby. People know what is actually there.',
+    description:
+      'A map-first public utility for finding everyday essentials through recent community confirmation. The interface compresses category, distance, freshness, price, and contribution into a calm sheet that works at street speed.',
+    proof: 'Map-first PWA · confirmation freshness · local contribution loop',
+    modes: ['Observe', 'Build'],
+    accent: '#54f0b3',
+    accentSoft: 'rgba(84, 240, 179, 0.20)',
+    url: 'https://wetindey.live',
+    desktop: {
+      src: capture('wetindey', 'desktop'),
+      fallbacks: [remoteCapture('https://wetindey.live', 'desktop')],
+      alt: 'WetinDey community availability map on desktop',
+    },
+    mobile: {
+      src: capture('wetindey', 'mobile'),
+      fallbacks: [remoteCapture('https://wetindey.live', 'mobile')],
+      alt: 'WetinDey community availability map on mobile',
+    },
+  },
+  {
+    id: 'aumosaic',
+    sequence: '05',
+    period: '2026 — now',
+    title: 'AU Mosaic',
+    category: 'Material commerce and visual decision support',
+    statement: 'Materials become believable when they enter the room.',
+    description:
+      'A warm editorial commerce experience with a visualizer that helps a customer understand mosaic scale, surface, geometry, and placement before purchase. The interaction makes a difficult material decision tangible.',
+    proof: 'Surface visualizer · geometry-aware placement · editorial commerce',
+    modes: ['Observe', 'Build', 'Operate'],
+    accent: '#ff9e5f',
+    accentSoft: 'rgba(255, 158, 95, 0.22)',
+    url: 'https://aumosaic.com',
+    desktop: {
+      src: capture('aumosaic', 'desktop'),
+      fallbacks: [remoteCapture('https://aumosaic.com', 'desktop'), '/showcase/aumosaic-hero-dark.png'],
+      alt: 'AU Mosaic editorial commerce and surface visualizer on desktop',
+    },
+    mobile: {
+      src: capture('aumosaic', 'mobile'),
+      fallbacks: [remoteCapture('https://aumosaic.com', 'mobile'), '/showcase/aumosaic-backroom-dark.png'],
+      alt: 'AU Mosaic material selection experience on mobile',
+    },
+  },
+  {
+    id: 'justurbanwears',
+    sequence: '06',
+    period: '2026 — now',
+    title: 'Just Urban Wears',
+    category: 'Fashion identity, studio, and commerce',
+    statement: 'A fashion label needs a point of view, not another product grid.',
+    description:
+      'A connected identity and commerce system for a Nigerian fashion brand: public collection storytelling, product discovery, bag and checkout, plus a private creative studio for the work behind the release.',
+    proof: 'Brand system · collection direction · storefront and studio',
+    modes: ['Observe', 'Build', 'Operate'],
+    accent: '#ae91ff',
+    accentSoft: 'rgba(174, 145, 255, 0.22)',
+    url: 'https://justurbanwears.com',
+    desktop: {
+      src: capture('justurbanwears', 'desktop'),
+      fallbacks: [remoteCapture('https://justurbanwears.com', 'desktop')],
+      alt: 'Just Urban Wears fashion storefront on desktop',
+    },
+    mobile: {
+      src: capture('justurbanwears', 'mobile'),
+      fallbacks: [remoteCapture('https://justurbanwears.com', 'mobile')],
+      alt: 'Just Urban Wears fashion storefront on mobile',
+    },
+  },
+]
+
+export const archiveProjects: ArchiveProject[] = [
+  {
+    title: 'HOP',
+    category: 'Hydration and behaviour',
+    period: '2025',
+    image: '/showcase/hop-desktop-dark.png',
+  },
+  {
+    title: 'AERO',
+    category: 'Financial intelligence',
+    period: '2025',
+    image: '/showcase/aero-score-dark.png',
+  },
+  {
+    title: 'Kradle',
+    category: 'Product experience',
+    period: '2025',
+    image: '/showcase/kradle-desktop-dark.png',
+  },
+  {
+    title: 'Ablegod Spark',
+    category: 'Energy and infrastructure',
+    period: '2024',
+    image: '/showcase/ablegod-desktop-dark.png',
+  },
+]
+
+export const liquidPalette = immersiveProjects.map((project) => project.accent)

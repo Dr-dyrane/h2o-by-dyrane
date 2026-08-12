@@ -16,15 +16,15 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ["favicon.ico", "robots.txt", "/icons/*.png", "og-image.png"],
       manifest: {
-        name: "Dyrane",
-        short_name: "Dyrane",
+        name: "H₂O by Dyrane",
+        short_name: "H₂O",
         description:
-          "Premium websites, AI tools, and custom platforms designed to make products easier to understand, easier to trust, and easier to use.",
+          "A living, scroll-driven body of work spanning medicine, product design, software engineering, and real-world operations.",
         start_url: "/",
         display: "standalone",
-        background_color: "#fbf5ee",
-        theme_color: "#fbf5ee",
-        orientation: "portrait",
+        background_color: "#030506",
+        theme_color: "#030506",
+        orientation: "any",
         scope: "/",
         lang: "en",
         icons: [
@@ -41,14 +41,14 @@ export default defineConfig({
             purpose: "any maskable",
           },
         ],
-        categories: ["business", "productivity", "technology"],
+        categories: ["business", "design", "technology"],
         screenshots: [
           {
             src: "/og-image.png",
             sizes: "1200x630",
             type: "image/png",
             form_factor: "wide",
-            label: "Dyrane - Premium websites, AI tools, and custom platforms",
+            label: "H₂O by Dyrane — A body of work in motion",
           },
         ],
       },
@@ -57,7 +57,7 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         navigateFallback: null,
-        globPatterns: ["**/*.{js,css,ico,png,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,ico,jpg,png,svg,woff2}"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

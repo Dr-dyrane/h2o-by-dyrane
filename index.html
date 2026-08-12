@@ -4,17 +4,16 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-	<title>Dyrane | Premium Websites, AI Tools, and Custom Platforms</title>
+	<title>H₂O by Dyrane — A body of work in motion</title>
 	<meta name="description"
-		content="I design and build premium websites, AI tools, and custom platforms that help brands and teams communicate clearly, move faster, and feel more trustworthy." />
-	<meta name="author" content="Alexander Dyrane" />
+		content="Alexander Udeogaranya is a doctor, product designer, and software engineer building healthcare, commerce, spatial, and operational systems that survive contact with the real world." />
+	<meta name="author" content="Alexander Udeogaranya" />
 	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 	<meta name="keywords"
-		content="Dyrane, portfolio, premium websites, AI tools, custom platforms, product design, frontend development" />
-	<meta name="theme-color" content="#fbf5ee" />
+		content="Alexander Udeogaranya, Dyrane, H2O portfolio, product design, software engineering, healthcare technology, WebGL, immersive web" />
+	<meta name="theme-color" content="#030506" />
 
 	<link rel="canonical" href="https://dyrane.tech/" />
-
 	<link rel="icon" type="image/png" href="/logo.png" />
 	<link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
 
@@ -22,13 +21,7 @@
 		(() => {
 			try {
 				const storedTheme = localStorage.getItem("theme");
-				const resolvedTheme =
-					storedTheme === "light" || storedTheme === "dark"
-						? storedTheme
-						: window.matchMedia("(prefers-color-scheme: dark)").matches
-							? "dark"
-							: "light";
-
+				const resolvedTheme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : "dark";
 				const root = document.documentElement;
 				root.classList.remove("light", "dark");
 				root.classList.add(resolvedTheme);
@@ -41,37 +34,18 @@
 	<script>
 		(() => {
 			const hostname = window.location.hostname;
-			const isLocalHost =
-				hostname === "localhost" ||
-				hostname === "127.0.0.1" ||
-				hostname === "[::1]";
-
+			const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
 			window.__ENABLE_VERCEL_ANALYTICS__ = !isLocalHost;
-
-			if (!("serviceWorker" in navigator)) {
-				return;
-			}
-
+			if (!("serviceWorker" in navigator)) return;
 			if (isLocalHost) {
-				window.addEventListener(
-					"load",
-					() => {
-						navigator.serviceWorker
-							.getRegistrations()
-							.then((registrations) =>
-								Promise.all(registrations.map((registration) => registration.unregister()))
-							)
-							.catch(() => undefined);
-
-						if ("caches" in window) {
-							caches
-								.keys()
-								.then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
-								.catch(() => undefined);
-						}
-					},
-					{ once: true }
-				);
+				window.addEventListener("load", () => {
+					navigator.serviceWorker.getRegistrations()
+						.then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+						.catch(() => undefined);
+					if ("caches" in window) {
+						caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key)))).catch(() => undefined);
+					}
+				}, { once: true });
 			}
 		})();
 	</script>
@@ -81,34 +55,36 @@
 
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://dyrane.tech/" />
-	<meta property="og:site_name" content="Dyrane" />
-	<meta property="og:title" content="Complex product? Make it clear before the call." />
+	<meta property="og:site_name" content="H₂O by Dyrane" />
+	<meta property="og:title" content="A body of work in motion." />
 	<meta property="og:description"
-		content="Dyrane designs and builds websites, internal tools, and AI workflows for teams that need clarity, trust, and speed." />
+		content="Medicine, product design, software engineering, and operations treated as one continuous practice." />
 	<meta property="og:image" content="https://dyrane.tech/og-image.png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Dyrane social card showing product design and engineering work for complex products." />
+	<meta property="og:image:alt" content="H₂O by Dyrane — A body of work in motion." />
 
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:url" content="https://dyrane.tech/" />
-	<meta name="twitter:title" content="Complex product? Make it clear before the call." />
+	<meta name="twitter:title" content="A body of work in motion." />
 	<meta name="twitter:description"
-		content="Dyrane designs and builds websites, internal tools, and AI workflows for teams that need clarity, trust, and speed." />
+		content="Alexander Udeogaranya builds healthcare, commerce, spatial, and operational systems." />
 	<meta name="twitter:image" content="https://dyrane.tech/og-image.png" />
-	<meta name="twitter:image:alt" content="Dyrane social card showing product design and engineering work for complex products." />
+	<meta name="twitter:image:alt" content="H₂O by Dyrane — A body of work in motion." />
 
 	<script type="application/ld+json">
 	{
 		"@context": "https://schema.org",
 		"@type": "Person",
-		"name": "Dyrane",
+		"name": "Alexander Udeogaranya",
+		"alternateName": "Dyrane",
 		"url": "https://dyrane.tech",
 		"image": "https://dyrane.tech/logo.png",
-		"jobTitle": "Product Designer and Developer",
-		"description": "I design and build premium websites, AI tools, and custom platforms for brands and teams that need clarity, trust, and speed.",
+		"jobTitle": ["Doctor", "Product Designer", "Software Engineer"],
+		"description": "Alexander Udeogaranya observes complex systems, builds the product, and stays for what happens in the real world.",
 		"sameAs": [
-			"https://github.com/Dr-dyrane/"
+			"https://github.com/Dr-dyrane/",
+			"https://linkedin.com/in/dyrane"
 		]
 	}
 	</script>

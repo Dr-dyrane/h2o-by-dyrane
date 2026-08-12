@@ -1,0 +1,55 @@
+name: Refresh live project captures
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"
+  push:
+    branches: [main]
+    paths:
+      - scripts/capture-showcase.mjs
+      - src/data/immersiveProjects.ts
+      - .github/workflows/capture-showcase.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-live-captures
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - run: npm run capture:showcase
+      - name: Retain refreshed captures
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/showcase/live
+          if git diff --cached --quiet; then
+            echo "Live captures are unchanged."
+            exit 0
+          fi
+          git commit -m "chore: refresh live portfolio captures [skip ci]"
+          git push

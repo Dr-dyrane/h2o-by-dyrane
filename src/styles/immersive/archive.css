@@ -1,0 +1,152 @@
+.h2o-archive {
+  position: relative;
+  z-index: 3;
+  padding: clamp(8rem, 14vw, 15rem) var(--h2o-gutter);
+  background:
+    radial-gradient(circle at 75% 42%, rgba(174, 145, 255, 0.09), transparent 34rem),
+    #030506;
+}
+
+.h2o-archive__heading {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.32fr) minmax(20rem, 1fr);
+  gap: 2rem;
+  margin-bottom: clamp(4rem, 8vw, 8rem);
+}
+
+.h2o-archive__heading h2 {
+  max-width: 70rem;
+  margin: 0;
+  font-size: clamp(2.7rem, 5.8vw, 6.5rem);
+  font-weight: 500;
+  letter-spacing: -0.065em;
+  line-height: 0.98;
+}
+
+.h2o-archive__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1rem, 2.2vw, 2.2rem);
+}
+
+.h2o-archive-card {
+  position: relative;
+  grid-column: span 6;
+  min-height: clamp(22rem, 44vw, 39rem);
+  overflow: hidden;
+  border-radius: clamp(1.5rem, 2.8vw, 2.7rem);
+  background: #0b0d0f;
+  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.32);
+}
+
+.h2o-archive-card:nth-child(2),
+.h2o-archive-card:nth-child(3) {
+  grid-column: span 5;
+}
+
+.h2o-archive-card:nth-child(3) {
+  grid-column-start: 2;
+}
+
+.h2o-archive-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  filter: saturate(0.55) brightness(0.74);
+  transform: scale(1.02);
+  transition: transform 900ms var(--h2o-ease), filter 700ms ease;
+}
+
+.h2o-archive-card::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88), transparent 58%);
+  content: "";
+}
+
+.h2o-archive-card:hover img {
+  filter: saturate(0.92) brightness(0.82);
+  transform: scale(1.055);
+}
+
+.h2o-archive-card > div {
+  position: absolute;
+  right: clamp(1.2rem, 3vw, 2.6rem);
+  bottom: clamp(1.2rem, 3vw, 2.6rem);
+  left: clamp(1.2rem, 3vw, 2.6rem);
+  z-index: 2;
+}
+
+.h2o-archive-card span {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.66rem;
+}
+
+.h2o-archive-card h3 {
+  margin: 0.6rem 0 0;
+  font-size: clamp(2rem, 4vw, 4.8rem);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+}
+
+.h2o-archive-card p {
+  margin: 0.4rem 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.78rem;
+}
+
+.h2o-contact {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(8rem, 14vw, 15rem) var(--h2o-gutter) max(2rem, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 18% 66%, rgba(84, 240, 179, 0.12), transparent 35rem),
+    radial-gradient(circle at 78% 24%, rgba(255, 75, 62, 0.11), transparent 35rem),
+    #030506;
+}
+
+.h2o-contact h2 {
+  max-width: 82rem;
+  margin: 1.6rem 0 0;
+  font-size: clamp(3.4rem, 8.2vw, 9.5rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.89;
+}
+
+.h2o-contact > p:not(.h2o-section-label) {
+  max-width: 45rem;
+  margin: clamp(2rem, 4vw, 4rem) 0 0 clamp(0rem, 18vw, 18rem);
+  color: var(--h2o-muted);
+  font-size: clamp(1rem, 1.45vw, 1.35rem);
+  line-height: 1.54;
+}
+
+.h2o-contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 2rem 0 0 clamp(0rem, 18vw, 18rem);
+}
+
+.h2o-contact__actions a:last-child {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--h2o-ink);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.h2o-contact footer {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 2rem;
+  margin-top: auto;
+  padding-top: clamp(6rem, 12vh, 10rem);
+  color: var(--h2o-dim);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+}
