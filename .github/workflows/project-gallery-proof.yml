@@ -5,9 +5,10 @@ on:
   push:
     branches: [main]
     paths:
+      - src/components/immersive/**
+      - src/motion/**
       - src/styles/immersive.css
-      - src/styles/immersive/gallery*.css
-      - src/styles/immersive/projects.css
+      - src/styles/immersive/**
       - src/data/immersiveProjects.ts
       - scripts/capture-project-gallery.mjs
       - .github/workflows/project-gallery-proof.yml
