@@ -159,6 +159,15 @@ function ProjectChapter({
           <span className="h2o-project-media__index" aria-hidden="true">
             {project.sequence}
           </span>
+          <a
+            className="h2o-project-media-link"
+            href={project.url}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open ${project.title} live experience`}
+          >
+            <span>Open {project.title}</span>
+          </a>
         </motion.div>
 
         <motion.div
