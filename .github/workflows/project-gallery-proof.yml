@@ -1,0 +1,69 @@
+name: Project gallery proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - src/styles/immersive.css
+      - src/styles/immersive/gallery*.css
+      - src/styles/immersive/projects.css
+      - src/data/immersiveProjects.ts
+      - scripts/capture-project-gallery.mjs
+      - .github/workflows/project-gallery-proof.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h2o-project-gallery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gallery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-gallery-server.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/h2o-gallery-server.log
+          exit 1
+      - name: Capture all flagship scenes
+        run: node scripts/capture-project-gallery.mjs
+      - name: Show server log on failure
+        if: failure()
+        run: cat /tmp/h2o-gallery-server.log
+      - name: Upload project gallery proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2o-project-gallery-proof
+          path: .project-gallery-proof/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
