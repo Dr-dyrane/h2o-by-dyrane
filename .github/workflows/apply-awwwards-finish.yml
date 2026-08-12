@@ -1,0 +1,63 @@
+name: Apply H2O Awwwards finish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-awwwards-finish.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-apply-awwwards-finish
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Materialize final Awwwards pass
+        env:
+          H2O_AWWWARDS_PAYLOAD: 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
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$H2O_AWWWARDS_PAYLOAD" | base64 --decode > /tmp/h2o-awwwards-files.tgz
+          tar -xzf /tmp/h2o-awwwards-files.tgz -C .
+          git diff --check
+      - name: Verify final candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          node scripts/verify-motion-contract.mjs
+          node scripts/verify-awwwards-finish.mjs
+          npm run lint
+          npm run build
+      - name: Commit final candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            .github/workflows/quality.yml \
+            docs/awwwards/submission.md \
+            scripts/verify-awwwards-finish.mjs \
+            src/styles/immersive.css \
+            src/styles/immersive/award-finish.css
+          if git diff --cached --quiet; then
+            echo "Awwwards finish is already materialized."
+            exit 0
+          fi
+          git commit -m "feat: finish H2O for Awwwards submission"
+          git push origin HEAD:main
