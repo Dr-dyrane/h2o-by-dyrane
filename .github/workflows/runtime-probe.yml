@@ -1,0 +1,66 @@
+name: Runtime probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/probe-runtime.mjs
+      - .github/workflows/runtime-probe.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h2o-runtime-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-probe-server.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/h2o-probe-server.log
+          exit 1
+      - name: Probe browser runtime
+        run: node scripts/probe-runtime.mjs
+      - name: Show server log
+        if: always()
+        run: cat /tmp/h2o-probe-server.log
+      - name: Upload runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2o-runtime-probe
+          path: .runtime-probe/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
