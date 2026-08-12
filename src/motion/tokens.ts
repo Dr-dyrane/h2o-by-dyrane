@@ -1,3 +1,4 @@
+// Profiled by .github/workflows/motion-profile.yml; keep changes evidence-backed.
 export const fluidEase: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 const settle = {
