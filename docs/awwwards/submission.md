@@ -21,10 +21,11 @@ H₂O is Alexander Udeogaranya’s spatial portfolio: medicine, product design, 
 1. Opening — identity and premise immediately visible.
 2. Observe / Build / Operate — the three modes of practice move through shared depth.
 3. iVisit — the highest-stakes system leads.
-4. Weddings — the spatial and emotional range of the practice.
-5. JeloCare, WetinDey, AU Mosaic and Just Urban Wears — trust, locality, material decision support and fashion identity.
-6. Wider current — experiments that changed later work.
-7. DYRANE — authored closing signature.
+4. MyFinance — the real product becomes its own public product story.
+5. Weddings — the spatial and emotional range of the practice.
+6. JeloCare, WetinDey and AU Mosaic — trust, locality and material decision support.
+7. Wider current — Just Urban Wears and the experiments that changed later work.
+8. DYRANE — authored closing signature.
 
 ## Credits
 
@@ -45,7 +46,7 @@ One borderless visual law governs the experience: depth, light, scale, typograph
 
 ### Creativity
 
-The WebGL current is generated as a persistent spatial metaphor for how patterns and judgment move between projects. It is not a detached hero object; scroll, project state and color continually reshape the same world.
+The WebGL current is generated as a persistent spatial metaphor for how patterns and judgment move between projects. It is not a detached hero object; scroll, project state and color continually reshape the same world. MyFinance extends the same philosophy into product communication: its discovery route renders the real responsive product rather than describing it through a conventional stack of marketing sections.
 
 ### Usability
 
@@ -53,7 +54,7 @@ Essential content remains semantic HTML. Project scenes are direct links, focus 
 
 ### Content
 
-The six flagships are real products rather than speculative exercises. iVisit is live as a patient experience and on Google Play; the remaining chapters link to their public products.
+The six flagships are real products rather than speculative exercises. iVisit is live as a patient experience and on Google Play; MyFinance opens directly into its public `/discover` product story; the remaining chapters link to their public products.
 
 ## Do not submit until
 
@@ -74,8 +75,9 @@ The six flagships are real products rather than speculative exercises. iVisit is
 
 1. Desktop opening — the liquid current and “A body of work in motion.”
 2. Desktop iVisit — highest-stakes product and clearest proof of range.
-3. Mobile opening — immediate identity and responsive composition.
-4. DYRANE signature — authored closing frame.
+3. Desktop MyFinance — the product rendering its own public explanation.
+4. Mobile opening — immediate identity and responsive composition.
+5. DYRANE signature — authored closing frame.
 
 ## Final release decision
 

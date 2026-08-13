@@ -11,6 +11,12 @@ const projects = [
     geolocation: { latitude: 6.5244, longitude: 3.3792 },
   },
   {
+    slug: 'myfinance',
+    url: 'https://myfinance.dyrane.tech/discover',
+    waitMs: 6500,
+    waitFor: '[data-discovery-live-stage="bounded"]',
+  },
+  {
     slug: 'weddings',
     url: 'https://weddings.dyrane.tech/the_ogranyas',
     waitMs: 5500,
@@ -125,6 +131,9 @@ async function capture(project, viewportName) {
 
     await page.goto(project.url, { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await page.waitForNetworkIdle({ idleTime: 900, timeout: 15_000 }).catch(() => undefined)
+    if (project.waitFor) {
+      await page.waitForSelector(project.waitFor, { visible: true, timeout: 20_000 })
+    }
     await dismissCookieNotice(page).catch(() => undefined)
     await sleep(project.waitMs ?? 4500)
 
