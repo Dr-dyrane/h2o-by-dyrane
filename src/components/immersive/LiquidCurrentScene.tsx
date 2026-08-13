@@ -2,11 +2,13 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react'
 import * as THREE from 'three'
 import { frameBlend, webglMotionBudget } from '@/motion/tokens'
+import type { SpatialPointerSnapshot } from '@/motion/useSpatialPointer'
 
 interface LiquidCurrentSceneProps {
   progressRef: MutableRefObject<number>
   activeIndexRef: MutableRefObject<number>
   activityRef: MutableRefObject<number>
+  pointerRef: MutableRefObject<SpatialPointerSnapshot>
   palette: string[]
   compact: boolean
 }
@@ -94,7 +96,7 @@ function ActivityDriver({ activityRef }: { activityRef: MutableRefObject<number>
       }
     }
 
-    const events: Array<keyof WindowEventMap> = ['scroll', 'resize']
+    const events: Array<keyof WindowEventMap> = ['scroll', 'resize', 'pointermove']
     events.forEach((event) => window.addEventListener(event, wake, { passive: true }))
     wake()
 
@@ -111,6 +113,7 @@ function CurrentScene({
   progressRef,
   activeIndexRef,
   activityRef,
+  pointerRef,
   palette,
   compact,
 }: LiquidCurrentSceneProps) {
@@ -126,6 +129,7 @@ function CurrentScene({
   const secondaryMaterial = useMemo(() => createLiquidMaterial(accent), [accent])
   const cameraTarget = useMemo(() => new THREE.Vector3(), [])
   const cameraPosition = useMemo(() => new THREE.Vector3(), [])
+  const pointerPosition = useMemo(() => new THREE.Vector2(), [])
 
   const quality = compact ? webglMotionBudget.compact : webglMotionBudget.full
 
@@ -198,6 +202,19 @@ function CurrentScene({
     const progress = progressRef.current
     const activeIndex = Math.max(0, Math.min(palette.length - 1, activeIndexRef.current))
     const phase = progress * Math.PI * 3.6
+    const pointer = pointerRef.current
+    pointerPosition.x = THREE.MathUtils.damp(
+      pointerPosition.x,
+      pointer.x * pointer.presence,
+      10.5,
+      delta,
+    )
+    pointerPosition.y = THREE.MathUtils.damp(
+      pointerPosition.y,
+      pointer.y * pointer.presence,
+      10.5,
+      delta,
+    )
     targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
     accent.lerp(targetAccent, frameBlend(10, delta))
 
@@ -205,43 +222,47 @@ function CurrentScene({
       const activeDirection = activeIndex % 2 === 0 ? 1 : -1
       groupRef.current.rotation.y = THREE.MathUtils.damp(
         groupRef.current.rotation.y,
-        progress * Math.PI * 2.15 + Math.sin(phase) * 0.22,
+        progress * Math.PI * 2.15 + Math.sin(phase) * 0.22 + pointerPosition.x * 0.18,
         9.5,
         delta,
       )
       groupRef.current.rotation.x = THREE.MathUtils.damp(
         groupRef.current.rotation.x,
-        -0.13 + Math.cos(phase * 0.72) * 0.12,
+        -0.13 + Math.cos(phase * 0.72) * 0.12 + pointerPosition.y * 0.12,
         9,
         delta,
       )
       groupRef.current.position.x = THREE.MathUtils.damp(
         groupRef.current.position.x,
-        1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16,
+        1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16 + pointerPosition.x * 0.32,
         8.8,
         delta,
       )
       groupRef.current.position.y = THREE.MathUtils.damp(
         groupRef.current.position.y,
-        0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46,
+        0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46 - pointerPosition.y * 0.24,
         8.2,
         delta,
       )
       groupRef.current.position.z = THREE.MathUtils.damp(
         groupRef.current.position.z,
-        -0.18 + Math.sin(phase * 0.48) * 0.72,
+        -0.18 + Math.sin(phase * 0.48) * 0.72 + pointerPosition.y * 0.12,
         8.4,
         delta,
       )
     }
 
     cameraPosition.set(
-      Math.sin(phase * 0.42) * 0.62,
-      Math.cos(phase * 0.35) * 0.26,
-      6.1 + Math.sin(phase * 0.26) * 0.38,
+      Math.sin(phase * 0.42) * 0.62 + pointerPosition.x * 0.28,
+      Math.cos(phase * 0.35) * 0.26 - pointerPosition.y * 0.18,
+      6.1 + Math.sin(phase * 0.26) * 0.38 + Math.abs(pointerPosition.x) * 0.08,
     )
     state.camera.position.lerp(cameraPosition, frameBlend(9.2, delta))
-    cameraTarget.set(Math.sin(phase * 0.5) * 0.22, -progress * 0.38, -0.35)
+    cameraTarget.set(
+      Math.sin(phase * 0.5) * 0.22 + pointerPosition.x * 0.18,
+      -progress * 0.38 - pointerPosition.y * 0.13,
+      -0.35,
+    )
     state.camera.lookAt(cameraTarget)
 
     const elapsed = state.clock.elapsedTime
@@ -266,7 +287,7 @@ function CurrentScene({
 
     if (pointsRef.current) {
       pointsRef.current.rotation.y -= delta * 0.032
-      pointsRef.current.rotation.z = -0.65 + Math.sin(phase * 0.35) * 0.16
+      pointsRef.current.rotation.z = -0.65 + Math.sin(phase * 0.35) * 0.16 + pointerPosition.x * 0.08
       pointsRef.current.position.y = -progress * 1.05
       const pointsMaterial = pointsRef.current.material as THREE.PointsMaterial
       pointsMaterial.color.lerp(accent, frameBlend(8.5, delta))
@@ -274,7 +295,7 @@ function CurrentScene({
 
     if (filamentsRef.current) {
       filamentsRef.current.rotation.y = -progress * Math.PI * 1.2
-      filamentsRef.current.rotation.z = 0.5 + Math.sin(phase * 0.32) * 0.22
+      filamentsRef.current.rotation.z = 0.5 + Math.sin(phase * 0.32) * 0.22 + pointerPosition.y * 0.08
       filamentsRef.current.children.forEach((child, index) => {
         const mesh = child as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>
         mesh.material.color.lerp(accent, frameBlend(7 + index * 0.24, delta))

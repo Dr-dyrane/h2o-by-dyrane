@@ -1,6 +1,7 @@
 import {
   motion,
   useMotionValueEvent,
+  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -23,6 +24,7 @@ import {
   type ImmersiveProjectImage,
 } from '@/data/immersiveProjects'
 import { motionSprings } from '@/motion/tokens'
+import { useSpatialPointer, useViewportSpatialPointer } from '@/motion/useSpatialPointer'
 import { LiquidCurrentCanvas } from './LiquidCurrentCanvas'
 
 const practiceSteps = [
@@ -88,15 +90,18 @@ function ProjectChapter({
   project,
   index,
   active,
+  spatialEnabled,
   register,
 }: {
   project: ImmersiveProject
   index: number
   active: boolean
+  spatialEnabled: boolean
   register: (element: HTMLElement | null, index: number) => void
 }) {
   const sectionRef = useRef<HTMLElement | null>(null)
   const direction = index % 2 === 0 ? 1 : -1
+  const pointer = useSpatialPointer<HTMLDivElement>({ enabled: spatialEnabled })
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
@@ -122,6 +127,20 @@ function ProjectChapter({
   const copyY = useTransform(progress, [0, 0.5, 1], ['8%', '0%', '-8%'])
   const copyScale = useTransform(progress, [0, 0.25, 0.76, 1], [0.95, 1, 1, 0.96])
   const opacity = useTransform(progress, [0, 0.12, 0.84, 1], [0.08, 1, 1, 0.12])
+
+  const mediaPointerX = useTransform(pointer.x, [-1, 1], [-10, 10])
+  const mediaPointerY = useTransform(pointer.y, [-1, 1], [-7, 7])
+  const mediaPointerRotateX = useTransform(pointer.y, [-1, 1], [3.2, -3.2])
+  const mediaPointerRotateY = useTransform(pointer.x, [-1, 1], [-4.8, 4.8])
+  const mediaPointerScale = useTransform(pointer.presence, [0, 1], [1, 1.012])
+  const copyPointerX = useTransform(pointer.x, [-1, 1], [5, -5])
+  const copyPointerY = useTransform(pointer.y, [-1, 1], [3, -3])
+  const copyPointerZ = useTransform(pointer.presence, [0, 1], [0, 20])
+  const copyPointerRotateY = useTransform(pointer.x, [-1, 1], [1.4, -1.4])
+  const lightX = useTransform(pointer.x, [-1, 1], ['-42%', '42%'])
+  const lightY = useTransform(pointer.y, [-1, 1], ['-38%', '38%'])
+  const lightOpacity = useTransform(pointer.presence, [0, 1], [0, 0.7])
+
   const style = {
     '--project-accent': project.accent,
     '--project-accent-soft': project.accentSoft,
@@ -140,77 +159,107 @@ function ProjectChapter({
       data-direction={direction > 0 ? 'forward' : 'reverse'}
       data-active={active ? 'true' : 'false'}
     >
-      <div className="h2o-project-sticky">
+      <div
+        className="h2o-project-sticky"
+        data-spatial-enabled={spatialEnabled ? 'true' : 'false'}
+        {...pointer.bind}
+      >
         <div className="h2o-project-glow" aria-hidden="true" />
 
         <motion.div
           className="h2o-project-media"
           style={{ scale: mediaScale, x: mediaX, y: mediaY, rotateY: mediaRotateY, opacity }}
         >
-          <div className="h2o-project-media__wash" aria-hidden="true" />
-          <ProjectImage
-            image={project.desktop}
-            className="h2o-project-media__desktop"
-            loading={index === 0 ? 'eager' : 'lazy'}
-          />
-          <div className="h2o-project-media__mobile-shell">
-            <ProjectImage image={project.mobile} className="h2o-project-media__mobile" />
-          </div>
-          <span className="h2o-project-media__index" aria-hidden="true">
-            {project.sequence}
-          </span>
-          <a
-            className="h2o-project-media-link"
-            href={project.url}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Open ${project.title} live experience`}
+          <motion.div
+            className="h2o-project-media__spatial"
+            style={{
+              x: mediaPointerX,
+              y: mediaPointerY,
+              rotateX: mediaPointerRotateX,
+              rotateY: mediaPointerRotateY,
+              scale: mediaPointerScale,
+            }}
           >
-            <span>Open {project.title}</span>
-          </a>
+            <div className="h2o-project-media__wash" aria-hidden="true" />
+            <motion.div
+              className="h2o-project-pointer-light"
+              style={{ x: lightX, y: lightY, opacity: lightOpacity }}
+              aria-hidden="true"
+            />
+            <ProjectImage
+              image={project.desktop}
+              className="h2o-project-media__desktop"
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+            <div className="h2o-project-media__mobile-shell">
+              <ProjectImage image={project.mobile} className="h2o-project-media__mobile" />
+            </div>
+            <span className="h2o-project-media__index" aria-hidden="true">
+              {project.sequence}
+            </span>
+            <a
+              className="h2o-project-media-link"
+              href={project.url}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Open ${project.title} live experience`}
+            >
+              <span>Open {project.title}</span>
+            </a>
+          </motion.div>
         </motion.div>
 
         <motion.div
           className="h2o-project-copy"
           style={{ x: copyX, y: copyY, scale: copyScale, opacity }}
         >
-          <div className="h2o-project-kicker">
-            <span>{project.sequence}</span>
-            <span>{project.category}</span>
-            <span>{project.period}</span>
-          </div>
-
-          <h3>{project.title}</h3>
-          <p className="h2o-project-statement">{project.statement}</p>
-          <p className="h2o-project-description">{project.description}</p>
-
-          <div className="h2o-project-proof">
-            <span>Proof</span>
-            <p>{project.proof}</p>
-          </div>
-
-          <div className="h2o-project-actions">
-            <a href={project.url} target="_blank" rel="noreferrer">
-              Open live experience
-              <ArrowUpRight aria-hidden="true" size={18} strokeWidth={1.7} />
-            </a>
-            {project.secondaryUrl && project.secondaryLabel ? (
-              <a
-                className="h2o-project-actions__secondary"
-                href={project.secondaryUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {project.secondaryLabel}
-                <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.7} />
-              </a>
-            ) : null}
-            <div className="h2o-project-modes" aria-label="Practice modes">
-              {project.modes.map((mode) => (
-                <span key={mode}>{mode}</span>
-              ))}
+          <motion.div
+            className="h2o-project-copy__spatial"
+            style={{
+              x: copyPointerX,
+              y: copyPointerY,
+              z: copyPointerZ,
+              rotateY: copyPointerRotateY,
+            }}
+          >
+            <div className="h2o-project-kicker">
+              <span>{project.sequence}</span>
+              <span>{project.category}</span>
+              <span>{project.period}</span>
             </div>
-          </div>
+
+            <h3>{project.title}</h3>
+            <p className="h2o-project-statement">{project.statement}</p>
+            <p className="h2o-project-description">{project.description}</p>
+
+            <div className="h2o-project-proof">
+              <span>Proof</span>
+              <p>{project.proof}</p>
+            </div>
+
+            <div className="h2o-project-actions">
+              <a href={project.url} target="_blank" rel="noreferrer">
+                Open live experience
+                <ArrowUpRight aria-hidden="true" size={18} strokeWidth={1.7} />
+              </a>
+              {project.secondaryUrl && project.secondaryLabel ? (
+                <a
+                  className="h2o-project-actions__secondary"
+                  href={project.secondaryUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {project.secondaryLabel}
+                  <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.7} />
+                </a>
+              ) : null}
+              <div className="h2o-project-modes" aria-label="Practice modes">
+                {project.modes.map((mode) => (
+                  <span key={mode}>{mode}</span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </article>
@@ -301,7 +350,15 @@ function SpatialStep({
   )
 }
 
-function SpatialPractice() {
+function SpatialPractice({
+  pointerX,
+  pointerY,
+  pointerPresence,
+}: {
+  pointerX: MotionValue<number>
+  pointerY: MotionValue<number>
+  pointerPresence: MotionValue<number>
+}) {
   const sectionRef = useRef<HTMLElement | null>(null)
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -311,6 +368,13 @@ function SpatialPractice() {
   const currentX = useTransform(progress, [0, 1], ['18vw', '-24vw'])
   const currentZ = useTransform(progress, [0, 0.5, 1], [-420, 40, -460])
   const currentOpacity = useTransform(progress, [0, 0.5, 1], [0.1, 0.22, 0.08])
+  const fieldX = useTransform(pointerX, [-1, 1], [-11, 11])
+  const fieldY = useTransform(pointerY, [-1, 1], [-7, 7])
+  const fieldRotateX = useTransform(pointerY, [-1, 1], [1.3, -1.3])
+  const fieldRotateY = useTransform(pointerX, [-1, 1], [-2.2, 2.2])
+  const fieldScale = useTransform(pointerPresence, [0, 1], [1, 1.004])
+  const wordPointerX = useTransform(pointerX, [-1, 1], [18, -18])
+  const wordPointerY = useTransform(pointerY, [-1, 1], [8, -8])
 
   return (
     <section ref={sectionRef} className="h2o-practice" id="practice" aria-label="How the work moves">
@@ -321,17 +385,84 @@ function SpatialPractice() {
           style={{ x: currentX, z: currentZ, opacity: currentOpacity }}
           aria-hidden="true"
         >
-          CURRENT
+          <motion.span style={{ x: wordPointerX, y: wordPointerY }}>CURRENT</motion.span>
         </motion.div>
-        {practiceSteps.map((step, index) => (
-          <SpatialStep key={step.number} step={step} index={index} progress={progress} />
-        ))}
+        <motion.div
+          className="h2o-practice__pointer-field"
+          style={{
+            x: fieldX,
+            y: fieldY,
+            rotateX: fieldRotateX,
+            rotateY: fieldRotateY,
+            scale: fieldScale,
+          }}
+        >
+          {practiceSteps.map((step, index) => (
+            <SpatialStep key={step.number} step={step} index={index} progress={progress} />
+          ))}
+        </motion.div>
       </div>
     </section>
   )
 }
 
-function ArchiveCurrent() {
+type ArchiveProject = (typeof archiveProjects)[number]
+
+function ArchiveCard({
+  project,
+  index,
+  spatialEnabled,
+}: {
+  project: ArchiveProject
+  index: number
+  spatialEnabled: boolean
+}) {
+  const pointer = useSpatialPointer<HTMLElement>({
+    enabled: spatialEnabled,
+    spring: motionSprings.pointerSlow,
+  })
+  const rotateX = useTransform(pointer.y, [-1, 1], [3, -3])
+  const rotateY = useTransform(pointer.x, [-1, 1], [-4.2, 4.2])
+  const x = useTransform(pointer.x, [-1, 1], [-7, 7])
+  const y = useTransform(pointer.y, [-1, 1], [-5, 5])
+  const z = useTransform(pointer.presence, [0, 1], [0, 34])
+  const scale = useTransform(pointer.presence, [0, 1], [1, 1.014])
+  const lightX = useTransform(pointer.x, [-1, 1], ['-44%', '44%'])
+  const lightY = useTransform(pointer.y, [-1, 1], ['-40%', '40%'])
+  const lightOpacity = useTransform(pointer.presence, [0, 1], [0, 0.58])
+  const cardStyle = {
+    '--archive-tilt': `${index % 2 === 0 ? 5 : -6}deg`,
+    '--archive-depth': `${index % 2 === 0 ? 0 : -90}px`,
+  } as CSSProperties
+
+  return (
+    <article
+      className="h2o-archive-card"
+      style={cardStyle}
+      data-spatial-enabled={spatialEnabled ? 'true' : 'false'}
+      {...pointer.bind}
+    >
+      <motion.div
+        className="h2o-archive-card__spatial"
+        style={{ x, y, z, rotateX, rotateY, scale }}
+      >
+        <motion.div
+          className="h2o-archive-pointer-light"
+          style={{ x: lightX, y: lightY, opacity: lightOpacity }}
+          aria-hidden="true"
+        />
+        <img src={project.image} alt={`${project.title} product interface`} loading="lazy" />
+        <div>
+          <span>{project.period}</span>
+          <h3>{project.title}</h3>
+          <p>{project.category}</p>
+        </div>
+      </motion.div>
+    </article>
+  )
+}
+
+function ArchiveCurrent({ spatialEnabled }: { spatialEnabled: boolean }) {
   const sectionRef = useRef<HTMLElement | null>(null)
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -353,23 +484,14 @@ function ArchiveCurrent() {
           MORE WORK
         </motion.div>
         <motion.div className="h2o-archive__rail" style={{ x: railX }}>
-          {archiveProjects.map((project, index) => {
-            const cardStyle = {
-              '--archive-tilt': `${index % 2 === 0 ? 5 : -6}deg`,
-              '--archive-depth': `${index % 2 === 0 ? 0 : -90}px`,
-            } as CSSProperties
-
-            return (
-              <article key={project.title} className="h2o-archive-card" style={cardStyle}>
-                <img src={project.image} alt={`${project.title} product interface`} loading="lazy" />
-                <div>
-                  <span>{project.period}</span>
-                  <h3>{project.title}</h3>
-                  <p>{project.category}</p>
-                </div>
-              </article>
-            )
-          })}
+          {archiveProjects.map((project, index) => (
+            <ArchiveCard
+              key={project.title}
+              project={project}
+              index={index}
+              spatialEnabled={spatialEnabled}
+            />
+          ))}
         </motion.div>
       </div>
     </section>
@@ -444,6 +566,9 @@ export default function ImmersivePortfolio() {
   const progressRef = useRef(0)
   const activeIndexRef = useRef(0)
   const activityRef = useRef(0)
+  const shouldReduceMotion = useReducedMotion()
+  const spatialEnabled = shouldReduceMotion !== true
+  const pointerField = useViewportSpatialPointer(activityRef, spatialEnabled)
   const [activeIndex, setActiveIndex] = useState(0)
   const { scrollYProgress } = useScroll()
   const smoothPageProgress = useSpring(scrollYProgress, motionSprings.world)
@@ -459,6 +584,16 @@ export default function ImmersivePortfolio() {
   const heroCopyRotateY = useTransform(smoothHeroProgress, [0, 0.58, 1], [0, 0, 10])
   const heroCopyOpacity = useTransform(smoothHeroProgress, [0, 0.7, 1], [1, 1, 0])
   const heroWordSpacing = useTransform(smoothHeroProgress, [0, 0.7], ['-0.07em', '-0.035em'])
+  const heroPointerX = useTransform(pointerField.x, [-1, 1], [-12, 12])
+  const heroPointerY = useTransform(pointerField.y, [-1, 1], [-8, 8])
+  const heroPointerRotateX = useTransform(pointerField.y, [-1, 1], [1.4, -1.4])
+  const heroPointerRotateY = useTransform(pointerField.x, [-1, 1], [-2.1, 2.1])
+  const heroPointerScale = useTransform(pointerField.presence, [0, 1], [1, 1.006])
+  const heroCountX = useTransform(pointerField.x, [-1, 1], [5, -5])
+  const heroCountY = useTransform(pointerField.y, [-1, 1], [3, -3])
+  const heroLightX = useTransform(pointerField.x, [-1, 1], [-210, 210])
+  const heroLightY = useTransform(pointerField.y, [-1, 1], [-130, 130])
+  const heroLightOpacity = useTransform(pointerField.presence, [0, 1], [0, 0.86])
 
   useMotionValueEvent(smoothPageProgress, 'change', (value) => {
     progressRef.current = value
@@ -505,7 +640,7 @@ export default function ImmersivePortfolio() {
   }
 
   return (
-    <main className="h2o-immersive" id="top">
+    <main className="h2o-immersive" id="top" data-spatial-input={spatialEnabled ? 'enabled' : 'reduced'}>
       <a className="h2o-skip-link" href="#work">
         Skip to selected work
       </a>
@@ -514,6 +649,7 @@ export default function ImmersivePortfolio() {
         progressRef={progressRef as MutableRefObject<number>}
         activeIndexRef={activeIndexRef as MutableRefObject<number>}
         activityRef={activityRef as MutableRefObject<number>}
+        pointerRef={pointerField.pointerRef}
         palette={palette}
       />
 
@@ -541,6 +677,11 @@ export default function ImmersivePortfolio() {
       <section ref={heroRef} className="h2o-hero" aria-labelledby="h2o-hero-title">
         <div className="h2o-hero__sticky">
           <motion.div
+            className="h2o-hero__pointer-light"
+            style={{ x: heroLightX, y: heroLightY, opacity: heroLightOpacity }}
+            aria-hidden="true"
+          />
+          <motion.div
             className="h2o-hero__copy"
             style={{
               x: heroCopyX,
@@ -551,30 +692,50 @@ export default function ImmersivePortfolio() {
               opacity: heroCopyOpacity,
             }}
           >
-            <p className="h2o-eyebrow">
-              Alexander Udeogaranya · Doctor · Product designer · Software engineer
-            </p>
-            <motion.h1 id="h2o-hero-title" style={{ letterSpacing: heroWordSpacing }}>
-              <span>A body</span>
-              <span>of work</span>
-              <em>in motion.</em>
-            </motion.h1>
-            <div className="h2o-hero__footer">
-              <p>I observe the system, build the product, and stay for reality.</p>
-              <a href="#practice">
-                Enter the current
-                <ArrowDown aria-hidden="true" size={18} strokeWidth={1.7} />
-              </a>
-            </div>
+            <motion.div
+              className="h2o-hero__spatial"
+              style={{
+                x: heroPointerX,
+                y: heroPointerY,
+                rotateX: heroPointerRotateX,
+                rotateY: heroPointerRotateY,
+                scale: heroPointerScale,
+              }}
+            >
+              <p className="h2o-eyebrow">
+                Alexander Udeogaranya · Doctor · Product designer · Software engineer
+              </p>
+              <motion.h1 id="h2o-hero-title" style={{ letterSpacing: heroWordSpacing }}>
+                <span>A body</span>
+                <span>of work</span>
+                <em>in motion.</em>
+              </motion.h1>
+              <div className="h2o-hero__footer">
+                <p>I observe the system, build the product, and stay for reality.</p>
+                <a href="#practice">
+                  Enter the current
+                  <ArrowDown aria-hidden="true" size={18} strokeWidth={1.7} />
+                </a>
+              </div>
+            </motion.div>
           </motion.div>
-          <div className="h2o-hero__count" aria-hidden="true">
+          <motion.div
+            className="h2o-hero__count"
+            style={{ x: heroCountX, y: heroCountY }}
+            aria-hidden="true"
+          >
             <strong>50+</strong>
             <span>builds, one current</span>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      <SpatialPractice />
+
+      <SpatialPractice
+        pointerX={pointerField.x}
+        pointerY={pointerField.y}
+        pointerPresence={pointerField.presence}
+      />
 
       <section className="h2o-work" id="work" aria-labelledby="h2o-work-title">
         <header className="h2o-work__intro">
@@ -588,12 +749,13 @@ export default function ImmersivePortfolio() {
             project={project}
             index={index}
             active={index === activeIndex}
+            spatialEnabled={spatialEnabled}
             register={registerChapter}
           />
         ))}
       </section>
 
-      <ArchiveCurrent />
+      <ArchiveCurrent spatialEnabled={spatialEnabled} />
       <EndCredits />
     </main>
   )

@@ -1,10 +1,12 @@
 import { lazy, Suspense, useEffect, useState, type MutableRefObject } from 'react'
 import { webglMotionBudget } from '@/motion/tokens'
+import type { SpatialPointerSnapshot } from '@/motion/useSpatialPointer'
 
 interface LiquidCurrentCanvasProps {
   progressRef: MutableRefObject<number>
   activeIndexRef: MutableRefObject<number>
   activityRef: MutableRefObject<number>
+  pointerRef: MutableRefObject<SpatialPointerSnapshot>
   palette: string[]
 }
 
