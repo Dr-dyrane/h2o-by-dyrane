@@ -1,0 +1,103 @@
+name: Materialize spatial Apple-like motion v2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/materialize-spatial-motion-v2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-spatial-motion-materializer-v2
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Run corrected spatial materializer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/materialize-spatial-motion.yml').read_text().splitlines()
+          start = workflow.index("          python - <<'PY'") + 1
+          end = workflow.index('          PY', start)
+          script_lines = []
+          for line in workflow[start:end]:
+              script_lines.append(line[10:] if line.startswith('          ') else line)
+          script = '\n'.join(script_lines)
+
+          old = """portfolio = replace_once(portfolio, hook_marker, local_hook.replace('          ', '') + hook_marker, 'local spatial hook')
+          portfolio = replace_between(portfolio, 'function ProjectChapter({', '\\ntype PracticeStep =', project_chapter.replace('          ', ''), 'ProjectChapter')""".replace('          ', '')
+          new = """portfolio = replace_between(portfolio, 'function ProjectChapter({', '\\ntype PracticeStep =', project_chapter.replace('          ', ''), 'ProjectChapter')
+          portfolio = replace_once(portfolio, hook_marker, local_hook.replace('          ', '') + hook_marker, 'local spatial hook')""".replace('          ', '')
+          if script.count(old) != 1:
+              raise SystemExit(f'expected one materializer order fragment, found {script.count(old)}')
+          script = script.replace(old, new, 1)
+          exec(compile(script, 'spatial-materializer', 'exec'), {})
+          PY
+      - run: npm ci
+      - run: node scripts/verify-motion-contract.mjs
+      - run: npm run lint
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-spatial-server.log 2>&1 &
+          echo $! > /tmp/h2o-spatial-server.pid
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/h2o-spatial-server.log
+          exit 1
+      - run: npm run verify:spatial
+      - run: git diff --check
+      - name: Retain verified spatial motion
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/materialize-spatial-motion.yml
+          rm .github/workflows/materialize-spatial-motion-v2.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            .gitignore \
+            package.json \
+            scripts/verify-motion-contract.mjs \
+            scripts/verify-spatial-hover.mjs \
+            src/components/immersive/ImmersivePortfolio.tsx \
+            src/components/immersive/LiquidCurrentCanvas.tsx \
+            src/components/immersive/LiquidCurrentScene.tsx \
+            src/motion/tokens.ts \
+            src/styles/immersive/motion.css \
+            .github/workflows/visual-proof.yml \
+            .github/workflows/materialize-spatial-motion.yml \
+            .github/workflows/materialize-spatial-motion-v2.yml
+          git commit -m "feat: add spatial Apple-like motion"
+          git push origin HEAD:main
