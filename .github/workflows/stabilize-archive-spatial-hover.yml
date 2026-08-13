@@ -1,0 +1,148 @@
+name: Stabilize archive spatial hover
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stabilize-archive-spatial-hover.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-stabilize-archive-spatial-hover
+  cancel-in-progress: false
+
+jobs:
+  stabilize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Put pointer capture on a stable archive hit plane
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          portfolio_path = Path('src/components/immersive/ImmersivePortfolio.tsx')
+          portfolio = portfolio_path.read_text()
+
+          old_hook = """  const pointer = useSpatialPointer<HTMLElement>({
+            enabled: spatialEnabled,
+            spring: motionSprings.pointerSlow,
+          })"""
+          new_hook = """  const pointer = useSpatialPointer<HTMLDivElement>({
+            enabled: spatialEnabled,
+            spring: motionSprings.pointerSlow,
+          })"""
+          if portfolio.count(old_hook) != 1:
+              raise SystemExit(f'expected one archive pointer hook, found {portfolio.count(old_hook)}')
+          portfolio = portfolio.replace(old_hook, new_hook, 1)
+
+          old_card = """    <article
+                className=\"h2o-archive-card\"
+                style={cardStyle}
+                data-spatial-enabled={spatialEnabled ? 'true' : 'false'}
+                {...pointer.bind}
+              >
+                <motion.div"""
+          new_card = """    <article
+                className=\"h2o-archive-card\"
+                style={cardStyle}
+                data-archive-index={index}
+                data-spatial-enabled={spatialEnabled ? 'true' : 'false'}
+              >
+                <div
+                  className=\"h2o-archive-card__hit-area\"
+                  {...pointer.bind}
+                  aria-hidden=\"true\"
+                />
+                <motion.div"""
+          if portfolio.count(old_card) != 1:
+              raise SystemExit(f'expected one archive card binding, found {portfolio.count(old_card)}')
+          portfolio = portfolio.replace(old_card, new_card, 1)
+          portfolio_path.write_text(portfolio)
+
+          css_path = Path('src/styles/immersive/archive-spatial-hit.css')
+          css_path.write_text('\n'.join([
+              '/* Stable pointer capture for archive cards.',
+              '   The hit surface stays fixed while the visual plane moves beneath it. */',
+              '',
+              '.h2o-archive-card__hit-area {',
+              '  position: absolute;',
+              '  inset: 0;',
+              '  z-index: 6;',
+              '  border-radius: inherit;',
+              '  cursor: default;',
+              '  touch-action: pan-y;',
+              '}',
+              '',
+              '@media (pointer: coarse), (max-width: 900px) {',
+              '  .h2o-archive-card__hit-area {',
+              '    display: none;',
+              '  }',
+              '}',
+              '',
+              '@media (prefers-reduced-motion: reduce) {',
+              '  .h2o-archive-card__hit-area {',
+              '    display: none;',
+              '  }',
+              '}',
+              '',
+          ]))
+
+          imports_path = Path('src/styles/immersive.css')
+          imports = imports_path.read_text()
+          old_import = "@import './immersive/spatial-interaction.css';\n"
+          new_import = "@import './immersive/spatial-interaction.css';\n@import './immersive/archive-spatial-hit.css';\n"
+          if imports.count(old_import) != 1:
+              raise SystemExit(f'expected one spatial stylesheet import, found {imports.count(old_import)}')
+          imports_path.write_text(imports.replace(old_import, new_import, 1))
+          PY
+      - name: Verify source contract
+        run: |
+          git diff --check
+          node scripts/verify-motion-contract.mjs
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-server.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/h2o-server.log
+          exit 1
+      - run: npm run verify:visual
+      - run: npm run verify:spatial
+      - name: Retain verified archive hover
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/immersive/ImmersivePortfolio.tsx src/styles/immersive.css src/styles/immersive/archive-spatial-hit.css
+          git commit -m "fix: stabilize archive spatial hover"
+          git push origin HEAD:main
