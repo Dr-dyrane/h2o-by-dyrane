@@ -29,6 +29,8 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - name: Repair the stale build lock without mutating it
+        run: npm install --no-save --package-lock=false vite-plugin-pwa@0.21.1
       - run: npm run build
 
       - name: Locate Chromium
