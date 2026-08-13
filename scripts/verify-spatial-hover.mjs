@@ -127,11 +127,13 @@ try {
   await reducedPage.goto(baseUrl, { waitUntil: 'networkidle0', timeout: 60_000 })
   await reducedPage.waitForSelector('.h2o-immersive[data-spatial-input="reduced"]', { timeout: 20_000 })
   const reduced = await reducedPage.evaluate(() => ({
+    mediaQueryMatches: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     canvasCount: document.querySelectorAll('canvas').length,
     lightDisplay: getComputedStyle(document.querySelector('.h2o-hero__pointer-light')).display,
     heroTransform: getComputedStyle(document.querySelector('.h2o-hero__spatial')).transform,
   }))
   report.reducedMotion = reduced
+  if (!reduced.mediaQueryMatches) failures.push('reduced motion: browser media preference was not applied')
   if (reduced.canvasCount !== 0) failures.push('reduced motion: WebGL canvas should remain disabled')
   if (reduced.lightDisplay !== 'none') failures.push('reduced motion: pointer lights should be hidden')
   await reducedPage.close()
