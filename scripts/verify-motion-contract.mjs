@@ -65,8 +65,6 @@ requireText(
   'webglMotionBudget.idleWindowMs',
   'scene: on-demand render tail is not governed by the motion budget',
 )
-requireText('styles', '#justurbanwears .h2o-project-copy h3', 'mobile JUW: duplicate title suppression is missing')
-requireText('styles', '#justurbanwears .h2o-project-statement', 'mobile JUW: duplicate statement suppression is missing')
 requireText('styles', "[data-active='true']", 'styles: active-only will-change budgeting is missing')
 requireText('spatialStyles', '--h2o-ease-apple', 'styles: Apple-like cubic-bezier curve is missing')
 requireText('spatialStyles', '.h2o-project-media__spatial', 'styles: project spatial plane is missing')

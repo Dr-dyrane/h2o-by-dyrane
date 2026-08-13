@@ -6,7 +6,7 @@ const outputDirectory = resolve(process.cwd(), '.project-gallery-proof')
 const reportPath = resolve(outputDirectory, 'report.json')
 const logPath = process.argv[2]
 const captureStatus = Number(process.argv[3] ?? 0)
-const projects = ['ivisit', 'weddings', 'jelocare', 'wetindey', 'aumosaic', 'justurbanwears']
+const projects = ['ivisit', 'myfinance', 'weddings', 'jelocare', 'wetindey', 'aumosaic']
 const profiles = ['desktop', 'mobile']
 const failures = []
 
@@ -16,16 +16,16 @@ if (!existsSync(reportPath)) {
 
 const report = JSON.parse(await readFile(reportPath, 'utf8'))
 const log = logPath && existsSync(logPath) ? await readFile(logPath, 'utf8') : ''
-const expectedLegacyFailure = /^(desktop|mobile)\/(ivisit|weddings|jelocare|wetindey|aumosaic|justurbanwears): \.h2o-project-proof displays as flex$/
+const expectedProofNotice = /^(desktop|mobile)\/(ivisit|myfinance|weddings|jelocare|wetindey|aumosaic): \.h2o-project-proof displays as flex$/
 
-const legacyLines = log
+const captureLines = log
   .split(/\r?\n/)
   .map((line) => line.trim())
   .filter(Boolean)
 
-const unexpectedLegacyLines = legacyLines.filter((line) => !expectedLegacyFailure.test(line))
-if (captureStatus !== 0 && unexpectedLegacyLines.length > 0) {
-  failures.push(`unexpected legacy gallery failures: ${unexpectedLegacyLines.join(' | ')}`)
+const unexpectedCaptureLines = captureLines.filter((line) => !expectedProofNotice.test(line))
+if (captureStatus !== 0 && unexpectedCaptureLines.length > 0) {
+  failures.push(`unexpected gallery failures: ${unexpectedCaptureLines.join(' | ')}`)
 }
 
 for (const profileName of profiles) {
@@ -45,13 +45,9 @@ for (const profileName of profiles) {
     const proof = result.clutter?.find((item) => item.selector === '.h2o-project-proof')
     const description = result.clutter?.find((item) => item.selector === '.h2o-project-description')
     const modes = result.clutter?.find((item) => item.selector === '.h2o-project-modes')
-    const previewAuthoredMobile = profileName === 'mobile' && project === 'justurbanwears'
 
     if (!proof) failures.push(`${profileName}/${project}: proof measurement missing`)
-    if (previewAuthoredMobile && proof?.display !== 'none') {
-      failures.push(`${profileName}/${project}: duplicate H2O proof remains visible`)
-    }
-    if (!previewAuthoredMobile && (proof?.display === 'none' || proof?.display === 'missing')) {
+    if (proof?.display === 'none' || proof?.display === 'missing') {
       failures.push(`${profileName}/${project}: proof line is not visible`)
     }
     if (description?.display !== 'none') {
@@ -73,11 +69,11 @@ for (const profileName of profiles) {
   }
 }
 
-const expectedVisibleProofFailures = projects.length + projects.length - 1
-const observedVisibleProofFailures = legacyLines.filter(expectedLegacyFailure.test.bind(expectedLegacyFailure)).length
-if (captureStatus !== 0 && observedVisibleProofFailures !== expectedVisibleProofFailures) {
+const expectedProofNotices = projects.length * profiles.length
+const observedProofNotices = captureLines.filter(expectedProofNotice.test.bind(expectedProofNotice)).length
+if (captureStatus !== 0 && observedProofNotices !== expectedProofNotices) {
   failures.push(
-    `expected ${expectedVisibleProofFailures} intentional proof-visibility notices, found ${observedVisibleProofFailures}`,
+    `expected ${expectedProofNotices} intentional proof-visibility notices, found ${observedProofNotices}`,
   )
 }
 

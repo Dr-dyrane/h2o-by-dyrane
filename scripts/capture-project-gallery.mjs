@@ -18,7 +18,7 @@ if (!executablePath) {
   throw new Error(`No Chromium executable found. Checked: ${executableCandidates.join(', ')}`)
 }
 
-const projects = ['ivisit', 'weddings', 'jelocare', 'wetindey', 'aumosaic', 'justurbanwears']
+const projects = ['ivisit', 'myfinance', 'weddings', 'jelocare', 'wetindey', 'aumosaic']
 const profiles = {
   desktop: { width: 1440, height: 1000, deviceScaleFactor: 1, isMobile: false, hasTouch: false },
   mobile: { width: 430, height: 932, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
@@ -70,7 +70,7 @@ try {
     ])
     await page.goto(baseUrl, { waitUntil: 'networkidle0', timeout: 60_000 })
     await page.waitForSelector('.h2o-immersive', { timeout: 20_000 })
-    await page.waitForSelector('#justurbanwears', { timeout: 20_000 })
+    await page.waitForSelector('#aumosaic', { timeout: 20_000 })
     await page.evaluate(async () => {
       if (document.fonts?.ready) await document.fonts.ready
       const images = Array.from(document.querySelectorAll('.h2o-project-media img'))
