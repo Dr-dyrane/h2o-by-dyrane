@@ -1,6 +1,7 @@
 // Profiled by .github/workflows/motion-profile.yml and runtime-probed after WebGL loads.
 // The curves mirror Apple's interaction character: decisive acceleration, long soft deceleration,
 // and a spring tail that settles once instead of vibrating around the destination.
+// Scroll choreography and pointer response remain separate so neither transform fights the other.
 export const fluidEase: [number, number, number, number] = [0.16, 1, 0.3, 1]
 export const appleEase: [number, number, number, number] = [0.32, 0.72, 0, 1]
 export const appleEaseInOut: [number, number, number, number] = [0.65, 0, 0.35, 1]
