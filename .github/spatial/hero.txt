@@ -1,0 +1,55 @@
+      <section ref={heroRef} className="h2o-hero" aria-labelledby="h2o-hero-title">
+        <div className="h2o-hero__sticky">
+          <motion.div
+            className="h2o-hero__pointer-light"
+            style={{ x: heroLightX, y: heroLightY, opacity: heroLightOpacity }}
+            aria-hidden="true"
+          />
+          <motion.div
+            className="h2o-hero__copy"
+            style={{
+              x: heroCopyX,
+              y: heroCopyY,
+              z: heroCopyZ,
+              scale: heroCopyScale,
+              rotateY: heroCopyRotateY,
+              opacity: heroCopyOpacity,
+            }}
+          >
+            <motion.div
+              className="h2o-hero__spatial"
+              style={{
+                x: heroPointerX,
+                y: heroPointerY,
+                rotateX: heroPointerRotateX,
+                rotateY: heroPointerRotateY,
+                scale: heroPointerScale,
+              }}
+            >
+              <p className="h2o-eyebrow">
+                Alexander Udeogaranya · Doctor · Product designer · Software engineer
+              </p>
+              <motion.h1 id="h2o-hero-title" style={{ letterSpacing: heroWordSpacing }}>
+                <span>A body</span>
+                <span>of work</span>
+                <em>in motion.</em>
+              </motion.h1>
+              <div className="h2o-hero__footer">
+                <p>I observe the system, build the product, and stay for reality.</p>
+                <a href="#practice">
+                  Enter the current
+                  <ArrowDown aria-hidden="true" size={18} strokeWidth={1.7} />
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+          <motion.div
+            className="h2o-hero__count"
+            style={{ x: heroCountX, y: heroCountY }}
+            aria-hidden="true"
+          >
+            <strong>50+</strong>
+            <span>builds, one current</span>
+          </motion.div>
+        </div>
+      </section>
