@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node scripts/verify-motion-contract.mjs
+      - run: node scripts/verify-perceptual-motion.mjs
       - run: node scripts/verify-awwwards-finish.mjs
+      - run: node scripts/verify-og-image.mjs
       - run: npm run lint
       - run: npm run build
