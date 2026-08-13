@@ -1,0 +1,29 @@
+/* Stable pointer capture for archive cards.
+   The hit surface stays fixed while the visual plane moves beneath it. */
+
+.h2o-archive-card > .h2o-archive-card__hit-area {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  border-radius: inherit;
+  cursor: default;
+  pointer-events: auto;
+  touch-action: pan-y;
+  transform: translateZ(180px);
+}
+
+.h2o-archive-card > .h2o-archive-card__spatial {
+  pointer-events: none;
+}
+
+@media (pointer: coarse), (max-width: 900px) {
+  .h2o-archive-card > .h2o-archive-card__hit-area {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h2o-archive-card > .h2o-archive-card__hit-area {
+    display: none;
+  }
+}

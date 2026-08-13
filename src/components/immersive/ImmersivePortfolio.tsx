@@ -431,9 +431,10 @@ function ArchiveCard({
   index: number
   spatialEnabled: boolean
 }) {
-  const pointer = useSpatialPointer<HTMLElement>({
+  const pointer = useSpatialPointer<HTMLDivElement>({
     enabled: spatialEnabled,
     spring: motionSprings.pointerSlow,
+    stableHover: true,
   })
   const rotateX = useTransform(pointer.y, [-1, 1], [3, -3])
   const rotateY = useTransform(pointer.x, [-1, 1], [-4.2, 4.2])
@@ -453,9 +454,14 @@ function ArchiveCard({
     <article
       className="h2o-archive-card"
       style={cardStyle}
+      data-archive-index={index}
       data-spatial-enabled={spatialEnabled ? 'true' : 'false'}
-      {...pointer.bind}
     >
+      <div
+        className="h2o-archive-card__hit-area"
+        {...pointer.bind}
+        aria-hidden="true"
+      />
       <motion.div
         className="h2o-archive-card__spatial"
         style={{ x, y, z, rotateX, rotateY, scale }}

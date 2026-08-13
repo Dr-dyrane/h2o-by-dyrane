@@ -100,33 +100,30 @@ try {
 
   const archiveTarget = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('.h2o-archive-card')]
-    const samplePoints = [
-      [0.56, 0.62],
-      [0.48, 0.66],
-      [0.66, 0.66],
-      [0.36, 0.68],
-    ]
+    const minY = Math.round(window.innerHeight * 0.38)
+    const maxY = Math.round(window.innerHeight * 0.9)
+    const minX = Math.round(window.innerWidth * 0.08)
+    const maxX = Math.round(window.innerWidth * 0.92)
 
-    for (const [xRatio, yRatio] of samplePoints) {
-      const x = window.innerWidth * xRatio
-      const y = window.innerHeight * yRatio
-      const card = document
-        .elementsFromPoint(x, y)
-        .map((element) => element.closest?.('.h2o-archive-card'))
-        .find(Boolean)
-
-      if (card) {
+    for (let y = minY; y <= maxY; y += 24) {
+      for (let x = minX; x <= maxX; x += 24) {
+        const topElement = document.elementFromPoint(x, y)
+        const hitArea = topElement?.closest('.h2o-archive-card__hit-area')
+        if (!hitArea) continue
+        const card = hitArea.closest('.h2o-archive-card')
+        if (!card) continue
         const index = cards.indexOf(card)
         return {
           index,
           x,
           y,
           title: card.querySelector('h3')?.textContent?.trim() || `archive-${index}`,
+          topClass: topElement.className || topElement.tagName,
         }
       }
     }
 
-    throw new Error('No archive card was hit-testable in the viewport')
+    throw new Error('No archive hit surface was topmost in the viewport')
   })
   const archiveSelector = `.h2o-archive-card:nth-of-type(${archiveTarget.index + 1})`
   await page.mouse.move(archiveTarget.x, archiveTarget.y)
