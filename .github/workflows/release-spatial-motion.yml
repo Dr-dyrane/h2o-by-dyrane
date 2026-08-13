@@ -1,0 +1,123 @@
+name: Release spatial motion
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release-spatial-motion.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-spatial-motion-materializer-v2
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Ensure the final spatial source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          portfolio = Path('src/components/immersive/ImmersivePortfolio.tsx').read_text()
+          motion = Path('src/styles/immersive/motion.css').read_text()
+          ready = (
+              Path('scripts/verify-spatial-hover.mjs').exists()
+              and 'pointerSlow' in Path('src/motion/tokens.ts').read_text()
+              and 'pointerWordScale' in portfolio
+              and 'translateY(-36%) translateZ(0) rotateY(0deg)' in motion
+              and '.h2o-archive-card:hover {\n    transform: none !important;' in motion
+          )
+          if ready:
+              raise SystemExit(0)
+
+          finalizer_path = Path('.github/workflows/finalize-spatial-motion-v5.yml')
+          if not finalizer_path.exists():
+              raise SystemExit('Spatial source is incomplete and the finalizer is unavailable.')
+          workflow = finalizer_path.read_text().splitlines()
+          start = workflow.index("          python - <<'PY'") + 1
+          end = workflow.index('          PY', start)
+          script = '\n'.join(line[10:] if line.startswith('          ') else line for line in workflow[start:end])
+          exec(compile(script, 'spatial-finalizer-v5', 'exec'), {})
+          PY
+      - run: npm ci
+      - run: node scripts/verify-motion-contract.mjs
+      - run: npm run lint
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-spatial-release.log 2>&1 &
+          echo $! > /tmp/h2o-spatial-release.pid
+          for attempt in {1..75}; do
+            for port in 5173 4173 3000; do
+              if curl --fail --silent "http://127.0.0.1:${port}" > /dev/null; then
+                echo "H2O_SPATIAL_URL=http://127.0.0.1:${port}" >> "$GITHUB_ENV"
+                exit 0
+              fi
+            done
+            sleep 1
+          done
+          cat /tmp/h2o-spatial-release.log
+          exit 1
+      - run: npm run verify:spatial
+      - run: git diff --check
+      - name: Commit and tag the release
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/portfolio
+          source_head="$(git rev-parse HEAD)"
+          cat > docs/portfolio/spatial-motion-validation.md <<EOF
+          # Spatial motion validation
+
+          The H₂O portfolio motion system is certified against the production build.
+
+          - Lower-frequency shared springs absorb wheel and trackpad stepping.
+          - Fine-pointer movement changes the hero viewpoint, project-plane tilt, counter-parallax, local light, archive depth, and WebGL current.
+          - Touch and coarse pointers remain flat and stable.
+          - Reduced-motion mode removes pointer depth and the WebGL canvas.
+          - Browser proof: \`npm run verify:spatial\`.
+          - Release tag: \`h2o-spatial-motion-v1\`.
+          - Source head validated: \`${source_head}\`.
+          EOF
+          rm -f .github/workflows/materialize-spatial-motion.yml
+          rm -f .github/workflows/materialize-spatial-motion-v2.yml
+          rm -f .github/workflows/certify-spatial-motion.yml
+          rm -f .github/workflows/finalize-spatial-motion.yml
+          rm -f .github/workflows/finalize-spatial-motion-v2.yml
+          rm -f .github/workflows/finalize-spatial-motion-v3.yml
+          rm -f .github/workflows/finalize-spatial-motion-v4.yml
+          rm -f .github/workflows/finalize-spatial-motion-v5.yml
+          rm -f .github/workflows/release-spatial-motion.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: release spatial Apple-like motion"
+          git push origin HEAD:main
+          git tag -a h2o-spatial-motion-v1 -m "H₂O spatial Apple-like motion v1"
+          git push origin h2o-spatial-motion-v1
