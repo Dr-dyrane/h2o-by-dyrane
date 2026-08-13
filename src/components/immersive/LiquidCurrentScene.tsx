@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react'
 import * as THREE from 'three'
-import { frameBlend, webglMotionBudget } from '@/motion/tokens'
+import { frameBlend, webglMotionBudget, webglResponse } from '@/motion/tokens'
 import type { SpatialPointerSnapshot } from '@/motion/useSpatialPointer'
 
 interface LiquidCurrentSceneProps {
@@ -128,8 +128,11 @@ function CurrentScene({
   const primaryMaterial = useMemo(() => createLiquidMaterial(accent), [accent])
   const secondaryMaterial = useMemo(() => createLiquidMaterial(accent), [accent])
   const cameraTarget = useMemo(() => new THREE.Vector3(), [])
+  const cameraLookAt = useMemo(() => new THREE.Vector3(0, 0, -0.35), [])
   const cameraPosition = useMemo(() => new THREE.Vector3(), [])
   const pointerPosition = useMemo(() => new THREE.Vector2(), [])
+  const pointerTrail = useMemo(() => new THREE.Vector2(), [])
+  const visualTimeRef = useRef(0)
 
   const quality = compact ? webglMotionBudget.compact : webglMotionBudget.full
 
@@ -198,7 +201,9 @@ function CurrentScene({
     [filamentGeometries, primaryMaterial, secondaryMaterial],
   )
 
-  useFrame((state, delta) => {
+  useFrame((state, rawDelta) => {
+    // Demand rendering can sleep. Clamp the resumed frame so the liquid never jumps.
+    const delta = Math.min(rawDelta, 1 / 30)
     const progress = progressRef.current
     const activeIndex = Math.max(0, Math.min(palette.length - 1, activeIndexRef.current))
     const phase = progress * Math.PI * 3.6
@@ -206,66 +211,82 @@ function CurrentScene({
     pointerPosition.x = THREE.MathUtils.damp(
       pointerPosition.x,
       pointer.x * pointer.presence,
-      10.5,
+      webglResponse.pointerLead,
       delta,
     )
     pointerPosition.y = THREE.MathUtils.damp(
       pointerPosition.y,
       pointer.y * pointer.presence,
-      10.5,
+      webglResponse.pointerLead,
       delta,
     )
+    pointerTrail.x = THREE.MathUtils.damp(
+      pointerTrail.x,
+      pointerPosition.x,
+      webglResponse.pointerTrail,
+      delta,
+    )
+    pointerTrail.y = THREE.MathUtils.damp(
+      pointerTrail.y,
+      pointerPosition.y,
+      webglResponse.pointerTrail,
+      delta,
+    )
+    const pointerMomentumX = pointerPosition.x - pointerTrail.x
+    const pointerMomentumY = pointerPosition.y - pointerTrail.y
     targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
-    accent.lerp(targetAccent, frameBlend(10, delta))
+    accent.lerp(targetAccent, frameBlend(webglResponse.accent, delta))
 
     if (groupRef.current) {
       const activeDirection = activeIndex % 2 === 0 ? 1 : -1
       groupRef.current.rotation.y = THREE.MathUtils.damp(
         groupRef.current.rotation.y,
-        progress * Math.PI * 2.15 + Math.sin(phase) * 0.22 + pointerPosition.x * 0.18,
+        progress * Math.PI * 2.15 + Math.sin(phase) * 0.22 + pointerTrail.x * 0.24 + pointerMomentumX * 0.42,
         9.5,
         delta,
       )
       groupRef.current.rotation.x = THREE.MathUtils.damp(
         groupRef.current.rotation.x,
-        -0.13 + Math.cos(phase * 0.72) * 0.12 + pointerPosition.y * 0.12,
+        -0.13 + Math.cos(phase * 0.72) * 0.12 + pointerTrail.y * 0.17 + pointerMomentumY * 0.28,
         9,
         delta,
       )
       groupRef.current.position.x = THREE.MathUtils.damp(
         groupRef.current.position.x,
-        1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16 + pointerPosition.x * 0.32,
+        1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16 + pointerTrail.x * 0.46 + pointerMomentumX * 0.58,
         8.8,
         delta,
       )
       groupRef.current.position.y = THREE.MathUtils.damp(
         groupRef.current.position.y,
-        0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46 - pointerPosition.y * 0.24,
+        0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46 - pointerTrail.y * 0.34 - pointerMomentumY * 0.42,
         8.2,
         delta,
       )
       groupRef.current.position.z = THREE.MathUtils.damp(
         groupRef.current.position.z,
-        -0.18 + Math.sin(phase * 0.48) * 0.72 + pointerPosition.y * 0.12,
+        -0.18 + Math.sin(phase * 0.48) * 0.72 + pointerTrail.y * 0.18 + pointerMomentumY * 0.24,
         8.4,
         delta,
       )
     }
 
     cameraPosition.set(
-      Math.sin(phase * 0.42) * 0.62 + pointerPosition.x * 0.28,
-      Math.cos(phase * 0.35) * 0.26 - pointerPosition.y * 0.18,
-      6.1 + Math.sin(phase * 0.26) * 0.38 + Math.abs(pointerPosition.x) * 0.08,
+      Math.sin(phase * 0.42) * 0.62 + pointerTrail.x * 0.38 + pointerMomentumX * 0.2,
+      Math.cos(phase * 0.35) * 0.26 - pointerTrail.y * 0.26 - pointerMomentumY * 0.14,
+      6.1 + Math.sin(phase * 0.26) * 0.38 + Math.abs(pointerTrail.x) * 0.1,
     )
-    state.camera.position.lerp(cameraPosition, frameBlend(9.2, delta))
+    state.camera.position.lerp(cameraPosition, frameBlend(webglResponse.camera, delta))
     cameraTarget.set(
-      Math.sin(phase * 0.5) * 0.22 + pointerPosition.x * 0.18,
-      -progress * 0.38 - pointerPosition.y * 0.13,
+      Math.sin(phase * 0.5) * 0.22 + pointerTrail.x * 0.25,
+      -progress * 0.38 - pointerTrail.y * 0.18,
       -0.35,
     )
-    state.camera.lookAt(cameraTarget)
+    cameraLookAt.lerp(cameraTarget, frameBlend(webglResponse.lookAt, delta))
+    state.camera.lookAt(cameraLookAt)
 
-    const elapsed = state.clock.elapsedTime
+    visualTimeRef.current += delta
+    const elapsed = visualTimeRef.current
     const updateMaterial = (material: THREE.ShaderMaterial, speed = 1) => {
       material.uniforms.uTime.value = elapsed * speed
       material.uniforms.uScroll.value = progress
