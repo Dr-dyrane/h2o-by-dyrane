@@ -1,0 +1,88 @@
+name: Finalize archive spatial hover
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/finalize-archive-spatial-hover.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-finalize-archive-spatial-hover
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Materialize the stable archive interaction
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/stabilize-archive-spatial-hover.yml').read_text()
+          start = workflow.index("          python - <<'PY'\n") + len("          python - <<'PY'\n")
+          end = workflow.index('\n          PY', start)
+          script = textwrap.dedent(workflow[start:end])
+          exec(compile(script, 'archive-spatial-materializer', 'exec'))
+
+          path = Path('src/components/immersive/ImmersivePortfolio.tsx')
+          source = path.read_text()
+          old = "    spring: motionSprings.pointerSlow,\n  })"
+          new = "    spring: motionSprings.pointerSlow,\n    stableHover: true,\n  })"
+          if source.count(old) != 1:
+              raise SystemExit(f'expected one archive spring profile, found {source.count(old)}')
+          path.write_text(source.replace(old, new, 1))
+          PY
+      - name: Verify source contract
+        run: |
+          git diff --check
+          node scripts/verify-motion-contract.mjs
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-server.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/h2o-server.log
+          exit 1
+      - run: npm run verify:visual
+      - run: npm run verify:spatial
+      - name: Retain verified archive hover
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/immersive/ImmersivePortfolio.tsx src/styles/immersive.css src/styles/immersive/archive-spatial-hit.css scripts/verify-spatial-hover.mjs
+          git commit -m "fix: stabilize archive spatial hover"
+          git push origin HEAD:main
