@@ -41,24 +41,21 @@ jobs:
           source = source.replace(old, new, 1)
 
           marker = "] as const\n\nfunction ProjectImage({"
-          hook = """\n] as const
-
-function useBrowserReducedMotion() {
-  const [shouldReduceMotion, setShouldReduceMotion] = useState(false)
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const syncPreference = () => setShouldReduceMotion(mediaQuery.matches)
-
-    syncPreference()
-    mediaQuery.addEventListener('change', syncPreference)
-    return () => mediaQuery.removeEventListener('change', syncPreference)
-  }, [])
-
-  return shouldReduceMotion
-}
-
-function ProjectImage({"""
+          hook = (
+              "] as const\n\n"
+              "function useBrowserReducedMotion() {\n"
+              "  const [shouldReduceMotion, setShouldReduceMotion] = useState(false)\n\n"
+              "  useEffect(() => {\n"
+              "    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')\n"
+              "    const syncPreference = () => setShouldReduceMotion(mediaQuery.matches)\n\n"
+              "    syncPreference()\n"
+              "    mediaQuery.addEventListener('change', syncPreference)\n"
+              "    return () => mediaQuery.removeEventListener('change', syncPreference)\n"
+              "  }, [])\n\n"
+              "  return shouldReduceMotion\n"
+              "}\n\n"
+              "function ProjectImage({"
+          )
           if source.count(marker) != 1:
               raise SystemExit(f'expected one practice marker, found {source.count(marker)}')
           source = source.replace(marker, hook, 1)
@@ -79,7 +76,7 @@ function ProjectImage({"""
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
+          git config user.name "github-actions[bot]]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/components/immersive/ImmersivePortfolio.tsx
           git commit -m "fix: bind reduced motion to the browser preference"
