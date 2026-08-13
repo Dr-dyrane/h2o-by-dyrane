@@ -1,5 +1,6 @@
 name: Refresh live project captures
 
+# Refresh the retained portfolio frames after the Just Urban Wears editorial hero release.
 on:
   workflow_dispatch:
   schedule:
