@@ -50,16 +50,25 @@ export function PerceptualPointerField() {
   const auraOpacity = useTransform(presence, [0, 1], [0, 0.74])
 
   useEffect(() => {
-    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const sync = () => setEnabled(finePointer.matches && !reducedMotion.matches)
+    const primaryCoarsePointer = window.matchMedia('(pointer: coarse)')
+    const anyFinePointer = window.matchMedia('(any-pointer: fine)')
+    const sync = () => {
+      const desktopClassViewport = window.innerWidth > 900
+      const canAim = anyFinePointer.matches || !primaryCoarsePointer.matches
+      setEnabled(desktopClassViewport && canAim && !reducedMotion.matches)
+    }
 
     sync()
-    finePointer.addEventListener?.('change', sync)
     reducedMotion.addEventListener?.('change', sync)
+    primaryCoarsePointer.addEventListener?.('change', sync)
+    anyFinePointer.addEventListener?.('change', sync)
+    window.addEventListener('resize', sync, { passive: true })
     return () => {
-      finePointer.removeEventListener?.('change', sync)
       reducedMotion.removeEventListener?.('change', sync)
+      primaryCoarsePointer.removeEventListener?.('change', sync)
+      anyFinePointer.removeEventListener?.('change', sync)
+      window.removeEventListener('resize', sync)
     }
   }, [])
 
