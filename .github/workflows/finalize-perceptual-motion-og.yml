@@ -1,0 +1,345 @@
+name: Finalize perceptual motion and live OG
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/finalize-perceptual-motion-og.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-finalize-perceptual-motion-og
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Smooth WebGL camera and install persistent contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from textwrap import dedent
+
+          scene_path = Path('src/components/immersive/LiquidCurrentScene.tsx')
+          scene = scene_path.read_text()
+
+          old = "import { frameBlend, webglMotionBudget } from '@/motion/tokens'"
+          new = "import { frameBlend, webglMotionBudget, webglResponse } from '@/motion/tokens'"
+          if scene.count(old) != 1:
+              raise SystemExit(f'scene response import: expected one match, found {scene.count(old)}')
+          scene = scene.replace(old, new, 1)
+
+          old = dedent('''
+            const cameraTarget = useMemo(() => new THREE.Vector3(), [])
+            const cameraPosition = useMemo(() => new THREE.Vector3(), [])
+            const pointerPosition = useMemo(() => new THREE.Vector2(), [])
+          ''').strip('\n')
+          new = dedent('''
+            const cameraTarget = useMemo(() => new THREE.Vector3(), [])
+            const cameraLookAt = useMemo(() => new THREE.Vector3(0, 0, -0.35), [])
+            const cameraPosition = useMemo(() => new THREE.Vector3(), [])
+            const pointerPosition = useMemo(() => new THREE.Vector2(), [])
+            const pointerTrail = useMemo(() => new THREE.Vector2(), [])
+            const visualTimeRef = useRef(0)
+          ''').strip('\n')
+          if scene.count(old) != 1:
+              raise SystemExit(f'scene vectors: expected one match, found {scene.count(old)}')
+          scene = scene.replace(old, new, 1)
+
+          old = dedent('''
+            useFrame((state, delta) => {
+              const progress = progressRef.current
+          ''').strip('\n')
+          new = dedent('''
+            useFrame((state, rawDelta) => {
+              // Demand rendering can sleep. Clamp the first resumed frame so time, camera and geometry do not jump.
+              const delta = Math.min(rawDelta, 1 / 30)
+              const progress = progressRef.current
+          ''').strip('\n')
+          if scene.count(old) != 1:
+              raise SystemExit(f'scene safe delta: expected one match, found {scene.count(old)}')
+          scene = scene.replace(old, new, 1)
+
+          old = dedent('''
+              pointerPosition.x = THREE.MathUtils.damp(
+                pointerPosition.x,
+                pointer.x * pointer.presence,
+                10.5,
+                delta,
+              )
+              pointerPosition.y = THREE.MathUtils.damp(
+                pointerPosition.y,
+                pointer.y * pointer.presence,
+                10.5,
+                delta,
+              )
+              targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
+              accent.lerp(targetAccent, frameBlend(10, delta))
+          ''').strip('\n')
+          new = dedent('''
+              pointerPosition.x = THREE.MathUtils.damp(
+                pointerPosition.x,
+                pointer.x * pointer.presence,
+                webglResponse.pointerLead,
+                delta,
+              )
+              pointerPosition.y = THREE.MathUtils.damp(
+                pointerPosition.y,
+                pointer.y * pointer.presence,
+                webglResponse.pointerLead,
+                delta,
+              )
+              pointerTrail.x = THREE.MathUtils.damp(
+                pointerTrail.x,
+                pointerPosition.x,
+                webglResponse.pointerTrail,
+                delta,
+              )
+              pointerTrail.y = THREE.MathUtils.damp(
+                pointerTrail.y,
+                pointerPosition.y,
+                webglResponse.pointerTrail,
+                delta,
+              )
+              const pointerMomentumX = pointerPosition.x - pointerTrail.x
+              const pointerMomentumY = pointerPosition.y - pointerTrail.y
+              targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
+              accent.lerp(targetAccent, frameBlend(webglResponse.accent, delta))
+          ''').strip('\n')
+          if scene.count(old) != 1:
+              raise SystemExit(f'scene pointer phase: expected one match, found {scene.count(old)}')
+          scene = scene.replace(old, new, 1)
+
+          replacements = [
+              ('progress * Math.PI * 2.15 + Math.sin(phase) * 0.22 + pointerPosition.x * 0.18,',
+               'progress * Math.PI * 2.15 + Math.sin(phase) * 0.22 + pointerTrail.x * 0.24 + pointerMomentumX * 0.42,'),
+              ('-0.13 + Math.cos(phase * 0.72) * 0.12 + pointerPosition.y * 0.12,',
+               '-0.13 + Math.cos(phase * 0.72) * 0.12 + pointerTrail.y * 0.17 + pointerMomentumY * 0.28,'),
+              ('1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16 + pointerPosition.x * 0.32,',
+               '1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16 + pointerTrail.x * 0.46 + pointerMomentumX * 0.58,'),
+              ('0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46 - pointerPosition.y * 0.24,',
+               '0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46 - pointerTrail.y * 0.34 - pointerMomentumY * 0.42,'),
+              ('-0.18 + Math.sin(phase * 0.48) * 0.72 + pointerPosition.y * 0.12,',
+               '-0.18 + Math.sin(phase * 0.48) * 0.72 + pointerTrail.y * 0.18 + pointerMomentumY * 0.24,'),
+          ]
+          for old, new in replacements:
+              if scene.count(old) != 1:
+                  raise SystemExit(f'scene spatial expression: expected one match, found {scene.count(old)} for {old[:48]}')
+              scene = scene.replace(old, new, 1)
+
+          old = dedent('''
+              cameraPosition.set(
+                Math.sin(phase * 0.42) * 0.62 + pointerPosition.x * 0.28,
+                Math.cos(phase * 0.35) * 0.26 - pointerPosition.y * 0.18,
+                6.1 + Math.sin(phase * 0.26) * 0.38 + Math.abs(pointerPosition.x) * 0.08,
+              )
+              state.camera.position.lerp(cameraPosition, frameBlend(9.2, delta))
+              cameraTarget.set(
+                Math.sin(phase * 0.5) * 0.22 + pointerPosition.x * 0.18,
+                -progress * 0.38 - pointerPosition.y * 0.13,
+                -0.35,
+              )
+              state.camera.lookAt(cameraTarget)
+
+              const elapsed = state.clock.elapsedTime
+          ''').strip('\n')
+          new = dedent('''
+              cameraPosition.set(
+                Math.sin(phase * 0.42) * 0.62 + pointerTrail.x * 0.38 + pointerMomentumX * 0.2,
+                Math.cos(phase * 0.35) * 0.26 - pointerTrail.y * 0.26 - pointerMomentumY * 0.14,
+                6.1 + Math.sin(phase * 0.26) * 0.38 + Math.abs(pointerTrail.x) * 0.1,
+              )
+              state.camera.position.lerp(cameraPosition, frameBlend(webglResponse.camera, delta))
+              cameraTarget.set(
+                Math.sin(phase * 0.5) * 0.22 + pointerTrail.x * 0.25,
+                -progress * 0.38 - pointerTrail.y * 0.18,
+                -0.35,
+              )
+              cameraLookAt.lerp(cameraTarget, frameBlend(webglResponse.lookAt, delta))
+              state.camera.lookAt(cameraLookAt)
+
+              visualTimeRef.current += delta
+              const elapsed = visualTimeRef.current
+          ''').strip('\n')
+          if scene.count(old) != 1:
+              raise SystemExit(f'scene camera/time smoothing: expected one match, found {scene.count(old)}')
+          scene = scene.replace(old, new, 1)
+          scene_path.write_text(scene)
+
+          quality = Path('.github/workflows/quality.yml')
+          quality_source = quality.read_text()
+          quality_source = quality_source.replace(
+              '      - run: node scripts/verify-motion-contract.mjs\n',
+              '      - run: node scripts/verify-motion-contract.mjs\n      - run: node scripts/verify-perceptual-motion.mjs\n',
+              1,
+          )
+          quality_source = quality_source.replace(
+              '      - run: node scripts/verify-awwwards-finish.mjs\n',
+              '      - run: node scripts/verify-awwwards-finish.mjs\n      - run: node scripts/verify-og-image.mjs\n',
+              1,
+          )
+          quality.write_text(quality_source)
+
+          Path('.github/workflows/refresh-live-og.yml').write_text(dedent('''
+          name: Refresh live H2O Open Graph
+
+          on:
+            workflow_dispatch:
+            push:
+              branches: [main]
+              paths:
+                - src/components/immersive/**
+                - src/motion/**
+                - src/styles/immersive/**
+                - scripts/generate-og-image.mjs
+                - .github/workflows/refresh-live-og.yml
+
+          permissions:
+            contents: write
+
+          concurrency:
+            group: h2o-live-og
+            cancel-in-progress: true
+
+          jobs:
+            capture:
+              runs-on: ubuntu-latest
+              timeout-minutes: 20
+              steps:
+                - uses: actions/checkout@v4
+                  with:
+                    fetch-depth: 0
+                - uses: actions/setup-node@v4
+                  with:
+                    node-version: 22
+                    cache: npm
+                - run: npm ci
+                - run: npm run build
+                - name: Locate Chromium
+                  shell: bash
+                  run: |
+                    browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+                    if [ -z "$browser" ]; then
+                      npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+                      browser="$(find "$RUNNER_TEMP/puppeteer" -type f \\( -name chrome -o -name chromium \\) | head -n 1)"
+                    fi
+                    test -n "$browser"
+                    echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+                - name: Start production build
+                  shell: bash
+                  run: |
+                    npm run start > /tmp/h2o-og-server.log 2>&1 &
+                    for attempt in {1..60}; do
+                      if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then exit 0; fi
+                      sleep 1
+                    done
+                    cat /tmp/h2o-og-server.log
+                    exit 1
+                - run: npm run generate:og
+                  env:
+                    H2O_OG_URL: http://127.0.0.1:5173
+                - run: npm run verify:og
+                - run: npm run build:client
+                - name: Retain changed hero
+                  shell: bash
+                  run: |
+                    git config user.name "github-actions[bot]"
+                    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                    git add public/og-image-live.png index.html
+                    if git diff --cached --quiet; then
+                      echo "Live OG already matches the hero."
+                      exit 0
+                    fi
+                    git commit -m "chore: refresh live H2O Open Graph [skip ci]"
+                    git push origin HEAD:main
+                - uses: actions/upload-artifact@v4
+                  with:
+                    name: h2o-live-og
+                    path: public/og-image-live.png
+                    retention-days: 30
+          ''').lstrip())
+          PY
+      - run: npm ci
+      - run: node scripts/verify-motion-contract.mjs
+      - run: node scripts/verify-perceptual-motion.mjs
+      - run: node scripts/verify-awwwards-finish.mjs
+      - run: npm run lint
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+          "$browser" --version
+      - name: Start production build
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-perceptual-server.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/h2o-perceptual-server.log
+          exit 1
+      - run: npm run verify:spatial
+      - run: node scripts/verify-perceptual-hover.mjs
+      - run: npm run generate:og
+        env:
+          H2O_OG_URL: http://127.0.0.1:5173
+      - run: npm run verify:og
+      - run: npm run build:client
+      - name: Upload motion and OG evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2o-perceptual-motion-live-og
+          path: |
+            .spatial-proof/
+            .perceptual-proof/
+            public/og-image-live.png
+          include-hidden-files: true
+          retention-days: 30
+      - name: Retain completed release
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/portfolio
+          image_hash="$(sha256sum public/og-image-live.png | cut -c1-12)"
+          source_head="$(git rev-parse HEAD)"
+          cat > docs/portfolio/perceptual-motion-og-validation.md <<EOF
+          # Perceptual motion and live OG validation
+
+          H₂O now separates scroll, leading pointer, and trailing light/camera response.
+
+          - Scroll choreography uses near-critical shared springs rather than raw progress.
+          - Fine-pointer movement changes typography, project depth, local light, the current, and the DYRANE ending.
+          - WebGL clamps resumed delta, advances visual time safely, and damps camera position and look-at.
+          - Coarse-pointer and reduced-motion paths remain flat and touch-safe.
+          - Open Graph is captured from the real live hero at 1200 × 630.
+          - OG content hash: \`${image_hash}\`.
+          - Staging source validated: \`${source_head}\`.
+          EOF
+          rm .github/workflows/finalize-perceptual-motion-og.yml
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: finish perceptual motion and live hero OG"
+          git push origin HEAD:main

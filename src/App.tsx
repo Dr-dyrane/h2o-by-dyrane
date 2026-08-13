@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { PerceptualPointerField } from "@/components/immersive/PerceptualPointerField";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -46,12 +47,23 @@ const AnalyticsMount = () => {
   );
 };
 
-export const AppContent = ({ path = "/" }: { path?: string }) => (
-  <ThemeProvider>
-    <AnalyticsMount />
-    {shouldRenderHome(path) ? <Index /> : <NotFound path={path} />}
-  </ThemeProvider>
-);
+export const AppContent = ({ path = "/" }: { path?: string }) => {
+  const isHome = shouldRenderHome(path);
+
+  return (
+    <ThemeProvider>
+      <AnalyticsMount />
+      {isHome ? (
+        <>
+          <PerceptualPointerField />
+          <Index />
+        </>
+      ) : (
+        <NotFound path={path} />
+      )}
+    </ThemeProvider>
+  );
+};
 
 const App = () => <AppContent />;
 

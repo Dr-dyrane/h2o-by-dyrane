@@ -1,66 +1,94 @@
-// Profiled by .github/workflows/motion-profile.yml and runtime-probed after WebGL loads.
-// The curves mirror Apple's interaction character: decisive acceleration, long soft deceleration,
-// and a spring tail that settles once instead of vibrating around the destination.
-// Scroll choreography and pointer response remain separate so neither transform fights the other.
+// Profiled by .github/workflows/motion-profile.yml and browser-probed after deferred WebGL loads.
+// The system separates three frequencies: scroll settles broadly, the pointer leads immediately,
+// and light/camera layers trail softly. That phase difference creates liquid depth without inertia.
 export const fluidEase: [number, number, number, number] = [0.16, 1, 0.3, 1]
-export const appleEase: [number, number, number, number] = [0.32, 0.72, 0, 1]
+export const appleEase: [number, number, number, number] = [0.2, 0.8, 0.2, 1]
+export const appleSpringEase: [number, number, number, number] = [0.22, 1.12, 0.36, 1]
 export const appleEaseInOut: [number, number, number, number] = [0.65, 0, 0.35, 1]
 
 const settle = {
-  restDelta: 0.001,
-  restSpeed: 0.015,
+  restDelta: 0.0008,
+  restSpeed: 0.012,
 } as const
 
-// Scroll springs are deliberately slower than the old near-instant profiles. They absorb wheel
-// and trackpad steps without introducing the floaty lag of a synthetic smooth-scroll engine.
 export const motionSprings = {
+  // Near-critical scroll springs absorb wheel and trackpad stepping without synthetic scroll hijacking.
   world: {
-    stiffness: 210,
-    damping: 28,
-    mass: 0.82,
+    stiffness: 150,
+    damping: 24,
+    mass: 0.9,
     ...settle,
   },
   hero: {
-    stiffness: 240,
-    damping: 27,
-    mass: 0.78,
+    stiffness: 180,
+    damping: 26,
+    mass: 0.85,
     ...settle,
   },
   spatial: {
-    stiffness: 185,
-    damping: 27,
-    mass: 0.88,
+    stiffness: 135,
+    damping: 23,
+    mass: 0.96,
     ...settle,
   },
   gallery: {
-    stiffness: 225,
-    damping: 28,
-    mass: 0.8,
+    stiffness: 165,
+    damping: 25,
+    mass: 0.9,
     ...settle,
   },
+  // The leading plane stays attached to the hand; trailing light and copy settle one beat later.
+  pointerLead: {
+    stiffness: 360,
+    damping: 30,
+    mass: 0.62,
+    ...settle,
+  },
+  pointerTrail: {
+    stiffness: 115,
+    damping: 19.5,
+    mass: 0.88,
+    ...settle,
+  },
+  pointerPresence: {
+    stiffness: 220,
+    damping: 26,
+    mass: 0.75,
+    ...settle,
+  },
+  // Compatibility aliases retained for existing contracts and callers.
   pointer: {
-    stiffness: 260,
-    damping: 24,
-    mass: 0.7,
+    stiffness: 360,
+    damping: 30,
+    mass: 0.62,
     ...settle,
   },
   pointerSlow: {
-    stiffness: 170,
-    damping: 23,
-    mass: 0.82,
+    stiffness: 115,
+    damping: 19.5,
+    mass: 0.88,
     ...settle,
   },
 } as const
 
 export const motionTransitions = {
-  micro: { duration: 0.26, ease: appleEase },
-  reveal: { duration: 0.64, ease: fluidEase },
-  cinematic: { duration: 0.98, ease: appleEase },
-  settle: { duration: 0.78, ease: appleEaseInOut },
+  micro: { duration: 0.32, ease: appleEase },
+  reveal: { duration: 0.72, ease: fluidEase },
+  cinematic: { duration: 1.08, ease: appleSpringEase },
+  settle: { duration: 0.84, ease: appleEaseInOut },
+} as const
+
+export const webglResponse = {
+  pointerLead: 14,
+  pointerTrail: 6.8,
+  world: 8.4,
+  camera: 7.4,
+  lookAt: 6.2,
+  accent: 8.2,
 } as const
 
 export const webglMotionBudget = {
-  idleWindowMs: 720,
+  idleWindowMs: 1080,
   idleLoadTimeoutMs: 560,
   fallbackLoadDelayMs: 90,
   full: {

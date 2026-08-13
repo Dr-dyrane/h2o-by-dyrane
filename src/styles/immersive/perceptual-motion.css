@@ -1,0 +1,195 @@
+/* Perceptual motion finish
+   Performance was already stable. This layer separates the leading surface from the trailing field,
+   so hover reads as spatial liquid rather than one rigid transform attached to scroll. */
+
+:root {
+  --h2o-motion-instant: 140ms;
+  --h2o-motion-fast: 300ms;
+  --h2o-motion-base: 480ms;
+  --h2o-motion-slow: 780ms;
+  --h2o-motion-cinematic: 1080ms;
+  --h2o-ease-apple: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --h2o-ease-spring: cubic-bezier(0.22, 1.12, 0.36, 1);
+  --h2o-ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+  --h2o-ease-settle: cubic-bezier(0.65, 0, 0.35, 1);
+  --h2o-ease: var(--h2o-ease-spring);
+  --h2o-pointer-lead-x: 0px;
+  --h2o-pointer-lead-y: 0px;
+  --h2o-pointer-trail-x: 0px;
+  --h2o-pointer-trail-y: 0px;
+  --h2o-pointer-counter-x: 0px;
+  --h2o-pointer-counter-y: 0px;
+  --h2o-pointer-rotate-x: 0deg;
+  --h2o-pointer-rotate-y: 0deg;
+  --h2o-pointer-presence: 0;
+}
+
+.h2o-spatial-aura {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: min(42rem, 56vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(118, 180, 190, 0.12), rgba(84, 240, 179, 0.038) 35%, transparent 68%);
+  filter: blur(18px);
+  pointer-events: none;
+  translate: -50% -50%;
+  will-change: transform, opacity;
+}
+
+.h2o-hero h1,
+.h2o-practice__copy,
+.h2o-project-copy__spatial h3,
+.h2o-project-statement,
+.h2o-project-media__mobile-shell,
+.h2o-project-media__index,
+.h2o-end__name > span,
+.h2o-end__name strong {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.h2o-hero h1 {
+  transform:
+    translate3d(var(--h2o-pointer-trail-x), var(--h2o-pointer-trail-y), 36px)
+    rotateX(var(--h2o-pointer-rotate-x))
+    rotateY(var(--h2o-pointer-rotate-y));
+  transform-origin: 30% 54%;
+}
+
+.h2o-practice__copy {
+  transform:
+    translate3d(var(--h2o-pointer-counter-x), var(--h2o-pointer-counter-y), 110px)
+    rotateX(var(--h2o-pointer-rotate-x))
+    rotateY(var(--h2o-pointer-rotate-y));
+  transform-origin: 48% 52%;
+}
+
+.h2o-project-chapter[data-active='true'] .h2o-project-copy__spatial h3 {
+  transform: translate3d(var(--h2o-pointer-counter-x), var(--h2o-pointer-counter-y), 34px);
+}
+
+.h2o-project-chapter[data-active='true'] .h2o-project-statement {
+  transform: translate3d(var(--h2o-pointer-trail-x), var(--h2o-pointer-trail-y), 18px);
+}
+
+.h2o-project-chapter[data-active='true'] .h2o-project-media__mobile-shell {
+  transform: translate3d(var(--h2o-pointer-lead-x), var(--h2o-pointer-lead-y), 48px);
+}
+
+.h2o-project-chapter[data-active='true'] .h2o-project-media__index {
+  transform: translate3d(var(--h2o-pointer-counter-x), var(--h2o-pointer-counter-y), 52px);
+}
+
+.h2o-end__name > span {
+  transform: translate3d(var(--h2o-pointer-counter-x), var(--h2o-pointer-counter-y), 38px);
+}
+
+.h2o-end__name strong {
+  transform:
+    translate3d(var(--h2o-pointer-trail-x), var(--h2o-pointer-trail-y), 72px)
+    rotateX(var(--h2o-pointer-rotate-x))
+    rotateY(var(--h2o-pointer-rotate-y));
+  transform-origin: center;
+}
+
+.h2o-project-media__desktop {
+  transition:
+    transform var(--h2o-motion-cinematic) var(--h2o-ease-spring),
+    opacity var(--h2o-motion-base) var(--h2o-ease-settle),
+    filter var(--h2o-motion-slow) var(--h2o-ease-apple);
+}
+
+.h2o-nav__brand,
+.h2o-nav__links a,
+.h2o-hero__footer a,
+.h2o-project-actions > a,
+.h2o-contact__actions a,
+.h2o-project-media-link > span {
+  transition:
+    color var(--h2o-motion-fast) var(--h2o-ease-apple),
+    opacity var(--h2o-motion-fast) var(--h2o-ease-apple),
+    transform var(--h2o-motion-base) var(--h2o-ease-spring),
+    box-shadow var(--h2o-motion-base) var(--h2o-ease-apple),
+    background var(--h2o-motion-fast) var(--h2o-ease-apple);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .h2o-nav__brand:hover,
+  .h2o-nav__brand:focus-visible {
+    transform: translate3d(0, -2px, 18px);
+  }
+
+  .h2o-nav__links a:hover,
+  .h2o-nav__links a:focus-visible {
+    transform: translate3d(0, -2px, 14px);
+  }
+
+  .h2o-hero__footer a:hover,
+  .h2o-hero__footer a:focus-visible,
+  .h2o-project-actions > a:hover,
+  .h2o-project-actions > a:focus-visible,
+  .h2o-contact__actions a:hover,
+  .h2o-contact__actions a:focus-visible {
+    transform: translate3d(0, -5px, 24px) scale(1.012);
+  }
+
+  .h2o-project-chapter[data-active='true'] .h2o-project-copy__spatial h3,
+  .h2o-project-chapter[data-active='true'] .h2o-project-statement,
+  .h2o-project-chapter[data-active='true'] .h2o-project-media__mobile-shell,
+  .h2o-project-chapter[data-active='true'] .h2o-project-media__index,
+  .h2o-hero h1,
+  .h2o-practice__copy,
+  .h2o-end__name > span,
+  .h2o-end__name strong {
+    will-change: transform;
+  }
+}
+
+@media (pointer: coarse), (max-width: 900px) {
+  .h2o-spatial-aura {
+    display: none;
+  }
+
+  .h2o-hero h1,
+  .h2o-practice__copy,
+  .h2o-project-chapter[data-active='true'] .h2o-project-copy__spatial h3,
+  .h2o-project-chapter[data-active='true'] .h2o-project-statement,
+  .h2o-project-chapter[data-active='true'] .h2o-project-media__mobile-shell,
+  .h2o-project-chapter[data-active='true'] .h2o-project-media__index,
+  .h2o-end__name > span,
+  .h2o-end__name strong {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h2o-spatial-aura {
+    display: none;
+  }
+
+  .h2o-nav__brand,
+  .h2o-nav__links a,
+  .h2o-hero__footer a,
+  .h2o-project-actions > a,
+  .h2o-contact__actions a,
+  .h2o-project-media-link > span,
+  .h2o-project-media__desktop {
+    transition-duration: 1ms !important;
+  }
+
+  .h2o-hero h1,
+  .h2o-practice__copy,
+  .h2o-project-copy__spatial h3,
+  .h2o-project-statement,
+  .h2o-project-media__mobile-shell,
+  .h2o-project-media__index,
+  .h2o-end__name > span,
+  .h2o-end__name strong {
+    transform: none !important;
+    will-change: auto;
+  }
+}

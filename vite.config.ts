@@ -14,7 +14,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: false,
-      includeAssets: ["favicon.ico", "robots.txt", "/icons/*.png", "og-image.png"],
+      includeAssets: ["favicon.ico", "robots.txt", "/icons/*.png", "og-image-live.png"],
       manifest: {
         name: "H₂O by Dyrane",
         short_name: "H₂O",
@@ -44,7 +44,7 @@ export default defineConfig({
         categories: ["business", "design", "technology"],
         screenshots: [
           {
-            src: "/og-image.png",
+            src: "/og-image-live.png",
             sizes: "1200x630",
             type: "image/png",
             form_factor: "wide",

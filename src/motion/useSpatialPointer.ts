@@ -19,6 +19,7 @@ type SpringProfile = (typeof motionSprings)[keyof typeof motionSprings]
 type SpatialPointerOptions = {
   enabled?: boolean
   spring?: SpringProfile
+  trailSpring?: SpringProfile
   stableHover?: boolean
 }
 
@@ -32,17 +33,21 @@ type SpatialPointerBindings<T extends HTMLElement> = {
 export type SpatialPointerController<T extends HTMLElement> = {
   x: MotionValue<number>
   y: MotionValue<number>
+  trailX: MotionValue<number>
+  trailY: MotionValue<number>
   presence: MotionValue<number>
   bind: SpatialPointerBindings<T>
 }
 
 const clampUnit = (value: number) => Math.max(-1, Math.min(1, value))
+const shapePointer = (value: number) => Math.sign(value) * Math.pow(Math.abs(value), 0.78)
 const now = () => (typeof performance === 'undefined' ? Date.now() : performance.now())
 
 export function useSpatialPointer<T extends HTMLElement>({
   enabled = true,
-  spring = motionSprings.pointer,
-  stableHover = false,
+  spring = motionSprings.pointerLead,
+  trailSpring = motionSprings.pointerTrail,
+  stableHover = true,
 }: SpatialPointerOptions = {}): SpatialPointerController<T> {
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
@@ -50,7 +55,9 @@ export function useSpatialPointer<T extends HTMLElement>({
   const targetRef = useRef<T | null>(null)
   const x = useSpring(rawX, spring)
   const y = useSpring(rawY, spring)
-  const presence = useSpring(rawPresence, motionSprings.pointerSlow)
+  const trailX = useSpring(x, trailSpring)
+  const trailY = useSpring(y, trailSpring)
+  const presence = useSpring(rawPresence, motionSprings.pointerPresence)
 
   const reset = useCallback(() => {
     rawX.set(0)
@@ -61,8 +68,8 @@ export function useSpatialPointer<T extends HTMLElement>({
   const syncPoint = useCallback(
     (clientX: number, clientY: number, rect: DOMRect) => {
       if (rect.width <= 0 || rect.height <= 0) return
-      rawX.set(clampUnit(((clientX - rect.left) / rect.width) * 2 - 1))
-      rawY.set(clampUnit(((clientY - rect.top) / rect.height) * 2 - 1))
+      rawX.set(shapePointer(clampUnit(((clientX - rect.left) / rect.width) * 2 - 1)))
+      rawY.set(shapePointer(clampUnit(((clientY - rect.top) / rect.height) * 2 - 1)))
       rawPresence.set(1)
     },
     [rawPresence, rawX, rawY],
@@ -145,6 +152,8 @@ export function useSpatialPointer<T extends HTMLElement>({
   return {
     x,
     y,
+    trailX,
+    trailY,
     presence,
     bind: {
       onPointerEnter: update,
@@ -163,9 +172,11 @@ export function useViewportSpatialPointer(
   const rawY = useMotionValue(0)
   const rawPresence = useMotionValue(0)
   const pointerRef = useRef<SpatialPointerSnapshot>({ x: 0, y: 0, presence: 0 })
-  const x = useSpring(rawX, motionSprings.pointerSlow)
-  const y = useSpring(rawY, motionSprings.pointerSlow)
-  const presence = useSpring(rawPresence, motionSprings.pointerSlow)
+  const x = useSpring(rawX, motionSprings.pointerLead)
+  const y = useSpring(rawY, motionSprings.pointerLead)
+  const trailX = useSpring(x, motionSprings.pointerTrail)
+  const trailY = useSpring(y, motionSprings.pointerTrail)
+  const presence = useSpring(rawPresence, motionSprings.pointerPresence)
 
   useEffect(() => {
     const sync = (nextX: number, nextY: number, nextPresence: number) => {
@@ -189,8 +200,8 @@ export function useViewportSpatialPointer(
     const handlePointerMove = (event: PointerEvent) => {
       if (event.pointerType === 'touch' || window.innerWidth <= 0 || window.innerHeight <= 0) return
       sync(
-        clampUnit((event.clientX / window.innerWidth) * 2 - 1),
-        clampUnit((event.clientY / window.innerHeight) * 2 - 1),
+        shapePointer(clampUnit((event.clientX / window.innerWidth) * 2 - 1)),
+        shapePointer(clampUnit((event.clientY / window.innerHeight) * 2 - 1)),
         1,
       )
     }
@@ -214,5 +225,5 @@ export function useViewportSpatialPointer(
     }
   }, [activityRef, enabled, rawPresence, rawX, rawY])
 
-  return { x, y, presence, pointerRef }
+  return { x, y, trailX, trailY, presence, pointerRef }
 }
