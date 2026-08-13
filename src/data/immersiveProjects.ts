@@ -83,7 +83,7 @@ export const immersiveProjects: ImmersiveProject[] = [
     category: 'Personal finance OS and product-story architecture',
     statement: 'A landing page should not describe the product. It should become it.',
     description:
-      'A calm personal finance operating system whose public discovery route renders the real product shell, one reconciled financial life, and four responsive views instead of a conventional section-based landing page.',
+      'A calm personal finance operating system whose public discovery route renders the real product shell and one reconciled financial life across four responsive views.',
     proof: 'Production shell · one synthetic fixture · Home, Plan, Accounts and Activity',
     modes: ['Observe', 'Build', 'Operate'],
     accent: '#ff3d96',
