@@ -18,8 +18,22 @@ const imports = entry
   .map((line) => line.trim())
   .filter(Boolean)
 
-if (imports.at(-1) !== "@import './immersive/award-finish.css';") {
-  fail('award-finish.css must remain the last immersive stylesheet import')
+const awardImport = "@import './immersive/award-finish.css';"
+const spatialImport = "@import './immersive/spatial-interaction.css';"
+const archiveHitImport = "@import './immersive/archive-spatial-hit.css';"
+const awardIndex = imports.indexOf(awardImport)
+const spatialIndex = imports.indexOf(spatialImport)
+const archiveHitIndex = imports.indexOf(archiveHitImport)
+
+if (awardIndex < 0) fail('award-finish.css must remain in the immersive stylesheet stack')
+if (spatialIndex < 0 || spatialIndex <= awardIndex) {
+  fail('spatial-interaction.css must follow the authored award finish')
+}
+if (archiveHitIndex < 0 || archiveHitIndex <= spatialIndex) {
+  fail('archive-spatial-hit.css must remain the final stable interaction plane')
+}
+if (imports.at(-1) !== archiveHitImport) {
+  fail('archive-spatial-hit.css must remain the last immersive stylesheet import')
 }
 
 for (const id of ['ivisit', 'weddings', 'jelocare', 'wetindey', 'aumosaic', 'justurbanwears']) {
@@ -61,5 +75,5 @@ for (const character of finish) {
 if (depth !== 0) fail('stylesheet braces are unbalanced')
 
 if (!process.exitCode) {
-  console.log('Awwwards finish contract passed.')
+  console.log('Awwwards finish contract passed with the spatial interaction overlays intact.')
 }
