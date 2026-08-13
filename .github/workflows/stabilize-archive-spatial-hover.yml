@@ -52,23 +52,24 @@ jobs:
               '/* Stable pointer capture for archive cards.',
               '   The hit surface stays fixed while the visual plane moves beneath it. */',
               '',
-              '.h2o-archive-card__hit-area {',
+              '.h2o-archive-card > .h2o-archive-card__hit-area {',
               '  position: absolute;',
               '  inset: 0;',
-              '  z-index: 6;',
+              '  z-index: 8;',
               '  border-radius: inherit;',
               '  cursor: default;',
               '  touch-action: pan-y;',
+              '  transform: none;',
               '}',
               '',
               '@media (pointer: coarse), (max-width: 900px) {',
-              '  .h2o-archive-card__hit-area {',
+              '  .h2o-archive-card > .h2o-archive-card__hit-area {',
               '    display: none;',
               '  }',
               '}',
               '',
               '@media (prefers-reduced-motion: reduce) {',
-              '  .h2o-archive-card__hit-area {',
+              '  .h2o-archive-card > .h2o-archive-card__hit-area {',
               '    display: none;',
               '  }',
               '}',
@@ -82,6 +83,42 @@ jobs:
           if imports.count(old_import) != 1:
               raise SystemExit(f'expected one spatial stylesheet import, found {imports.count(old_import)}')
           imports_path.write_text(imports.replace(old_import, new_import, 1))
+
+          verifier_path = Path('scripts/verify-spatial-hover.mjs')
+          verifier = verifier_path.read_text()
+          probe_start = verifier.index('  const archiveTarget = await page.evaluate(() => {')
+          probe_end = verifier.index('  const archiveSelector =', probe_start)
+          archive_probe = '\n'.join([
+              '  const archiveTarget = await page.evaluate(() => {',
+              "    const cards = [...document.querySelectorAll('.h2o-archive-card')]",
+              '    const minY = Math.round(window.innerHeight * 0.38)',
+              '    const maxY = Math.round(window.innerHeight * 0.9)',
+              '    const minX = Math.round(window.innerWidth * 0.08)',
+              '    const maxX = Math.round(window.innerWidth * 0.92)',
+              '',
+              '    for (let y = minY; y <= maxY; y += 24) {',
+              '      for (let x = minX; x <= maxX; x += 24) {',
+              '        const topElement = document.elementFromPoint(x, y)',
+              "        const hitArea = topElement?.closest('.h2o-archive-card__hit-area')",
+              '        if (!hitArea) continue',
+              "        const card = hitArea.closest('.h2o-archive-card')",
+              '        if (!card) continue',
+              '        const index = cards.indexOf(card)',
+              '        return {',
+              '          index,',
+              '          x,',
+              '          y,',
+              "          title: card.querySelector('h3')?.textContent?.trim() || `archive-${index}`,",
+              "          topClass: topElement.className || topElement.tagName,",
+              '        }',
+              '      }',
+              '    }',
+              '',
+              "    throw new Error('No archive hit surface was topmost in the viewport')",
+              '  })',
+              '',
+          ])
+          verifier_path.write_text(verifier[:probe_start] + archive_probe + verifier[probe_end:])
           PY
       - name: Verify source contract
         run: |
@@ -120,6 +157,6 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/components/immersive/ImmersivePortfolio.tsx src/styles/immersive.css src/styles/immersive/archive-spatial-hit.css
+          git add src/components/immersive/ImmersivePortfolio.tsx src/styles/immersive.css src/styles/immersive/archive-spatial-hit.css scripts/verify-spatial-hover.mjs
           git commit -m "fix: stabilize archive spatial hover"
           git push origin HEAD:main
