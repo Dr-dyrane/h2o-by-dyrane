@@ -1,0 +1,1151 @@
+name: Materialize spatial Apple-like motion
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/materialize-spatial-motion.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-spatial-motion-materializer
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Materialize motion and hover system
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace_once(source: str, old: str, new: str, label: str) -> str:
+              count = source.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected one match, found {count}")
+              return source.replace(old, new, 1)
+
+          def replace_between(source: str, start: str, end: str, replacement: str, label: str) -> str:
+              start_index = source.find(start)
+              if start_index < 0:
+                  raise SystemExit(f"{label}: start marker missing")
+              end_index = source.find(end, start_index)
+              if end_index < 0:
+                  raise SystemExit(f"{label}: end marker missing")
+              return source[:start_index] + replacement.rstrip() + source[end_index:]
+
+          tokens = '''// Profiled by .github/workflows/motion-profile.yml and runtime-probed after WebGL loads.
+          // These curves use decisive acceleration, a long soft deceleration, and one clean settle.
+          export const fluidEase: [number, number, number, number] = [0.16, 1, 0.3, 1]
+          export const appleEase: [number, number, number, number] = [0.32, 0.72, 0, 1]
+          export const appleEaseInOut: [number, number, number, number] = [0.65, 0, 0.35, 1]
+
+          const settle = {
+            restDelta: 0.001,
+            restSpeed: 0.015,
+          } as const
+
+          // Lower-frequency springs absorb wheel/trackpad stepping instead of transmitting it directly.
+          export const motionSprings = {
+            world: {
+              stiffness: 210,
+              damping: 28,
+              mass: 0.82,
+              ...settle,
+            },
+            hero: {
+              stiffness: 240,
+              damping: 27,
+              mass: 0.78,
+              ...settle,
+            },
+            spatial: {
+              stiffness: 185,
+              damping: 27,
+              mass: 0.88,
+              ...settle,
+            },
+            gallery: {
+              stiffness: 225,
+              damping: 28,
+              mass: 0.8,
+              ...settle,
+            },
+            pointer: {
+              stiffness: 260,
+              damping: 24,
+              mass: 0.7,
+              ...settle,
+            },
+            pointerSlow: {
+              stiffness: 170,
+              damping: 23,
+              mass: 0.82,
+              ...settle,
+            },
+          } as const
+
+          export const motionTransitions = {
+            micro: { duration: 0.26, ease: appleEase },
+            reveal: { duration: 0.64, ease: fluidEase },
+            cinematic: { duration: 0.98, ease: appleEase },
+            settle: { duration: 0.78, ease: appleEaseInOut },
+          } as const
+
+          export const webglMotionBudget = {
+            idleWindowMs: 720,
+            idleLoadTimeoutMs: 560,
+            fallbackLoadDelayMs: 90,
+            full: {
+              dpr: 1,
+              particleCount: 220,
+              filamentCount: 3,
+              filamentSegments: 48,
+              filamentRadialSegments: 3,
+              primaryDetail: 3,
+              secondaryDetail: 2,
+              nodeSegments: 8,
+            },
+            compact: {
+              dpr: 0.85,
+              particleCount: 120,
+              filamentCount: 1,
+              filamentSegments: 28,
+              filamentRadialSegments: 3,
+              primaryDetail: 2,
+              secondaryDetail: 1,
+              nodeSegments: 6,
+            },
+          } as const
+
+          export function frameBlend(lambda: number, delta: number) {
+            return 1 - Math.exp(-lambda * delta)
+          }
+          '''
+          Path('src/motion/tokens.ts').write_text(tokens.replace('          ', '').rstrip() + '\n')
+
+          project_chapter = '''function ProjectChapter({
+            project,
+            index,
+            active,
+            spatialEnabled,
+            register,
+          }: {
+            project: ImmersiveProject
+            index: number
+            active: boolean
+            spatialEnabled: boolean
+            register: (element: HTMLElement | null, index: number) => void
+          }) {
+            const sectionRef = useRef<HTMLElement | null>(null)
+            const direction = index % 2 === 0 ? 1 : -1
+            const { scrollYProgress } = useScroll({
+              target: sectionRef,
+              offset: ['start end', 'end start'],
+            })
+            const progress = useSpring(scrollYProgress, motionSprings.gallery)
+            const mediaScale = useTransform(progress, [0, 0.24, 0.74, 1], [0.87, 1, 1, 0.92])
+            const mediaX = useTransform(
+              progress,
+              [0, 0.24, 0.74, 1],
+              [`${direction * 9}%`, '0%', '0%', `${direction * -5}%`],
+            )
+            const mediaY = useTransform(progress, [0, 0.5, 1], ['7%', '0%', '-6%'])
+            const mediaRotateY = useTransform(
+              progress,
+              [0, 0.24, 0.74, 1],
+              [direction * -7, 0, 0, direction * 4],
+            )
+            const copyX = useTransform(
+              progress,
+              [0, 0.24, 0.74, 1],
+              [`${direction * -7}%`, '0%', '0%', `${direction * 6}%`],
+            )
+            const copyY = useTransform(progress, [0, 0.5, 1], ['8%', '0%', '-8%'])
+            const copyScale = useTransform(progress, [0, 0.25, 0.76, 1], [0.95, 1, 1, 0.96])
+            const opacity = useTransform(progress, [0, 0.12, 0.84, 1], [0.08, 1, 1, 0.12])
+            const pointer = useLocalSpatialPointer(spatialEnabled && active)
+            const pointerRotateX = useTransform(pointer.y, [-1, 1], [3.4, -3.4])
+            const pointerRotateY = useTransform(pointer.x, [-1, 1], [-4.8, 4.8])
+            const pointerX = useTransform(pointer.x, [-1, 1], [-9, 9])
+            const pointerY = useTransform(pointer.y, [-1, 1], [-6, 6])
+            const pointerScale = useTransform(pointer.presence, [0, 1], [1, 1.012])
+            const copyPointerX = useTransform(pointer.x, [-1, 1], [8, -8])
+            const copyPointerY = useTransform(pointer.y, [-1, 1], [5, -5])
+            const copyPointerZ = useTransform(pointer.presence, [0, 1], [0, 32])
+            const lightX = useTransform(pointer.x, [-1, 1], [-230, 230])
+            const lightY = useTransform(pointer.y, [-1, 1], [-150, 150])
+            const lightOpacity = useTransform(pointer.presence, [0, 1], [0, 0.88])
+            const style = {
+              '--project-accent': project.accent,
+              '--project-accent-soft': project.accentSoft,
+            } as CSSProperties
+
+            return (
+              <article
+                id={project.id}
+                ref={(element) => {
+                  sectionRef.current = element
+                  register(element, index)
+                }}
+                className="h2o-project-chapter"
+                style={style}
+                data-project-index={index}
+                data-direction={direction > 0 ? 'forward' : 'reverse'}
+                data-active={active ? 'true' : 'false'}
+              >
+                <div className="h2o-project-sticky">
+                  <div className="h2o-project-glow" aria-hidden="true" />
+
+                  <motion.div
+                    className="h2o-project-media"
+                    style={{ scale: mediaScale, x: mediaX, y: mediaY, rotateY: mediaRotateY, opacity }}
+                    onPointerEnter={pointer.onMove}
+                    onPointerMove={pointer.onMove}
+                    onPointerLeave={pointer.onLeave}
+                  >
+                    <motion.div
+                      className="h2o-project-media__spatial"
+                      style={{
+                        rotateX: pointerRotateX,
+                        rotateY: pointerRotateY,
+                        x: pointerX,
+                        y: pointerY,
+                        scale: pointerScale,
+                      }}
+                    >
+                      <motion.span
+                        className="h2o-project-pointer-light"
+                        style={{ x: lightX, y: lightY, opacity: lightOpacity }}
+                        aria-hidden="true"
+                      />
+                      <div className="h2o-project-media__wash" aria-hidden="true" />
+                      <ProjectImage
+                        image={project.desktop}
+                        className="h2o-project-media__desktop"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                      />
+                      <div className="h2o-project-media__mobile-shell">
+                        <ProjectImage image={project.mobile} className="h2o-project-media__mobile" />
+                      </div>
+                      <span className="h2o-project-media__index" aria-hidden="true">
+                        {project.sequence}
+                      </span>
+                      <a
+                        className="h2o-project-media-link"
+                        href={project.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Open ${project.title} live experience`}
+                      >
+                        <span>Open {project.title}</span>
+                      </a>
+                    </motion.div>
+                  </motion.div>
+
+                  <motion.div
+                    className="h2o-project-copy"
+                    style={{ x: copyX, y: copyY, scale: copyScale, opacity }}
+                  >
+                    <motion.div
+                      className="h2o-project-copy__spatial"
+                      style={{ x: copyPointerX, y: copyPointerY, z: copyPointerZ }}
+                    >
+                      <div className="h2o-project-kicker">
+                        <span>{project.sequence}</span>
+                        <span>{project.category}</span>
+                        <span>{project.period}</span>
+                      </div>
+
+                      <h3>{project.title}</h3>
+                      <p className="h2o-project-statement">{project.statement}</p>
+                      <p className="h2o-project-description">{project.description}</p>
+
+                      <div className="h2o-project-proof">
+                        <span>Proof</span>
+                        <p>{project.proof}</p>
+                      </div>
+
+                      <div className="h2o-project-actions">
+                        <a href={project.url} target="_blank" rel="noreferrer">
+                          Open live experience
+                          <ArrowUpRight aria-hidden="true" size={18} strokeWidth={1.7} />
+                        </a>
+                        {project.secondaryUrl && project.secondaryLabel ? (
+                          <a
+                            className="h2o-project-actions__secondary"
+                            href={project.secondaryUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {project.secondaryLabel}
+                            <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.7} />
+                          </a>
+                        ) : null}
+                        <div className="h2o-project-modes" aria-label="Practice modes">
+                          {project.modes.map((mode) => (
+                            <span key={mode}>{mode}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                </div>
+              </article>
+            )
+          }
+          '''
+
+          archive_components = '''type ArchiveProject = (typeof archiveProjects)[number]
+
+          function ArchiveCard({
+            project,
+            index,
+            spatialEnabled,
+          }: {
+            project: ArchiveProject
+            index: number
+            spatialEnabled: boolean
+          }) {
+            const pointer = useLocalSpatialPointer(spatialEnabled)
+            const rotateX = useTransform(pointer.y, [-1, 1], [4.2, -4.2])
+            const rotateY = useTransform(pointer.x, [-1, 1], [-6.5, 6.5])
+            const x = useTransform(pointer.x, [-1, 1], [-8, 8])
+            const y = useTransform(pointer.y, [-1, 1], [-6, 6])
+            const z = useTransform(pointer.presence, [0, 1], [0, 66])
+            const scale = useTransform(pointer.presence, [0, 1], [1, 1.018])
+            const lightX = useTransform(pointer.x, [-1, 1], [-190, 190])
+            const lightY = useTransform(pointer.y, [-1, 1], [-120, 120])
+            const lightOpacity = useTransform(pointer.presence, [0, 1], [0, 0.78])
+            const cardStyle = {
+              '--archive-tilt': `${index % 2 === 0 ? 5 : -6}deg`,
+              '--archive-depth': `${index % 2 === 0 ? 0 : -90}px`,
+            } as CSSProperties
+
+            return (
+              <article
+                className="h2o-archive-card"
+                style={cardStyle}
+                onPointerEnter={pointer.onMove}
+                onPointerMove={pointer.onMove}
+                onPointerLeave={pointer.onLeave}
+              >
+                <motion.div
+                  className="h2o-archive-card__spatial"
+                  style={{ rotateX, rotateY, x, y, z, scale }}
+                >
+                  <motion.span
+                    className="h2o-archive-pointer-light"
+                    style={{ x: lightX, y: lightY, opacity: lightOpacity }}
+                    aria-hidden="true"
+                  />
+                  <img src={project.image} alt={`${project.title} product interface`} loading="lazy" />
+                  <div className="h2o-archive-card__copy">
+                    <span>{project.period}</span>
+                    <h3>{project.title}</h3>
+                    <p>{project.category}</p>
+                  </div>
+                </motion.div>
+              </article>
+            )
+          }
+
+          function ArchiveCurrent({ spatialEnabled }: { spatialEnabled: boolean }) {
+            const sectionRef = useRef<HTMLElement | null>(null)
+            const { scrollYProgress } = useScroll({
+              target: sectionRef,
+              offset: ['start start', 'end end'],
+            })
+            const progress = useSpring(scrollYProgress, motionSprings.gallery)
+            const railX = useTransform(progress, [0, 0.08, 0.92, 1], ['8vw', '6vw', '-68%', '-70%'])
+            const wordX = useTransform(progress, [0, 1], ['18vw', '-28vw'])
+            const wordZ = useTransform(progress, [0, 0.55, 1], [-520, 40, -620])
+
+            return (
+              <section ref={sectionRef} className="h2o-archive" id="archive" aria-labelledby="h2o-archive-title">
+                <div className="h2o-archive__sticky">
+                  <div className="h2o-archive__heading">
+                    <p className="h2o-section-label">The wider current</p>
+                    <h2 id="h2o-archive-title">Experiments that changed what came next.</h2>
+                  </div>
+                  <motion.div className="h2o-archive__word" style={{ x: wordX, z: wordZ }} aria-hidden="true">
+                    MORE WORK
+                  </motion.div>
+                  <motion.div className="h2o-archive__rail" style={{ x: railX }}>
+                    {archiveProjects.map((project, index) => (
+                      <ArchiveCard
+                        key={project.title}
+                        project={project}
+                        index={index}
+                        spatialEnabled={spatialEnabled}
+                      />
+                    ))}
+                  </motion.div>
+                </div>
+              </section>
+            )
+          }
+          '''
+
+          hero_block = '''      <section ref={heroRef} className="h2o-hero" aria-labelledby="h2o-hero-title">
+                <div className="h2o-hero__sticky">
+                  <motion.span
+                    className="h2o-hero__pointer-light"
+                    style={{ x: heroLightX, y: heroLightY, opacity: heroLightOpacity }}
+                    aria-hidden="true"
+                  />
+                  <motion.div
+                    className="h2o-hero__copy"
+                    style={{
+                      x: heroCopyX,
+                      y: heroCopyY,
+                      z: heroCopyZ,
+                      scale: heroCopyScale,
+                      rotateY: heroCopyRotateY,
+                      opacity: heroCopyOpacity,
+                    }}
+                  >
+                    <motion.div
+                      className="h2o-hero__spatial"
+                      style={{
+                        x: heroPointerX,
+                        y: heroPointerY,
+                        rotateX: heroPointerRotateX,
+                        rotateY: heroPointerRotateY,
+                        scale: heroPointerScale,
+                      }}
+                    >
+                      <p className="h2o-eyebrow">
+                        Alexander Udeogaranya · Doctor · Product designer · Software engineer
+                      </p>
+                      <motion.h1 id="h2o-hero-title" style={{ letterSpacing: heroWordSpacing }}>
+                        <span>A body</span>
+                        <span>of work</span>
+                        <em>in motion.</em>
+                      </motion.h1>
+                      <div className="h2o-hero__footer">
+                        <p>I observe the system, build the product, and stay for reality.</p>
+                        <a href="#practice">
+                          Enter the current
+                          <ArrowDown aria-hidden="true" size={18} strokeWidth={1.7} />
+                        </a>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                  <div className="h2o-hero__count" aria-hidden="true">
+                    <strong>50+</strong>
+                    <span>builds, one current</span>
+                  </div>
+                </div>
+              </section>'''
+
+          portfolio_path = Path('src/components/immersive/ImmersivePortfolio.tsx')
+          portfolio = portfolio_path.read_text()
+          portfolio = replace_once(
+              portfolio,
+              "  useMotionValueEvent,\n  useScroll,",
+              "  useMotionValue,\n  useMotionValueEvent,\n  useReducedMotion,\n  useScroll,",
+              'portfolio motion imports',
+          )
+          portfolio = replace_once(
+              portfolio,
+              "  type CSSProperties,\n  type MutableRefObject,",
+              "  type CSSProperties,\n  type MutableRefObject,\n  type PointerEvent as ReactPointerEvent,",
+              'portfolio pointer event type',
+          )
+          hook_marker = "type PracticeStep = (typeof practiceSteps)[number]"
+          local_hook = '''function useLocalSpatialPointer(enabled: boolean) {
+            const rawX = useMotionValue(0)
+            const rawY = useMotionValue(0)
+            const rawPresence = useMotionValue(0)
+            const x = useSpring(rawX, motionSprings.pointer)
+            const y = useSpring(rawY, motionSprings.pointer)
+            const presence = useSpring(rawPresence, motionSprings.pointerSlow)
+
+            const onMove = (event: ReactPointerEvent<HTMLElement>) => {
+              if (!enabled || event.pointerType === 'touch') return
+              const rect = event.currentTarget.getBoundingClientRect()
+              if (rect.width <= 0 || rect.height <= 0) return
+              const nextX = ((event.clientX - rect.left) / rect.width) * 2 - 1
+              const nextY = ((event.clientY - rect.top) / rect.height) * 2 - 1
+              rawX.set(Math.max(-1, Math.min(1, nextX)))
+              rawY.set(Math.max(-1, Math.min(1, nextY)))
+              rawPresence.set(1)
+            }
+
+            const onLeave = () => {
+              rawX.set(0)
+              rawY.set(0)
+              rawPresence.set(0)
+            }
+
+            return { x, y, presence, onMove, onLeave }
+          }
+
+          '''
+          portfolio = replace_once(portfolio, hook_marker, local_hook.replace('          ', '') + hook_marker, 'local spatial hook')
+          portfolio = replace_between(portfolio, 'function ProjectChapter({', '\ntype PracticeStep =', project_chapter.replace('          ', ''), 'ProjectChapter')
+          portfolio = replace_between(portfolio, 'function ArchiveCurrent()', '\nfunction EndCredits()', archive_components.replace('          ', ''), 'ArchiveCurrent')
+          portfolio = replace_once(
+              portfolio,
+              "  const activityRef = useRef(0)\n  const [activeIndex, setActiveIndex] = useState(0)",
+              """  const activityRef = useRef(0)
+            const shouldReduceMotion = useReducedMotion()
+            const spatialEnabled = shouldReduceMotion !== true
+            const pointerRawX = useMotionValue(0)
+            const pointerRawY = useMotionValue(0)
+            const pointerRawPresence = useMotionValue(0)
+            const pointerX = useSpring(pointerRawX, motionSprings.pointer)
+            const pointerY = useSpring(pointerRawY, motionSprings.pointer)
+            const pointerPresence = useSpring(pointerRawPresence, motionSprings.pointerSlow)
+            const pointerRef = useRef({ x: 0, y: 0, presence: 0 })
+            const [activeIndex, setActiveIndex] = useState(0)""".replace('            ', ''),
+              'global spatial values',
+          )
+          portfolio = replace_once(
+              portfolio,
+              "  const heroWordSpacing = useTransform(smoothHeroProgress, [0, 0.7], ['-0.07em', '-0.035em'])\n",
+              """  const heroWordSpacing = useTransform(smoothHeroProgress, [0, 0.7], ['-0.07em', '-0.035em'])
+            const heroPointerX = useTransform(pointerX, [-1, 1], [-13, 13])
+            const heroPointerY = useTransform(pointerY, [-1, 1], [-8, 8])
+            const heroPointerRotateX = useTransform(pointerY, [-1, 1], [1.45, -1.45])
+            const heroPointerRotateY = useTransform(pointerX, [-1, 1], [-2.1, 2.1])
+            const heroPointerScale = useTransform(pointerPresence, [0, 1], [1, 1.006])
+            const heroLightX = useTransform(pointerX, [-1, 1], [-260, 260])
+            const heroLightY = useTransform(pointerY, [-1, 1], [-160, 160])
+            const heroLightOpacity = useTransform(pointerPresence, [0, 1], [0, 0.86])
+            """.replace('            ', ''),
+              'hero spatial values',
+          )
+          effect_marker = "  useEffect(() => {\n    const observer = new IntersectionObserver("
+          pointer_effect = '''  useEffect(() => {
+            const reset = () => {
+              pointerRawX.set(0)
+              pointerRawY.set(0)
+              pointerRawPresence.set(0)
+              pointerRef.current = { x: 0, y: 0, presence: 0 }
+            }
+
+            if (!spatialEnabled) {
+              reset()
+              return undefined
+            }
+
+            const move = (event: PointerEvent) => {
+              if (event.pointerType === 'touch') return
+              const x = Math.max(-1, Math.min(1, (event.clientX / window.innerWidth) * 2 - 1))
+              const y = Math.max(-1, Math.min(1, (event.clientY / window.innerHeight) * 2 - 1))
+              pointerRawX.set(x)
+              pointerRawY.set(y)
+              pointerRawPresence.set(1)
+              pointerRef.current = { x, y, presence: 1 }
+              activityRef.current = performance.now()
+            }
+
+            window.addEventListener('pointermove', move, { passive: true })
+            window.addEventListener('blur', reset)
+            document.documentElement.addEventListener('mouseleave', reset)
+            return () => {
+              window.removeEventListener('pointermove', move)
+              window.removeEventListener('blur', reset)
+              document.documentElement.removeEventListener('mouseleave', reset)
+            }
+          }, [pointerRawPresence, pointerRawX, pointerRawY, spatialEnabled])
+
+          '''
+          portfolio = replace_once(portfolio, effect_marker, pointer_effect.replace('          ', '') + effect_marker, 'global pointer effect')
+          portfolio = replace_once(
+              portfolio,
+              '    <main className="h2o-immersive" id="top">\n',
+              """    <main
+                  className="h2o-immersive"
+                  id="top"
+                  data-spatial-input={spatialEnabled ? 'enabled' : 'reduced'}
+                >
+              """.replace('              ', ''),
+              'root spatial attribute',
+          )
+          portfolio = replace_once(
+              portfolio,
+              "        activityRef={activityRef as MutableRefObject<number>}\n        palette={palette}\n",
+              "        activityRef={activityRef as MutableRefObject<number>}\n        pointerRef={pointerRef}\n        palette={palette}\n",
+              'canvas pointer ref',
+          )
+          portfolio = replace_between(
+              portfolio,
+              '      <section ref={heroRef} className="h2o-hero" aria-labelledby="h2o-hero-title">',
+              '\n      <SpatialPractice />',
+              hero_block,
+              'hero block',
+          )
+          portfolio = replace_once(
+              portfolio,
+              '      <SpatialPractice />',
+              """      <SpatialPractice
+                    pointerX={pointerX}
+                    pointerY={pointerY}
+                    pointerPresence={pointerPresence}
+                  />""".replace('                  ', ''),
+              'SpatialPractice props',
+          )
+          portfolio = replace_once(
+              portfolio,
+              'function SpatialPractice() {',
+              """function SpatialPractice({
+            pointerX,
+            pointerY,
+            pointerPresence,
+          }: {
+            pointerX: MotionValue<number>
+            pointerY: MotionValue<number>
+            pointerPresence: MotionValue<number>
+          }) {""".replace('          ', ''),
+              'SpatialPractice signature',
+          )
+          portfolio = replace_once(
+              portfolio,
+              "  const currentOpacity = useTransform(progress, [0, 0.5, 1], [0.1, 0.22, 0.08])\n",
+              """  const currentOpacity = useTransform(progress, [0, 0.5, 1], [0.1, 0.22, 0.08])
+            const pointerShiftX = useTransform([pointerX, pointerPresence], ([x, presence]) => x * presence * 38)
+            const pointerShiftY = useTransform([pointerY, pointerPresence], ([y, presence]) => y * presence * 22)
+            const pointerRotateY = useTransform([pointerX, pointerPresence], ([x, presence]) => x * presence * 3.2)
+            """.replace('            ', ''),
+              'SpatialPractice pointer values',
+          )
+          portfolio = replace_once(
+              portfolio,
+              """        <motion.div
+          className="h2o-practice__current-word"
+          style={{ x: currentX, z: currentZ, opacity: currentOpacity }}
+          aria-hidden="true"
+        >
+          CURRENT
+        </motion.div>""",
+              """        <motion.div
+          className="h2o-practice__current-word"
+          style={{ x: currentX, z: currentZ, opacity: currentOpacity }}
+          aria-hidden="true"
+        >
+          <motion.span
+            className="h2o-practice__current-word-spatial"
+            style={{ x: pointerShiftX, y: pointerShiftY, rotateY: pointerRotateY }}
+          >
+            CURRENT
+          </motion.span>
+        </motion.div>""",
+              'SpatialPractice pointer layer',
+          )
+          portfolio = replace_once(
+              portfolio,
+              """            active={index === activeIndex}
+            register={registerChapter}
+""",
+              """            active={index === activeIndex}
+            spatialEnabled={spatialEnabled}
+            register={registerChapter}
+""",
+              'ProjectChapter spatial prop',
+          )
+          portfolio = replace_once(portfolio, '      <ArchiveCurrent />', '      <ArchiveCurrent spatialEnabled={spatialEnabled} />', 'Archive spatial prop')
+          portfolio_path.write_text(portfolio)
+
+          canvas_path = Path('src/components/immersive/LiquidCurrentCanvas.tsx')
+          canvas = canvas_path.read_text()
+          canvas = replace_once(
+              canvas,
+              "interface LiquidCurrentCanvasProps {\n",
+              "type SpatialPointerSnapshot = { x: number; y: number; presence: number }\n\ninterface LiquidCurrentCanvasProps {\n",
+              'canvas pointer type',
+          )
+          canvas = replace_once(
+              canvas,
+              "  activityRef: MutableRefObject<number>\n  palette: string[]",
+              "  activityRef: MutableRefObject<number>\n  pointerRef: MutableRefObject<SpatialPointerSnapshot>\n  palette: string[]",
+              'canvas pointer prop',
+          )
+          canvas_path.write_text(canvas)
+
+          scene_path = Path('src/components/immersive/LiquidCurrentScene.tsx')
+          scene = scene_path.read_text()
+          scene = replace_once(
+              scene,
+              "interface LiquidCurrentSceneProps {\n",
+              "type SpatialPointerSnapshot = { x: number; y: number; presence: number }\n\ninterface LiquidCurrentSceneProps {\n",
+              'scene pointer type',
+          )
+          scene = replace_once(
+              scene,
+              "  activityRef: MutableRefObject<number>\n  palette: string[]",
+              "  activityRef: MutableRefObject<number>\n  pointerRef: MutableRefObject<SpatialPointerSnapshot>\n  palette: string[]",
+              'scene pointer prop',
+          )
+          scene = replace_once(scene, "    const events: Array<keyof WindowEventMap> = ['scroll', 'resize']", "    const events: Array<keyof WindowEventMap> = ['scroll', 'resize', 'pointermove']", 'scene pointer wake')
+          scene = replace_once(
+              scene,
+              """  activeIndexRef,
+  activityRef,
+  palette,
+""",
+              """  activeIndexRef,
+  activityRef,
+  pointerRef,
+  palette,
+""",
+              'scene pointer destructure',
+          )
+          scene = replace_once(scene, "  const cameraPosition = useMemo(() => new THREE.Vector3(), [])\n", "  const cameraPosition = useMemo(() => new THREE.Vector3(), [])\n  const pointerPosition = useMemo(() => new THREE.Vector2(), [])\n", 'scene pointer vector')
+          scene = replace_once(
+              scene,
+              """    const phase = progress * Math.PI * 3.6
+    targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
+""",
+              """    const phase = progress * Math.PI * 3.6
+    const pointer = pointerRef.current
+    pointerPosition.x = THREE.MathUtils.damp(pointerPosition.x, pointer.x * pointer.presence, 12, delta)
+    pointerPosition.y = THREE.MathUtils.damp(pointerPosition.y, pointer.y * pointer.presence, 12, delta)
+    targetAccent.set(palette[activeIndex] ?? palette[0] ?? '#ff4b3e')
+""",
+              'scene pointer damping',
+          )
+          for old, new, label in [
+              ('        progress * Math.PI * 2.15 + Math.sin(phase) * 0.22,', '        progress * Math.PI * 2.15 + Math.sin(phase) * 0.22 + pointerPosition.x * 0.18,', 'scene rotation y'),
+              ('        -0.13 + Math.cos(phase * 0.72) * 0.12,', '        -0.13 + Math.cos(phase * 0.72) * 0.12 - pointerPosition.y * 0.12,', 'scene rotation x'),
+              ('        1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16,', '        1.1 + Math.sin(phase * 0.82) * 0.95 + activeDirection * 0.16 + pointerPosition.x * 0.34,', 'scene position x'),
+              ('        0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46,', '        0.2 + Math.cos(phase * 0.64) * 0.38 - progress * 0.46 - pointerPosition.y * 0.24,', 'scene position y'),
+              ('        -0.18 + Math.sin(phase * 0.48) * 0.72,', '        -0.18 + Math.sin(phase * 0.48) * 0.72 + Math.abs(pointerPosition.x) * 0.08,', 'scene position z'),
+          ]:
+              scene = replace_once(scene, old, new, label)
+          scene = replace_once(
+              scene,
+              """    cameraPosition.set(
+      Math.sin(phase * 0.42) * 0.62,
+      Math.cos(phase * 0.35) * 0.26,
+      6.1 + Math.sin(phase * 0.26) * 0.38,
+    )
+    state.camera.position.lerp(cameraPosition, frameBlend(9.2, delta))
+    cameraTarget.set(Math.sin(phase * 0.5) * 0.22, -progress * 0.38, -0.35)
+""",
+              """    cameraPosition.set(
+      Math.sin(phase * 0.42) * 0.62 + pointerPosition.x * 0.3,
+      Math.cos(phase * 0.35) * 0.26 - pointerPosition.y * 0.18,
+      6.1 + Math.sin(phase * 0.26) * 0.38 + Math.abs(pointerPosition.x) * 0.06,
+    )
+    state.camera.position.lerp(cameraPosition, frameBlend(9.2, delta))
+    cameraTarget.set(
+      Math.sin(phase * 0.5) * 0.22 + pointerPosition.x * 0.18,
+      -progress * 0.38 - pointerPosition.y * 0.13,
+      -0.35,
+    )
+""",
+              'scene camera parallax',
+          )
+          scene = replace_once(scene, '      pointsRef.current.rotation.z = -0.65 + Math.sin(phase * 0.35) * 0.16', '      pointsRef.current.rotation.z = -0.65 + Math.sin(phase * 0.35) * 0.16 + pointerPosition.x * 0.08', 'scene points response')
+          scene = replace_once(scene, '      filamentsRef.current.rotation.z = 0.5 + Math.sin(phase * 0.32) * 0.22', '      filamentsRef.current.rotation.z = 0.5 + Math.sin(phase * 0.32) * 0.22 - pointerPosition.y * 0.08', 'scene filament response')
+          scene_path.write_text(scene)
+
+          motion_path = Path('src/styles/immersive/motion.css')
+          motion = motion_path.read_text()
+          motion = replace_once(
+              motion,
+              """:root {
+  --h2o-motion-instant: 120ms;
+  --h2o-motion-fast: 220ms;
+  --h2o-motion-base: 380ms;
+  --h2o-motion-slow: 680ms;
+  --h2o-motion-cinematic: 860ms;
+  --h2o-ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+  --h2o-ease-settle: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --h2o-ease: var(--h2o-ease-fluid);
+}
+""",
+              """:root {
+  --h2o-motion-instant: 140ms;
+  --h2o-motion-fast: 260ms;
+  --h2o-motion-base: 440ms;
+  --h2o-motion-slow: 720ms;
+  --h2o-motion-cinematic: 980ms;
+  --h2o-ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
+  --h2o-ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+  --h2o-ease-settle: cubic-bezier(0.65, 0, 0.35, 1);
+  --h2o-ease: var(--h2o-ease-apple);
+}
+""",
+              'motion variables',
+          )
+          spatial_css = r'''
+
+          /* Spatial interaction contract
+             Pointer response changes viewpoint, depth and light. It never blocks the full-surface exits. */
+          .h2o-hero__spatial,
+          .h2o-project-media__spatial,
+          .h2o-project-copy__spatial,
+          .h2o-archive-card__spatial,
+          .h2o-practice__current-word-spatial {
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+          }
+
+          .h2o-hero__spatial {
+            transform-origin: 38% 52%;
+          }
+
+          .h2o-hero__pointer-light,
+          .h2o-project-pointer-light,
+          .h2o-archive-pointer-light {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 1;
+            width: clamp(20rem, 40vw, 44rem);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            pointer-events: none;
+            translate: -50% -50%;
+          }
+
+          .h2o-hero__pointer-light {
+            z-index: 1;
+            width: clamp(25rem, 52vw, 60rem);
+            background: radial-gradient(circle, rgba(244, 246, 244, 0.075), rgba(84, 240, 179, 0.035) 31%, transparent 68%);
+            filter: blur(14px);
+          }
+
+          .h2o-project-media__spatial {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            border-radius: inherit;
+            transform-origin: center center;
+          }
+
+          .h2o-project-pointer-light {
+            background: radial-gradient(circle, color-mix(in srgb, var(--project-accent) 23%, white 4%), color-mix(in srgb, var(--project-accent) 7%, transparent) 34%, transparent 68%);
+            filter: blur(8px);
+            mix-blend-mode: screen;
+          }
+
+          .h2o-project-copy__spatial {
+            position: relative;
+            transform-origin: left center;
+          }
+
+          .h2o-project-media__desktop,
+          .h2o-project-media__mobile-shell,
+          .h2o-project-media__index,
+          .h2o-project-media-link {
+            transform-style: preserve-3d;
+          }
+
+          .h2o-project-media__desktop {
+            transform: translateZ(8px) scale(1.012);
+          }
+
+          .h2o-project-media__mobile-shell {
+            transform: translateZ(56px);
+          }
+
+          .h2o-project-media__index,
+          .h2o-project-media-link > span {
+            transform: translateZ(72px);
+          }
+
+          .h2o-practice__current-word-spatial {
+            display: block;
+            transform-origin: center center;
+          }
+
+          .h2o-archive-card > .h2o-archive-card__spatial {
+            position: absolute;
+            inset: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            overflow: hidden;
+            border-radius: inherit;
+            transform-origin: center center;
+          }
+
+          .h2o-archive-pointer-light {
+            width: clamp(18rem, 34vw, 36rem);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.13), rgba(174, 145, 255, 0.06) 36%, transparent 70%);
+            filter: blur(8px);
+            mix-blend-mode: screen;
+          }
+
+          .h2o-archive-card__spatial > img {
+            transform: translateZ(10px) scale(1.025);
+          }
+
+          .h2o-archive-card__copy {
+            position: absolute;
+            right: clamp(1.2rem, 3vw, 2.6rem);
+            bottom: clamp(1.2rem, 3vw, 2.6rem);
+            left: clamp(1.2rem, 3vw, 2.6rem);
+            z-index: 2;
+            transform: translateZ(72px);
+          }
+
+          .h2o-archive-card:hover {
+            transform: translateY(-42%) translateZ(var(--archive-depth)) rotateY(var(--archive-tilt));
+          }
+
+          .h2o-archive-card:hover .h2o-archive-card__spatial > img {
+            filter: saturate(0.94) brightness(0.82);
+            transform: translateZ(10px) scale(1.055);
+          }
+
+          @media (pointer: coarse), (max-width: 900px) {
+            .h2o-hero__pointer-light,
+            .h2o-project-pointer-light,
+            .h2o-archive-pointer-light {
+              display: none;
+            }
+
+            .h2o-hero__spatial,
+            .h2o-project-media__spatial,
+            .h2o-project-copy__spatial,
+            .h2o-archive-card__spatial,
+            .h2o-practice__current-word-spatial {
+              transform: none !important;
+            }
+
+            .h2o-project-media__desktop,
+            .h2o-project-media__mobile-shell,
+            .h2o-project-media__index,
+            .h2o-project-media-link > span,
+            .h2o-archive-card__copy {
+              transform: none;
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .h2o-hero__pointer-light,
+            .h2o-project-pointer-light,
+            .h2o-archive-pointer-light {
+              display: none !important;
+            }
+
+            .h2o-hero__spatial,
+            .h2o-project-media__spatial,
+            .h2o-project-copy__spatial,
+            .h2o-archive-card__spatial,
+            .h2o-practice__current-word-spatial {
+              transform: none !important;
+            }
+          }
+          '''
+          motion_path.write_text(motion.rstrip() + '\n' + spatial_css.replace('          ', '').strip() + '\n')
+
+          verifier_path = Path('scripts/verify-motion-contract.mjs')
+          verifier = verifier_path.read_text()
+          verifier = replace_once(
+              verifier,
+              "requireText('tokens', 'motionSprings', 'tokens: shared spring profiles are missing')\n",
+              """requireText('tokens', 'motionSprings', 'tokens: shared spring profiles are missing')
+          requireText('tokens', 'pointer:', 'tokens: pointer spring profile is missing')
+          requireText('tokens', 'appleEase', 'tokens: Apple-like easing curve is missing')
+          requireText('portfolio', 'useLocalSpatialPointer', 'portfolio: local spatial pointer hook is missing')
+          requireText('portfolio', 'data-spatial-input', 'portfolio: spatial input state is not exposed')
+          requireText('portfolio', 'h2o-project-pointer-light', 'portfolio: project pointer light is missing')
+          requireText('scene', "'pointermove'", 'scene: pointer movement does not wake demand rendering')
+          requireText('scene', 'pointerRef.current', 'scene: WebGL does not read spatial pointer input')
+          requireText('styles', '.h2o-project-media__spatial', 'styles: project spatial plane is missing')
+          requireText('styles', '@media (pointer: coarse)', 'styles: coarse-pointer fallback is missing')
+          """.replace('          ', ''),
+              'motion verifier spatial checks',
+          )
+          verifier = replace_once(
+              verifier,
+              """if (source.scene.includes("'pointermove'")) {
+  failures.push('scene: pointer movement wakes WebGL without changing the scene')
+}
+
+""",
+              '',
+              'remove old pointer prohibition',
+          )
+          verifier_path.write_text(verifier)
+
+          spatial_test = r'''import { existsSync } from 'node:fs'
+          import { mkdir, writeFile } from 'node:fs/promises'
+          import { resolve } from 'node:path'
+          import puppeteer from 'puppeteer-core'
+
+          const baseUrl = process.env.H2O_SPATIAL_URL || 'http://127.0.0.1:5173'
+          const outputDirectory = resolve(process.cwd(), '.spatial-proof')
+          const executableCandidates = [
+            process.env.PUPPETEER_EXECUTABLE_PATH,
+            '/usr/bin/google-chrome-stable',
+            '/usr/bin/google-chrome',
+            '/usr/bin/chromium',
+            '/usr/bin/chromium-browser',
+          ].filter(Boolean)
+          const executablePath = executableCandidates.find((candidate) => existsSync(candidate))
+          if (!executablePath) throw new Error(`No Chromium executable found. Checked: ${executableCandidates.join(', ')}`)
+
+          await mkdir(outputDirectory, { recursive: true })
+          const browser = await puppeteer.launch({
+            executablePath,
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio', '--no-first-run'],
+          })
+          const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds))
+          const failures = []
+          const report = { generatedAt: new Date().toISOString(), baseUrl, desktop: {}, reduced: {} }
+
+          try {
+            const page = await browser.newPage()
+            await page.setViewport({ width: 1440, height: 1000, deviceScaleFactor: 1, isMobile: false, hasTouch: false })
+            await page.emulateMediaFeatures([
+              { name: 'prefers-color-scheme', value: 'dark' },
+              { name: 'prefers-reduced-motion', value: 'no-preference' },
+            ])
+            await page.goto(baseUrl, { waitUntil: 'networkidle0', timeout: 60_000 })
+            await page.waitForSelector('[data-spatial-input="enabled"]', { timeout: 20_000 })
+            await page.evaluate(() => {
+              const target = document.getElementById('ivisit')
+              if (!target) throw new Error('Missing #ivisit')
+              const rect = target.getBoundingClientRect()
+              const top = rect.top + window.scrollY
+              window.scrollTo(0, top + Math.max(0, rect.height - window.innerHeight) * 0.42)
+            })
+            await sleep(1100)
+            const box = await page.$eval('#ivisit .h2o-project-media', (element) => {
+              const rect = element.getBoundingClientRect()
+              return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+            })
+            const sample = async (ratioX, ratioY) => {
+              await page.mouse.move(box.x + box.width * ratioX, box.y + box.height * ratioY)
+              await sleep(560)
+              return page.$eval('#ivisit', (chapter) => {
+                const plane = chapter.querySelector('.h2o-project-media__spatial')
+                const copy = chapter.querySelector('.h2o-project-copy__spatial')
+                const light = chapter.querySelector('.h2o-project-pointer-light')
+                return {
+                  plane: plane ? getComputedStyle(plane).transform : 'missing',
+                  copy: copy ? getComputedStyle(copy).transform : 'missing',
+                  lightOpacity: light ? Number.parseFloat(getComputedStyle(light).opacity) : 0,
+                }
+              })
+            }
+            const left = await sample(0.22, 0.36)
+            const right = await sample(0.78, 0.64)
+            report.desktop = { left, right }
+            if (left.plane === right.plane || left.plane === 'none') failures.push('desktop: project plane did not react spatially')
+            if (left.copy === right.copy || left.copy === 'none') failures.push('desktop: project copy did not counter-parallax')
+            if (Math.max(left.lightOpacity, right.lightOpacity) < 0.2) failures.push('desktop: pointer light did not become visible')
+            await page.screenshot({ path: resolve(outputDirectory, 'desktop-project-hover.png'), captureBeyondViewport: false })
+            await page.close()
+
+            const reducedPage = await browser.newPage()
+            await reducedPage.setViewport({ width: 1440, height: 1000, deviceScaleFactor: 1, isMobile: false, hasTouch: false })
+            await reducedPage.emulateMediaFeatures([
+              { name: 'prefers-color-scheme', value: 'dark' },
+              { name: 'prefers-reduced-motion', value: 'reduce' },
+            ])
+            await reducedPage.goto(baseUrl, { waitUntil: 'networkidle0', timeout: 60_000 })
+            await reducedPage.waitForSelector('[data-spatial-input="reduced"]', { timeout: 20_000 })
+            report.reduced = await reducedPage.evaluate(() => ({
+              canvasCount: document.querySelectorAll('canvas').length,
+              pointerLightDisplay: getComputedStyle(document.querySelector('.h2o-hero__pointer-light')).display,
+            }))
+            if (report.reduced.canvasCount !== 0) failures.push('reduced: WebGL canvas should not load')
+            if (report.reduced.pointerLightDisplay !== 'none') failures.push('reduced: pointer light should be hidden')
+            await reducedPage.screenshot({ path: resolve(outputDirectory, 'reduced-motion.png'), captureBeyondViewport: false })
+            await reducedPage.close()
+          } finally {
+            await browser.close()
+          }
+
+          await writeFile(resolve(outputDirectory, 'report.json'), JSON.stringify(report, null, 2))
+          if (failures.length > 0) {
+            console.error(failures.join('\n'))
+            process.exitCode = 1
+          } else {
+            console.log(`Spatial hover proof passed. Evidence retained in ${outputDirectory}`)
+          }
+          '''
+          Path('scripts/verify-spatial-hover.mjs').write_text(spatial_test.replace('          ', '').rstrip() + '\n')
+
+          package_path = Path('package.json')
+          package = json.loads(package_path.read_text())
+          package['scripts']['verify:spatial'] = 'node scripts/verify-spatial-hover.mjs'
+          package_path.write_text(json.dumps(package, indent=2) + '\n')
+
+          visual_path = Path('.github/workflows/visual-proof.yml')
+          visual = visual_path.read_text()
+          visual = replace_once(visual, '      - scripts/verify-visual.mjs\n', '      - scripts/verify-visual.mjs\n      - scripts/verify-spatial-hover.mjs\n', 'visual spatial path')
+          visual = replace_once(visual, '      - run: npm run verify:visual\n', '      - run: npm run verify:visual\n      - run: npm run verify:spatial\n', 'visual spatial run')
+          visual = replace_once(visual, '          path: .visual-proof/\n', '          path: |\n            .visual-proof/\n            .spatial-proof/\n', 'visual spatial artifact')
+          visual_path.write_text(visual)
+
+          ignore_path = Path('.gitignore')
+          ignore = ignore_path.read_text()
+          if '.spatial-proof/' not in ignore:
+              ignore = ignore.rstrip() + '\n.spatial-proof/\n'
+          ignore_path.write_text(ignore)
+          PY
+      - run: npm ci
+      - run: node scripts/verify-motion-contract.mjs
+      - run: npm run lint
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-spatial-server.log 2>&1 &
+          echo $! > /tmp/h2o-spatial-server.pid
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/h2o-spatial-server.log
+          exit 1
+      - run: npm run verify:spatial
+      - run: git diff --check
+      - name: Retain verified spatial motion
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/materialize-spatial-motion.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            .gitignore \
+            package.json \
+            scripts/verify-motion-contract.mjs \
+            scripts/verify-spatial-hover.mjs \
+            src/components/immersive/ImmersivePortfolio.tsx \
+            src/components/immersive/LiquidCurrentCanvas.tsx \
+            src/components/immersive/LiquidCurrentScene.tsx \
+            src/motion/tokens.ts \
+            src/styles/immersive/motion.css \
+            .github/workflows/visual-proof.yml \
+            .github/workflows/materialize-spatial-motion.yml
+          git commit -m "feat: add spatial Apple-like motion"
+          git push origin HEAD:main
