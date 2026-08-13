@@ -1,7 +1,6 @@
 import {
   motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -47,6 +46,21 @@ const practiceSteps = [
     copy: 'Follow the handoffs, failures, evidence, and consequences after the product ships.',
   },
 ] as const
+
+function useBrowserReducedMotion() {
+  const [shouldReduceMotion, setShouldReduceMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const syncPreference = () => setShouldReduceMotion(mediaQuery.matches)
+
+    syncPreference()
+    mediaQuery.addEventListener('change', syncPreference)
+    return () => mediaQuery.removeEventListener('change', syncPreference)
+  }, [])
+
+  return shouldReduceMotion
+}
 
 function ProjectImage({
   image,
@@ -566,8 +580,8 @@ export default function ImmersivePortfolio() {
   const progressRef = useRef(0)
   const activeIndexRef = useRef(0)
   const activityRef = useRef(0)
-  const shouldReduceMotion = useReducedMotion()
-  const spatialEnabled = shouldReduceMotion !== true
+  const shouldReduceMotion = useBrowserReducedMotion()
+  const spatialEnabled = !shouldReduceMotion
   const pointerField = useViewportSpatialPointer(activityRef, spatialEnabled)
   const [activeIndex, setActiveIndex] = useState(0)
   const { scrollYProgress } = useScroll()
