@@ -137,10 +137,26 @@
     transform: translate3d(0, -5px, 24px) scale(1.012);
   }
 
+  /* The archive hit plane remains fixed while its visible plane follows the global spring field. */
+  .h2o-archive-card:hover > .h2o-archive-card__spatial {
+    transform:
+      translate3d(var(--h2o-pointer-lead-x), var(--h2o-pointer-lead-y), 46px)
+      rotateX(var(--h2o-pointer-rotate-x))
+      rotateY(var(--h2o-pointer-rotate-y))
+      scale(1.014) !important;
+  }
+
+  .h2o-archive-card:hover .h2o-archive-pointer-light {
+    opacity: calc(0.34 + (var(--h2o-pointer-presence) * 0.24)) !important;
+    transform: translate3d(var(--h2o-pointer-trail-x), var(--h2o-pointer-trail-y), 62px) !important;
+  }
+
   .h2o-project-chapter[data-active='true'] .h2o-project-copy__spatial h3,
   .h2o-project-chapter[data-active='true'] .h2o-project-statement,
   .h2o-project-chapter[data-active='true'] .h2o-project-media__mobile-shell,
   .h2o-project-chapter[data-active='true'] .h2o-project-media__index,
+  .h2o-archive-card:hover > .h2o-archive-card__spatial,
+  .h2o-archive-card:hover .h2o-archive-pointer-light,
   .h2o-hero h1,
   .h2o-practice__copy,
   .h2o-end__name > span,
@@ -187,6 +203,8 @@
   .h2o-project-statement,
   .h2o-project-media__mobile-shell,
   .h2o-project-media__index,
+  .h2o-archive-card__spatial,
+  .h2o-archive-pointer-light,
   .h2o-end__name > span,
   .h2o-end__name strong {
     transform: none !important;
