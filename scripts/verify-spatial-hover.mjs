@@ -97,19 +97,38 @@ try {
     window.scrollTo(0, top + travel * 0.56)
   })
   await sleep(1000)
-  const archiveBox = await page.$eval('.h2o-archive-card', (element) => {
-    const rect = element.getBoundingClientRect()
-    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+
+  const archiveTarget = await page.$$eval('.h2o-archive-card', (elements) => {
+    const candidates = elements.map((element, index) => {
+      const rect = element.getBoundingClientRect()
+      const visibleWidth = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0))
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0))
+      return {
+        index,
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        visibleArea: visibleWidth * visibleHeight,
+      }
+    })
+
+    return candidates.sort((left, right) => right.visibleArea - left.visibleArea)[0]
   })
-  await page.mouse.move(archiveBox.x + archiveBox.width * 0.74, archiveBox.y + archiveBox.height * 0.26)
+  const archiveSelector = `.h2o-archive-card:nth-of-type(${archiveTarget.index + 1})`
+  await page.mouse.move(
+    archiveTarget.x + archiveTarget.width * 0.64,
+    archiveTarget.y + archiveTarget.height * 0.3,
+  )
   await sleep(620)
-  const archive = await page.$eval('.h2o-archive-card', (card) => ({
+  const archive = await page.$eval(archiveSelector, (card) => ({
+    index: Number.parseInt(card.getAttribute('data-archive-index') || '-1', 10),
     transform: getComputedStyle(card.querySelector('.h2o-archive-card__spatial')).transform,
     lightOpacity: Number.parseFloat(getComputedStyle(card.querySelector('.h2o-archive-pointer-light')).opacity),
   }))
   await page.screenshot({ path: resolve(outputDirectory, 'desktop-archive-hover.png'), captureBeyondViewport: false })
 
-  report.desktop = { left, right, archive, pageErrors }
+  report.desktop = { left, right, archiveTarget, archive, pageErrors }
   if (left.mediaTransform === right.mediaTransform) failures.push('desktop: project plane did not react to cursor position')
   if (left.copyTransform === right.copyTransform) failures.push('desktop: project copy did not counter-parallax')
   if (Math.max(left.lightOpacity, right.lightOpacity) < 0.25) failures.push('desktop: project pointer light did not become visible')
