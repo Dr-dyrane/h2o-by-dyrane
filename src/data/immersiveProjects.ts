@@ -76,8 +76,33 @@ export const immersiveProjects: ImmersiveProject[] = [
     },
   },
   {
-    id: 'weddings',
+    id: 'myfinance',
     sequence: '02',
+    period: '2025 — now',
+    title: 'MyFinance',
+    category: 'Personal finance OS and product-story architecture',
+    statement: 'A landing page should not describe the product. It should become it.',
+    description:
+      'A calm personal finance operating system whose public discovery route renders the real product shell, one reconciled financial life, and four responsive views instead of a conventional section-based landing page.',
+    proof: 'Production shell · one synthetic fixture · Home, Plan, Accounts and Activity',
+    modes: ['Observe', 'Build', 'Operate'],
+    accent: '#ff3d96',
+    accentSoft: 'rgba(255, 61, 150, 0.24)',
+    url: 'https://myfinance.dyrane.tech/discover',
+    desktop: {
+      src: capture('myfinance', 'desktop'),
+      fallbacks: [remoteCapture('https://myfinance.dyrane.tech/discover', 'desktop')],
+      alt: 'MyFinance live product-story operating system on desktop',
+    },
+    mobile: {
+      src: capture('myfinance', 'mobile'),
+      fallbacks: [remoteCapture('https://myfinance.dyrane.tech/discover', 'mobile')],
+      alt: 'MyFinance responsive live product story on mobile',
+    },
+  },
+  {
+    id: 'weddings',
+    sequence: '03',
     period: '2026 — now',
     title: 'Dyrane Weddings',
     category: 'Spatial publishing and celebration',
@@ -108,7 +133,7 @@ export const immersiveProjects: ImmersiveProject[] = [
   },
   {
     id: 'jelocare',
-    sequence: '03',
+    sequence: '04',
     period: '2026 — now',
     title: 'JeloCare',
     category: 'Evidence-led skincare and retail trust',
@@ -133,7 +158,7 @@ export const immersiveProjects: ImmersiveProject[] = [
   },
   {
     id: 'wetindey',
-    sequence: '04',
+    sequence: '05',
     period: '2026 — now',
     title: 'WetinDey',
     category: 'Community-confirmed local availability',
@@ -158,7 +183,7 @@ export const immersiveProjects: ImmersiveProject[] = [
   },
   {
     id: 'aumosaic',
-    sequence: '05',
+    sequence: '06',
     period: '2026 — now',
     title: 'AU Mosaic',
     category: 'Material commerce and visual decision support',
@@ -181,34 +206,15 @@ export const immersiveProjects: ImmersiveProject[] = [
       alt: 'AU Mosaic material selection experience on mobile',
     },
   },
-  {
-    id: 'justurbanwears',
-    sequence: '06',
-    period: '2026 — now',
-    title: 'Just Urban Wears',
-    category: 'Fashion identity, studio, and commerce',
-    statement: 'A fashion label needs a point of view, not another product grid.',
-    description:
-      'A connected identity, storefront, and private creative studio for a Nigerian fashion label.',
-    proof: 'Brand system · collection direction · storefront and studio',
-    modes: ['Observe', 'Build', 'Operate'],
-    accent: '#ae91ff',
-    accentSoft: 'rgba(174, 145, 255, 0.22)',
-    url: 'https://justurbanwears.com',
-    desktop: {
-      src: capture('justurbanwears', 'desktop'),
-      fallbacks: [remoteCapture('https://justurbanwears.com', 'desktop')],
-      alt: 'Just Urban Wears fashion storefront on desktop',
-    },
-    mobile: {
-      src: capture('justurbanwears', 'mobile'),
-      fallbacks: [remoteCapture('https://justurbanwears.com', 'mobile')],
-      alt: 'Just Urban Wears fashion storefront on mobile',
-    },
-  },
 ]
 
 export const archiveProjects: ArchiveProject[] = [
+  {
+    title: 'Just Urban Wears',
+    category: 'Fashion identity, studio, and commerce',
+    period: '2026 — now',
+    image: capture('justurbanwears', 'desktop'),
+  },
   {
     title: 'HOP',
     category: 'Hydration and behaviour',
