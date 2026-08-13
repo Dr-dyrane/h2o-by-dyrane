@@ -1,0 +1,75 @@
+name: Diagnose archive spatial light
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/diagnose-archive-spatial-light.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h2o-diagnose-archive-spatial-light
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Reuse the exact archive source patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/stabilize-archive-spatial-hover.yml').read_text()
+          start = workflow.index("          python - <<'PY'\n") + len("          python - <<'PY'\n")
+          end = workflow.index('\n          PY', start)
+          script = textwrap.dedent(workflow[start:end])
+          exec(compile(script, 'archive-spatial-materializer', 'exec'))
+
+          verifier_path = Path('scripts/verify-spatial-hover.mjs')
+          verifier = verifier_path.read_text()
+          old = "  if (archive.lightOpacity < 0.2) failures.push('desktop: archive pointer light did not become visible')"
+          new = "  console.log(`Archive spatial sample: ${JSON.stringify({ archiveTarget, archive })}`)\n  if (archive.lightOpacity < 0.2) failures.push('desktop: archive pointer light did not become visible')"
+          if verifier.count(old) != 1:
+              raise SystemExit(f'expected one archive light assertion, found {verifier.count(old)}')
+          verifier_path.write_text(verifier.replace(old, new, 1))
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production server
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-server.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/h2o-server.log
+          exit 1
+      - name: Measure archive spatial response
+        shell: bash
+        run: |
+          set +e
+          npm run verify:spatial
+          status=$?
+          echo "--- spatial report ---"
+          cat .spatial-proof/report.json || true
+          exit $status
