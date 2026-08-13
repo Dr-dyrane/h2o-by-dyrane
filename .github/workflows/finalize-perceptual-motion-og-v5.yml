@@ -1,0 +1,97 @@
+name: Finalize perceptual motion and live OG v5
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/finalize-perceptual-motion-og-v5.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: h2o-finalize-perceptual-motion-og-v5
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: node scripts/apply-perceptual-scene.mjs
+      - run: npm ci
+      - run: node scripts/verify-motion-contract.mjs
+      - run: node scripts/verify-perceptual-motion.mjs
+      - run: node scripts/verify-awwwards-finish.mjs
+      - run: npm run lint
+      - run: npm run build
+      - name: Locate Chromium
+        shell: bash
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$browser" ]; then
+            npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/puppeteer"
+            browser="$(find "$RUNNER_TEMP/puppeteer" -type f \( -name chrome -o -name chromium \) | head -n 1)"
+          fi
+          test -n "$browser"
+          echo "PUPPETEER_EXECUTABLE_PATH=$browser" >> "$GITHUB_ENV"
+      - name: Start production build
+        shell: bash
+        run: |
+          npm run start > /tmp/h2o-perceptual-server.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173 > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/h2o-perceptual-server.log
+          exit 1
+      - run: npm run verify:spatial
+      - run: node scripts/verify-perceptual-hover.mjs
+      - run: npm run generate:og
+        env:
+          H2O_OG_URL: http://127.0.0.1:5173
+      - run: npm run verify:og
+      - run: npm run build:client
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2o-perceptual-motion-live-og
+          path: |
+            .spatial-proof/
+            .perceptual-proof/
+            public/og-image-live.png
+          include-hidden-files: true
+          retention-days: 30
+      - name: Retain completed release
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/portfolio
+          image_hash="$(sha256sum public/og-image-live.png | cut -c1-12)"
+          source_head="$(git rev-parse HEAD)"
+          cat > docs/portfolio/perceptual-motion-og-validation.md <<EOF
+          # Perceptual motion and live OG validation
+
+          H₂O now separates scroll, leading pointer, and trailing light/camera response.
+
+          - Scroll choreography uses near-critical shared springs rather than raw progress.
+          - Fine-pointer movement changes typography, project depth, archive cards, local light, the current, and the DYRANE ending.
+          - WebGL clamps resumed delta, advances visual time safely, and damps camera position and look-at.
+          - Coarse-pointer and reduced-motion paths remain flat and touch-safe.
+          - Open Graph is captured from the real live hero at 1200 × 630.
+          - OG content hash: \`${image_hash}\`.
+          - Staging source validated: \`${source_head}\`.
+          EOF
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/immersive/LiquidCurrentScene.tsx public/og-image-live.png index.html docs/portfolio/perceptual-motion-og-validation.md
+          git commit -m "feat: finish perceptual motion and live hero OG"
+          git push origin HEAD:main
