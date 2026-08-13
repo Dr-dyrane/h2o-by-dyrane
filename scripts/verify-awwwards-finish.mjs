@@ -42,7 +42,7 @@ if (imports.at(-1) !== perceptualImport) {
   fail('perceptual-motion.css must remain the last immersive stylesheet import')
 }
 
-for (const id of ['ivisit', 'weddings', 'jelocare', 'wetindey', 'aumosaic', 'justurbanwears']) {
+for (const id of ['ivisit', 'myfinance', 'weddings', 'jelocare', 'wetindey', 'aumosaic']) {
   if (!finish.includes(`#${id}`)) fail(`missing authored ${id} treatment`)
 }
 
@@ -50,7 +50,7 @@ const requiredContracts = [
   '.h2o-project-proof',
   '.h2o-project-media-link > span',
   '.h2o-hero__sticky',
-  '#justurbanwears .h2o-project-media-link > span',
+  '#myfinance .h2o-project-media__wash',
 ]
 
 for (const contract of requiredContracts) {
