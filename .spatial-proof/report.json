@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-08-13T02:40:19.454Z",
+  "baseUrl": "http://127.0.0.1:5173",
+  "desktop": {
+    "left": {
+      "mediaTransform": "matrix3d(1.01199, -0.000110149, 0.00401975, 0, 0, 1.01163, 0.0270672, 0, -0.00406948, -0.0273918, 0.999626, 0, -0.48, -3.39287, 0, 1)",
+      "copyTransform": "matrix3d(0.999999, 0, -0.00117286, 0, 0, 1, 0, 0, 0.00117286, 0, 0.999999, 0, 0.24, 1.45409, 20, 1)",
+      "lightOpacity": 0.7
+    },
+    "right": {
+      "mediaTransform": "matrix3d(1.00945, -0.00196443, -0.0709556, 0, 0, 1.01162, -0.0273469, 0, 0.0718339, 0.0276052, 0.997105, 0, 8.48, 3.42793, 0, 1)",
+      "copyTransform": "matrix3d(0.999785, 0, 0.0207191, 0, 0, 1, 0, 0, -0.0207191, 0, 0.999785, 0, -4.24, -1.46911, 20, 1)",
+      "lightOpacity": 0.7
+    },
+    "archiveTarget": {
+      "index": 0,
+      "x": 211,
+      "y": 380,
+      "title": "HOP",
+      "topClass": "h2o-archive-card__hit-area"
+    },
+    "archive": {
+      "transform": "matrix3d(1.0115, -0.00251547, 0.0699501, 0, 0, 1.01335, 0.0354426, 0, -0.0709731, -0.0358502, 0.996921, 0, -6.68941, -3.38523, 33.968, 1)",
+      "lightOpacity": 0.579454
+    },
+    "pageErrors": []
+  },
+  "reducedMotion": {
+    "mediaQueryMatches": true,
+    "canvasCount": 0,
+    "lightDisplay": "none",
+    "heroTransform": "none"
+  }
+}
