@@ -17,7 +17,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 24
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,11 +26,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - run: npm ci
-      - name: Repair the stale build lock without mutating it
-        run: npm install --no-save --package-lock=false vite-plugin-pwa@0.21.1
+      - name: Install from package.json without trusting the stale lock
+        run: npm install --package-lock=false --no-audit --no-fund
       - run: npm run build
 
       - name: Locate Chromium
