@@ -19,6 +19,7 @@ type SpringProfile = (typeof motionSprings)[keyof typeof motionSprings]
 type SpatialPointerOptions = {
   enabled?: boolean
   spring?: SpringProfile
+  stableHover?: boolean
 }
 
 type SpatialPointerBindings<T extends HTMLElement> = {
@@ -41,10 +42,12 @@ const now = () => (typeof performance === 'undefined' ? Date.now() : performance
 export function useSpatialPointer<T extends HTMLElement>({
   enabled = true,
   spring = motionSprings.pointer,
+  stableHover = false,
 }: SpatialPointerOptions = {}): SpatialPointerController<T> {
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
   const rawPresence = useMotionValue(0)
+  const targetRef = useRef<T | null>(null)
   const x = useSpring(rawX, spring)
   const y = useSpring(rawY, spring)
   const presence = useSpring(rawPresence, motionSprings.pointerSlow)
@@ -55,23 +58,89 @@ export function useSpatialPointer<T extends HTMLElement>({
     rawPresence.set(0)
   }, [rawPresence, rawX, rawY])
 
+  const syncPoint = useCallback(
+    (clientX: number, clientY: number, rect: DOMRect) => {
+      if (rect.width <= 0 || rect.height <= 0) return
+      rawX.set(clampUnit(((clientX - rect.left) / rect.width) * 2 - 1))
+      rawY.set(clampUnit(((clientY - rect.top) / rect.height) * 2 - 1))
+      rawPresence.set(1)
+    },
+    [rawPresence, rawX, rawY],
+  )
+
   useEffect(() => {
-    if (!enabled) reset()
+    if (!enabled) {
+      targetRef.current = null
+      reset()
+    }
   }, [enabled, reset])
+
+  useEffect(() => {
+    if (!enabled || !stableHover) return undefined
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return
+      const target = targetRef.current
+      if (!target) return
+
+      const rect = target.getBoundingClientRect()
+      const isInside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom
+
+      if (!isInside) {
+        targetRef.current = null
+        reset()
+        return
+      }
+
+      syncPoint(event.clientX, event.clientY, rect)
+    }
+
+    const handlePointerOut = (event: PointerEvent) => {
+      if (event.relatedTarget !== null) return
+      targetRef.current = null
+      reset()
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') return
+      targetRef.current = null
+      reset()
+    }
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true })
+    window.addEventListener('pointerout', handlePointerOut, { passive: true })
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove)
+      window.removeEventListener('pointerout', handlePointerOut)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [enabled, reset, stableHover, syncPoint])
 
   const update = useCallback(
     (event: ReactPointerEvent<T>) => {
       if (!enabled || event.pointerType === 'touch') return
-
-      const rect = event.currentTarget.getBoundingClientRect()
-      if (rect.width <= 0 || rect.height <= 0) return
-
-      rawX.set(clampUnit(((event.clientX - rect.left) / rect.width) * 2 - 1))
-      rawY.set(clampUnit(((event.clientY - rect.top) / rect.height) * 2 - 1))
-      rawPresence.set(1)
+      targetRef.current = event.currentTarget
+      syncPoint(event.clientX, event.clientY, event.currentTarget.getBoundingClientRect())
     },
-    [enabled, rawPresence, rawX, rawY],
+    [enabled, syncPoint],
   )
+
+  const handleLeave = useCallback(() => {
+    if (stableHover) return
+    targetRef.current = null
+    reset()
+  }, [reset, stableHover])
+
+  const handleCancel = useCallback(() => {
+    targetRef.current = null
+    reset()
+  }, [reset])
 
   return {
     x,
@@ -80,8 +149,8 @@ export function useSpatialPointer<T extends HTMLElement>({
     bind: {
       onPointerEnter: update,
       onPointerMove: update,
-      onPointerLeave: reset,
-      onPointerCancel: reset,
+      onPointerLeave: handleLeave,
+      onPointerCancel: handleCancel,
     },
   }
 }
