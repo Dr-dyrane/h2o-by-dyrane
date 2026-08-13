@@ -10,6 +10,7 @@ on:
       - src/styles/immersive/**
       - src/data/immersiveProjects.ts
       - scripts/verify-visual.mjs
+      - scripts/verify-spatial-hover.mjs
       - public/showcase/live/**
       - package.json
       - .github/workflows/visual-proof.yml
@@ -57,6 +58,7 @@ jobs:
           cat /tmp/h2o-server.log
           exit 1
       - run: npm run verify:visual
+      - run: npm run verify:spatial
       - name: Show server log on failure
         if: failure()
         run: cat /tmp/h2o-server.log
@@ -65,7 +67,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: h2o-visual-proof
-          path: .visual-proof/
+          path: |
+            .visual-proof/
+            .spatial-proof/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
