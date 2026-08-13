@@ -26,7 +26,23 @@ jobs:
           node-version: 22
           cache: npm
       - name: Materialize Apple-like spatial motion
-        run: python .github/materialize-spatial-motion.py
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/materialize-spatial-motion.py')
+          source = path.read_text()
+          marker = "\nvisual_path = ROOT / '.github/workflows/visual-proof.yml'"
+          if source.count(marker) != 1:
+              raise SystemExit(f'expected one visual workflow marker, found {source.count(marker)}')
+          source = source.replace(
+              marker,
+              "\nprint('Spatial motion patch materialized.')\nraise SystemExit(0)\n" + marker,
+              1,
+          )
+          exec(compile(source, str(path), 'exec'))
+          PY
       - name: Check patch integrity
         run: |
           git diff --check
@@ -38,11 +54,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf .github/spatial
-          rm .github/materialize-spatial-motion.py
-          rm .github/workflows/materialize-spatial-motion.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add src/components/immersive/ImmersivePortfolio.tsx src/components/immersive/LiquidCurrentCanvas.tsx src/components/immersive/LiquidCurrentScene.tsx src/styles/immersive.css package.json
           git commit -m "feat: make the portfolio spatially responsive"
           git push origin HEAD:main
