@@ -34,40 +34,17 @@ jobs:
           portfolio_path = Path('src/components/immersive/ImmersivePortfolio.tsx')
           portfolio = portfolio_path.read_text()
 
-          old_hook = """  const pointer = useSpatialPointer<HTMLElement>({
-            enabled: spatialEnabled,
-            spring: motionSprings.pointerSlow,
-          })"""
-          new_hook = """  const pointer = useSpatialPointer<HTMLDivElement>({
-            enabled: spatialEnabled,
-            spring: motionSprings.pointerSlow,
-          })"""
+          old_hook = 'useSpatialPointer<HTMLElement>'
+          new_hook = 'useSpatialPointer<HTMLDivElement>'
           if portfolio.count(old_hook) != 1:
               raise SystemExit(f'expected one archive pointer hook, found {portfolio.count(old_hook)}')
           portfolio = portfolio.replace(old_hook, new_hook, 1)
 
-          old_card = """    <article
-                className=\"h2o-archive-card\"
-                style={cardStyle}
-                data-spatial-enabled={spatialEnabled ? 'true' : 'false'}
-                {...pointer.bind}
-              >
-                <motion.div"""
-          new_card = """    <article
-                className=\"h2o-archive-card\"
-                style={cardStyle}
-                data-archive-index={index}
-                data-spatial-enabled={spatialEnabled ? 'true' : 'false'}
-              >
-                <div
-                  className=\"h2o-archive-card__hit-area\"
-                  {...pointer.bind}
-                  aria-hidden=\"true\"
-                />
-                <motion.div"""
-          if portfolio.count(old_card) != 1:
-              raise SystemExit(f'expected one archive card binding, found {portfolio.count(old_card)}')
-          portfolio = portfolio.replace(old_card, new_card, 1)
+          old_binding = "      data-spatial-enabled={spatialEnabled ? 'true' : 'false'}\n      {...pointer.bind}\n    >\n      <motion.div"
+          new_binding = "      data-archive-index={index}\n      data-spatial-enabled={spatialEnabled ? 'true' : 'false'}\n    >\n      <div\n        className=\"h2o-archive-card__hit-area\"\n        {...pointer.bind}\n        aria-hidden=\"true\"\n      />\n      <motion.div"
+          if portfolio.count(old_binding) != 1:
+              raise SystemExit(f'expected one archive card binding, found {portfolio.count(old_binding)}')
+          portfolio = portfolio.replace(old_binding, new_binding, 1)
           portfolio_path.write_text(portfolio)
 
           css_path = Path('src/styles/immersive/archive-spatial-hit.css')
