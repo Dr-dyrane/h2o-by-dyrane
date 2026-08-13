@@ -98,31 +98,40 @@ try {
   })
   await sleep(1000)
 
-  const archiveTarget = await page.$$eval('.h2o-archive-card', (elements) => {
-    const candidates = elements.map((element, index) => {
-      const rect = element.getBoundingClientRect()
-      const visibleWidth = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0))
-      const visibleHeight = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0))
-      return {
-        index,
-        x: rect.x,
-        y: rect.y,
-        width: rect.width,
-        height: rect.height,
-        visibleArea: visibleWidth * visibleHeight,
-      }
-    })
+  const archiveTarget = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('.h2o-archive-card')]
+    const samplePoints = [
+      [0.56, 0.62],
+      [0.48, 0.66],
+      [0.66, 0.66],
+      [0.36, 0.68],
+    ]
 
-    return candidates.sort((left, right) => right.visibleArea - left.visibleArea)[0]
+    for (const [xRatio, yRatio] of samplePoints) {
+      const x = window.innerWidth * xRatio
+      const y = window.innerHeight * yRatio
+      const card = document
+        .elementsFromPoint(x, y)
+        .map((element) => element.closest?.('.h2o-archive-card'))
+        .find(Boolean)
+
+      if (card) {
+        const index = cards.indexOf(card)
+        return {
+          index,
+          x,
+          y,
+          title: card.querySelector('h3')?.textContent?.trim() || `archive-${index}`,
+        }
+      }
+    }
+
+    throw new Error('No archive card was hit-testable in the viewport')
   })
   const archiveSelector = `.h2o-archive-card:nth-of-type(${archiveTarget.index + 1})`
-  await page.mouse.move(
-    archiveTarget.x + archiveTarget.width * 0.64,
-    archiveTarget.y + archiveTarget.height * 0.3,
-  )
+  await page.mouse.move(archiveTarget.x, archiveTarget.y)
   await sleep(620)
   const archive = await page.$eval(archiveSelector, (card) => ({
-    index: Number.parseInt(card.getAttribute('data-archive-index') || '-1', 10),
     transform: getComputedStyle(card.querySelector('.h2o-archive-card__spatial')).transform,
     lightOpacity: Number.parseFloat(getComputedStyle(card.querySelector('.h2o-archive-pointer-light')).opacity),
   }))
