@@ -47,6 +47,7 @@ const profiles = {
       frame('practice-build', 'practice', 0.5),
       frame('practice-operate', 'practice', 0.84),
       frame('ivisit', 'ivisit', 0.08),
+      frame('myfinance', 'myfinance', 0.08),
       frame('weddings', 'weddings', 0.08),
       frame('archive', 'archive', 0.57),
       frame('contact', 'contact', 0.16),
@@ -59,6 +60,7 @@ const profiles = {
       frame('top'),
       frame('practice-build', 'practice', 0.5),
       frame('ivisit', 'ivisit', 0.08),
+      frame('myfinance', 'myfinance', 0.08),
       frame('weddings', 'weddings', 0.08),
       frame('archive', 'archive', 0.57),
       frame('signature', 'contact', 0.9),
@@ -272,7 +274,7 @@ for (const [name, result] of Object.entries(report.profiles)) {
   if (result.layout.headingCount !== 1) failures.push(`${name}: expected one h1, received ${result.layout.headingCount}`)
   if (result.layout.projectCount !== 6) failures.push(`${name}: expected six project chapters, received ${result.layout.projectCount}`)
   if (result.layout.practiceCount !== 3) failures.push(`${name}: expected three spatial practice stages, received ${result.layout.practiceCount}`)
-  if (result.layout.archiveCount !== 4) failures.push(`${name}: expected four archive projects, received ${result.layout.archiveCount}`)
+  if (result.layout.archiveCount !== 5) failures.push(`${name}: expected five archive projects, received ${result.layout.archiveCount}`)
   if (result.layout.signatureCount !== 1) failures.push(`${name}: expected one Dyrane signature, received ${result.layout.signatureCount}`)
   if (result.layout.canvasCount < 1) failures.push(`${name}: expected the deferred WebGL current to load`)
   if (result.layout.horizontalOverflow) {
